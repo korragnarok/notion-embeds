@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Database</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sage:#6b7a5a;--sage-mid:#8a9a6e;--sage-light:#c5d4a8;
+    --tan:#c9a87a;--tan-dark:#9b6e3a;
+    --cream:#f4ede0;--cream-dark:#e8dcc8;
+    --ink:#2e2a24;--ink-mid:#5a5248;--ink-muted:#8a8078;
+    --border:rgba(107,122,90,0.15);--white:#faf7f2;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+  header{background:var(--ink);padding:28px 36px 22px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+  .eyebrow{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--tan);margin-bottom:4px;font-weight:500;}
+  header h1{font-family:'Bebas Neue',sans-serif;font-size:48px;line-height:0.9;color:var(--white);}
+  header h1 span{color:var(--sage-light);}
+  .header-btns{display:flex;gap:8px;align-items:center;}
+  .add-btn{background:var(--sage);color:white;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;}
+  .add-btn:hover{background:var(--sage-mid);}
+  .refresh-btn{background:none;border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 16px;font-size:13px;color:#7a7068;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+  .refresh-btn:hover{border-color:var(--sage-light);color:var(--sage-light);}
+
+  .tabs-wrap{background:var(--ink);border-bottom:1px solid rgba(255,255,255,0.08);overflow-x:auto;padding:0 36px;}
+  .tabs{display:flex;gap:4px;min-width:max-content;}
+  .tab{padding:10px 16px;font-size:12px;font-weight:500;color:#7a7068;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.12s;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif;}
+  .tab:hover{color:#ccc;}
+  .tab.active{color:var(--sage-light);border-bottom-color:var(--sage-light);}
+
+  .main{max-width:1100px;margin:0 auto;padding:24px 24px 80px;}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+  .stat{background:var(--white);border-radius:10px;border:1px solid var(--border);padding:14px 16px;}
+  .stat-label{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-muted);font-weight:500;margin-bottom:5px;}
+  .stat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;color:var(--ink);}
+  .stat-val.green{color:var(--sage);}
+  .stat-sub{font-size:11px;color:var(--ink-muted);margin-top:3px;font-style:italic;font-family:'DM Serif Display',serif;}
+
+  .filter-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+  .filter-btn{background:var(--white);border:1px solid var(--border);border-radius:100px;padding:5px 14px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;color:var(--ink-muted);transition:all 0.12s;}
+  .filter-btn.active{background:var(--ink);color:var(--white);border-color:var(--ink);}
+  .search-input{flex:1;min-width:180px;padding:7px 12px;border:1px solid var(--border);border-radius:100px;background:var(--white);color:var(--ink);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;}
+  .search-input:focus{border-color:var(--sage-mid);}
+
+  .table-wrap{background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden;}
+  table{width:100%;border-collapse:collapse;}
+  thead th{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-muted);padding:11px 14px;text-align:left;border-bottom:1px solid var(--border);background:var(--cream);font-weight:500;cursor:pointer;white-space:nowrap;}
+  thead th:hover{color:var(--ink);}
+  thead th.num{text-align:right;}
+  tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
+  tbody tr:last-child{border-bottom:none;}
+  tbody tr:hover{background:var(--cream);}
+  tbody td{padding:11px 14px;font-size:13px;color:var(--ink);vertical-align:middle;}
+  tbody td.num{text-align:right;}
+  .product-name{font-weight:500;}
+  .gmv-val{color:var(--sage);font-weight:500;}
+  .date-val{color:var(--ink-muted);font-size:12px;}
+  .link-btn{color:var(--sage);text-decoration:none;font-size:12px;font-weight:500;}
+  .link-btn:hover{text-decoration:underline;}
+  .action-btn{background:none;border:none;cursor:pointer;color:var(--ink-muted);font-size:13px;padding:2px 5px;border-radius:4px;}
+  .action-btn:hover{background:var(--cream-dark);color:var(--ink);}
+  .empty-state{text-align:center;padding:48px;color:var(--ink-muted);font-style:italic;font-family:'DM Serif Display',serif;}
+
+  .status-pill{display:inline-block;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:500;}
+  .status-Posted{background:rgba(107,122,90,0.15);color:#3a5228;}
+  .status-To-Do{background:rgba(100,130,200,0.12);color:#2a4a8a;}
+  .stock-pill{display:inline-block;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:500;}
+  .stock-In-Stock{background:rgba(107,122,90,0.12);color:#3a5228;}
+  .stock-Out-of-Stock{background:rgba(180,60,60,0.1);color:#8a2a2a;}
+  .stock-Low-Stock{background:rgba(200,160,50,0.12);color:#7a5a10;}
+  .core-badge{display:inline-block;background:var(--tan);color:var(--ink);font-size:9px;font-weight:700;padding:1px 6px;border-radius:100px;letter-spacing:0.06em;text-transform:uppercase;margin-left:4px;vertical-align:middle;}
+
+  .loading{text-align:center;padding:48px;color:var(--ink-muted);font-style:italic;font-family:'DM Serif Display',serif;}
+  .loading-spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--sage);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(46,42,36,0.5);z-index:200;align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--white);border-radius:14px;border:1px solid var(--border);padding:28px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.15);}
+  .modal-title{font-family:'Bebas Neue',sans-serif;font-size:28px;margin-bottom:20px;color:var(--ink);}
+  .form-group{margin-bottom:13px;}
+  .form-label{display:block;font-size:11px;font-weight:500;color:var(--ink-mid);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:5px;}
+  .form-input,.form-select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--cream);color:var(--ink);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.12s;}
+  .form-input:focus,.form-select:focus{border-color:var(--sage-mid);background:var(--white);}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .modal-actions{display:flex;gap:10px;margin-top:20px;}
+  .btn-cancel{flex:1;background:none;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;cursor:pointer;color:var(--ink-muted);font-family:'DM Sans',sans-serif;}
+  .btn-cancel:hover{background:var(--cream);}
+  .btn-save{flex:2;background:var(--sage);border:none;border-radius:8px;padding:10px;font-size:13px;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;font-weight:500;}
+  .btn-save:hover{background:var(--sage-mid);}
+  .btn-save:disabled{opacity:0.6;cursor:not-allowed;}
+  .form-msg{font-size:12px;margin-top:10px;text-align:center;font-style:italic;font-family:'DM Serif Display',serif;min-height:18px;}
+  .form-msg.success{color:var(--sage);}
+  .form-msg.error{color:var(--tan-dark);}
+
+  @media(max-width:640px){
+    .stats{grid-template-columns:1fr 1fr;}
+    header{padding:20px;}
+    .tabs-wrap{padding:0 16px;}
+    .main{padding:16px 12px 60px;}
+    .form-row,.form-row-3{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="eyebrow">@helloitskortny</div>
+    <h1>Product<br><span>Database</span></h1>
+  </div>
+  <div class="header-btns">
+    <button class="refresh-btn" onclick="loadFromNotion()">↻ Refresh</button>
+    <button class="add-btn" onclick="openModal()">+ Add Product</button>
+  </div>
+</header>
+
+<div class="tabs-wrap">
+  <div class="tabs" id="brand-tabs"></div>
+</div>
+
+<div class="main">
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Products</div><div class="stat-val green" id="stat-products">—</div><div class="stat-sub" id="stat-products-sub">—</div></div>
+    <div class="stat"><div class="stat-label">Total Sold</div><div class="stat-val" id="stat-sold">—</div><div class="stat-sub">units</div></div>
+    <div class="stat"><div class="stat-label">Total GMV</div><div class="stat-val" id="stat-gmv">—</div><div class="stat-sub">all products</div></div>
+    <div class="stat"><div class="stat-label">Posted</div><div class="stat-val" id="stat-posted">—</div><div class="stat-sub" id="stat-posted-sub">—</div></div>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="setFilter('All',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('Posted',this)">Posted</button>
+    <button class="filter-btn" onclick="setFilter('To Do',this)">To Do</button>
+    <button class="filter-btn" onclick="setFilter('In Stock',this)">In Stock</button>
+    <button class="filter-btn" onclick="setFilter('Out of Stock',this)">Out of Stock</button>
+    <input type="text" class="search-input" id="search-input" placeholder="Search products..." oninput="renderTable()">
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th onclick="sortBy('product')">Product</th>
+        <th onclick="sortBy('brand')">Brand</th>
+        <th onclick="sortBy('status')">Status</th>
+        <th onclick="sortBy('stock')">Stock</th>
+        <th onclick="sortBy('sold')" class="num">Sold</th>
+        <th onclick="sortBy('gmv')" class="num">GMV</th>
+        <th onclick="sortBy('day')">Date</th>
+        <th>Link</th>
+        <th></th>
+      </tr></thead>
+      <tbody id="table-body">
+        <tr><td colspan="9"><div class="loading"><div class="loading-spinner"></div>Loading from Notion...</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Add Product</div>
+    <div class="form-group"><label class="form-label">Product Name</label><input type="text" class="form-input" id="inp-product" placeholder="e.g. Temptations Shallow Bowls"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Brand</label>
+        <select class="form-select" id="inp-brand">
+          <option value="">— Select —</option>
+          <option>Comfrt</option><option>Mellow</option><option>Pet Lab Co</option><option>Sand Cloud</option>
+          <option>Woof</option><option>Goli</option><option>Grüns</option><option>Spark Paws</option>
+          <option>Muddy Mat</option><option>QVC</option><option>Honnity</option><option>SnowClad</option>
+          <option>Kitsch</option><option>Liquid IV</option><option>NiHome</option><option>Owala</option>
+          <option>Shark</option><option>We Love Doodles</option><option>Giratree</option><option>Flur</option>
+          <option>King Lou</option><option>Levoit</option><option>Dog Friendly Co</option><option>Sungboon</option>
+          <option>Loaded Tea Shop</option><option>MyQ</option><option>She's Birdie</option><option>Choxbox</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="inp-day"></div>
+    </div>
+    <div class="form-row-3">
+      <div class="form-group"><label class="form-label">Status</label>
+        <select class="form-select" id="inp-status"><option value="To Do">To Do</option><option value="Posted">Posted</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Stock</label>
+        <select class="form-select" id="inp-stock"><option value="In Stock">In Stock</option><option value="Low Stock">Low Stock</option><option value="Out of Stock">Out of Stock</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Go Live?</label>
+        <select class="form-select" id="inp-golive"><option value="no">No</option><option value="yes">Yes</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Units Sold</label><input type="number" class="form-input" id="inp-sold" placeholder="0" min="0"></div>
+      <div class="form-group"><label class="form-label">GMV ($)</label><input type="number" class="form-input" id="inp-gmv" placeholder="0.00" step="0.01" min="0"></div>
+    </div>
+    <div class="form-group"><label class="form-label">TikTok Shop Link</label><input type="url" class="form-input" id="inp-link" placeholder="https://..."></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="btn-save" onclick="saveProduct()">Save to Notion</button>
+    </div>
+    <div class="form-msg" id="form-msg"></div>
+  </div>
+</div>
+
+<script>
+const API = 'https://kortny-api.vercel.app/api/notion';
+const DB_ID = 'd99b6dec79ba46f1a564af4d00f7220d';
+const CORE_FIVE = ['Pet Lab Co','Comfrt','Sand Cloud','Woof','QVC'];
+
+let DATA = [];
+let currentBrand = 'All';
+let statusFilter = 'All';
+let sortField = 'day';
+let sortDir = -1;
+let editingId = null;
+
+function fmt(n){return '$'+Math.round(n).toLocaleString('en-US');}
+function fmtDate(s){if(!s)return'—';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'});}
+
+async function loadFromNotion() {
+  document.getElementById('table-body').innerHTML = '<tr><td colspan="9"><div class="loading"><div class="loading-spinner"></div>Loading from Notion...</div></td></tr>';
+  try {
+    let results = [];
+    let cursor = null;
+    do {
+      const body = {page_size:100, sorts:[{property:'Day',direction:'descending'}]};
+      if (cursor) body.start_cursor = cursor;
+      const res = await fetch(`${API}?endpoint=databases/${DB_ID}/query`, {
+        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+      });
+      const data = await res.json();
+      results = [...results, ...(data.results||[])];
+      cursor = data.next_cursor;
+    } while (cursor);
+
+    DATA = results
+      .filter(p => !p.archived && !p.in_trash)
+      .map(p => ({
+        id: p.id,
+        product: p.properties.Product?.title?.[0]?.plain_text || '',
+        brand: p.properties.Brand?.select?.name || '',
+        status: p.properties.Status?.status?.name || 'To Do',
+        stock: p.properties.Stock?.select?.name || '',
+        sold: p.properties.Sold?.number || 0,
+        gmv: p.properties.GMV?.number || 0,
+        day: p.properties.Day?.date?.start || '',
+        link: p.properties['TikTok Shop Link']?.url || '',
+      }))
+      .filter(p => p.product);
+
+    buildTabs();
+    renderTable();
+  } catch(e) {
+    console.error(e);
+    document.getElementById('table-body').innerHTML = '<tr><td colspan="9" class="empty-state">Error loading. Try refreshing.</td></tr>';
+  }
+}
+
+function buildTabs() {
+  const brands = ['All', ...[...new Set(DATA.map(d=>d.brand).filter(Boolean))].sort()];
+  const wrap = document.getElementById('brand-tabs');
+  wrap.innerHTML = '';
+  brands.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (b===currentBrand?' active':'');
+    btn.textContent = b==='All'?'All Brands':b;
+    btn.onclick = () => {
+      currentBrand = b;
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      btn.classList.add('active');
+      renderTable();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function updateStats(filtered) {
+  const sold = filtered.reduce((s,r)=>s+(r.sold||0),0);
+  const gmv = filtered.reduce((s,r)=>s+(r.gmv||0),0);
+  const posted = filtered.filter(r=>r.status==='Posted').length;
+  document.getElementById('stat-products').textContent = filtered.length;
+  document.getElementById('stat-products-sub').textContent = currentBrand==='All'?'across all brands':currentBrand;
+  document.getElementById('stat-sold').textContent = sold.toLocaleString();
+  document.getElementById('stat-gmv').textContent = fmt(gmv);
+  document.getElementById('stat-posted').textContent = posted;
+  document.getElementById('stat-posted-sub').textContent = filtered.length ? Math.round(posted/filtered.length*100)+'% posted' : '—';
+}
+
+function setFilter(f, btn) {
+  statusFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+function sortBy(field) {
+  if (sortField===field) sortDir*=-1;
+  else { sortField=field; sortDir=-1; }
+  renderTable();
+}
+
+function getFiltered() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  return DATA.filter(r => {
+    if (currentBrand!=='All' && r.brand!==currentBrand) return false;
+    if (statusFilter==='Posted' && r.status!=='Posted') return false;
+    if (statusFilter==='To Do' && r.status!=='To Do') return false;
+    if (statusFilter==='In Stock' && r.stock!=='In Stock') return false;
+    if (statusFilter==='Out of Stock' && r.stock!=='Out of Stock') return false;
+    if (search && !r.product.toLowerCase().includes(search) && !r.brand.toLowerCase().includes(search)) return false;
+    return true;
+  }).sort((a,b) => {
+    let av=a[sortField]||'', bv=b[sortField]||'';
+    if (sortField==='sold'||sortField==='gmv') { av=Number(a[sortField]||0); bv=Number(b[sortField]||0); }
+    if (av<bv) return -1*sortDir;
+    if (av>bv) return 1*sortDir;
+    return 0;
+  });
+}
+
+function renderTable() {
+  const filtered = getFiltered();
+  updateStats(filtered);
+  const tbody = document.getElementById('table-body');
+  if (!filtered.length) { tbody.innerHTML='<tr><td colspan="9" class="empty-state">No products found</td></tr>'; return; }
+  tbody.innerHTML = filtered.map(r => {
+    const isCore = CORE_FIVE.includes(r.brand);
+    return `<tr>
+      <td class="product-name">${r.product}${isCore?'<span class="core-badge">Core 5</span>':''}</td>
+      <td>${r.brand||'—'}</td>
+      <td><span class="status-pill status-${r.status?.replace(/\s/g,'-')}">${r.status||'—'}</span></td>
+      <td>${r.stock?`<span class="stock-pill stock-${r.stock.replace(/\s/g,'-')}">${r.stock}</span>`:'—'}</td>
+      <td class="num">${r.sold||0}</td>
+      <td class="num gmv-val">${r.gmv?fmt(r.gmv):'—'}</td>
+      <td class="date-val">${fmtDate(r.day)}</td>
+      <td>${r.link?`<a href="${r.link}" target="_blank" class="link-btn">Shop ↗</a>`:'—'}</td>
+      <td><button class="action-btn" onclick="editProduct('${r.id}')" title="Edit">✎</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function openModal(id=null) {
+  editingId = id;
+  document.getElementById('form-msg').textContent = '';
+  document.getElementById('btn-save').disabled = false;
+  if (id) {
+    const r = DATA.find(x=>x.id===id);
+    document.getElementById('modal-title').textContent = 'Edit Product';
+    document.getElementById('inp-product').value = r.product;
+    document.getElementById('inp-brand').value = r.brand;
+    document.getElementById('inp-day').value = r.day;
+    document.getElementById('inp-status').value = r.status;
+    document.getElementById('inp-stock').value = r.stock||'In Stock';
+    document.getElementById('inp-sold').value = r.sold||0;
+    document.getElementById('inp-gmv').value = r.gmv||0;
+    document.getElementById('inp-link').value = r.link||'';
+    document.getElementById('btn-save').textContent = 'Save Changes';
+  } else {
+    document.getElementById('modal-title').textContent = 'Add Product';
+    document.getElementById('inp-product').value = '';
+    document.getElementById('inp-brand').value = currentBrand!=='All'?currentBrand:'';
+    document.getElementById('inp-day').value = new Date().toISOString().split('T')[0];
+    document.getElementById('inp-status').value = 'To Do';
+    document.getElementById('inp-stock').value = 'In Stock';
+    document.getElementById('inp-sold').value = '';
+    document.getElementById('inp-gmv').value = '';
+    document.getElementById('inp-link').value = '';
+    document.getElementById('btn-save').textContent = 'Save to Notion';
+  }
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function editProduct(id) { openModal(id); }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+async function saveProduct() {
+  const product = document.getElementById('inp-product').value.trim();
+  const brand = document.getElementById('inp-brand').value;
+  const day = document.getElementById('inp-day').value;
+  const status = document.getElementById('inp-status').value;
+  const stock = document.getElementById('inp-stock').value;
+  const sold = parseInt(document.getElementById('inp-sold').value)||0;
+  const gmv = parseFloat(document.getElementById('inp-gmv').value)||0;
+  const link = document.getElementById('inp-link').value.trim();
+  if (!product||!brand) { showMsg('Please fill in product name and brand.','error'); return; }
+
+  const btn = document.getElementById('btn-save');
+  btn.disabled=true; btn.textContent='Saving...';
+
+  const properties = {
+    'Product': { title: [{text:{content:product}}] },
+    'Brand': { select: {name:brand} },
+    'Status': { status: {name:status} },
+    'Stock': { select: {name:stock} },
+    'Sold': { number: sold },
+    'GMV': { number: gmv },
+    ...(link ? {'TikTok Shop Link':{url:link}} : {}),
+    ...(day ? {'Day':{date:{start:day}}} : {}),
+  };
+
+  try {
+    let res;
+    if (editingId) {
+      res = await fetch(`${API}?endpoint=pages/${editingId}`, {
+        method:'PATCH', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({properties})
+      });
+    } else {
+      res = await fetch(`${API}?endpoint=pages`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({parent:{database_id:DB_ID}, properties})
+      });
+    }
+
+    if (res.ok) {
+      showMsg(editingId?'Updated in Notion! ✓':'Saved to Notion! ✓','success');
+      btn.textContent = 'Saved ✓';
+      setTimeout(() => { closeModal(); loadFromNotion(); }, 1200);
+    } else {
+      const err = await res.json();
+      console.error(err);
+      showMsg('Error saving. Try again.','error');
+      btn.disabled=false; btn.textContent='Save to Notion';
+    }
+  } catch(e) {
+    showMsg('Network error. Try again.','error');
+    btn.disabled=false; btn.textContent='Save to Notion';
+  }
+}
+
+function showMsg(msg,type){const el=document.getElementById('form-msg');el.textContent=msg;el.className='form-msg '+type;}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+loadFromNotion();
+</script>
+</body>
+</html>

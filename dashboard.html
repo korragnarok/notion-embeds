@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>@helloitskortny Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --sage:#6b7a5a;--sage-mid:#8a9a6e;--sage-light:#c5d4a8;
+    --tan:#c9a87a;--tan-dark:#9b6e3a;
+    --cream:#f4ede0;--cream-dark:#e8dcc8;
+    --ink:#2e2a24;--ink-mid:#5a5248;--ink-muted:#8a8078;
+    --border:rgba(107,122,90,0.15);--white:#faf7f2;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+  header{background:var(--ink);padding:28px 36px 22px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+  .eyebrow{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--tan);margin-bottom:4px;font-weight:500;}
+  header h1{font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:0.9;color:var(--white);}
+  header h1 span{color:var(--sage-light);}
+  .header-right{text-align:right;}
+  .header-date{font-size:12px;color:#7a7068;font-style:italic;font-family:'DM Serif Display',serif;margin-bottom:4px;}
+  .refresh-btn{background:none;border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:6px 14px;font-size:12px;color:#7a7068;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+  .refresh-btn:hover{border-color:var(--sage-light);color:var(--sage-light);}
+
+  .dashboard{max-width:1200px;margin:0 auto;padding:24px 24px 60px;display:flex;flex-direction:column;gap:20px;}
+
+  .card{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:20px 22px;}
+  .card-title{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-muted);font-weight:500;margin-bottom:12px;}
+
+  .row-3{display:grid;grid-template-columns:1fr 2fr 1.5fr;gap:16px;}
+  .big-number{font-family:'Bebas Neue',sans-serif;font-size:56px;line-height:1;color:var(--sage);}
+  .big-number-label{font-size:12px;color:var(--ink-muted);margin-top:4px;font-style:italic;font-family:'DM Serif Display',serif;}
+  .big-number-sub{font-size:11px;color:var(--ink-muted);margin-top:8px;}
+  .big-number-sub span{color:var(--ink);font-weight:500;}
+
+  .chart-wrap{position:relative;width:100%;}
+  .chart-wrap-h200{height:160px;}
+  .chart-wrap-h180{height:150px;}
+  .chart-wrap-h220{height:180px;}
+
+  .row-commission{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:16px;}
+  .donut-wrap{display:flex;align-items:center;gap:20px;}
+  .donut-chart-wrap{position:relative;width:120px;height:120px;flex-shrink:0;}
+  .donut-legend{display:flex;flex-direction:column;gap:10px;}
+  .donut-legend-item{display:flex;flex-direction:column;}
+  .donut-legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;}
+  .donut-legend-label{font-size:11px;color:var(--ink-muted);display:flex;align-items:center;}
+  .donut-legend-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--ink);line-height:1;margin-top:1px;}
+
+  .highlight-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;height:100%;}
+  .highlight-card{background:var(--cream);border-radius:8px;padding:14px;border:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between;}
+  .highlight-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-muted);font-weight:500;margin-bottom:6px;}
+  .highlight-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--ink);line-height:1;}
+  .highlight-val.green{color:var(--sage);}
+  .highlight-val.tan{color:var(--tan-dark);}
+  .highlight-sub{font-size:11px;color:var(--ink-muted);margin-top:4px;font-style:italic;font-family:'DM Serif Display',serif;}
+
+  .row-full{width:100%;}
+  .row-bottom{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;}
+
+  .product-list{display:flex;flex-direction:column;gap:6px;margin-top:4px;}
+  .product-row{display:flex;align-items:center;gap:10px;}
+  .product-rank{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--ink-muted);width:18px;flex-shrink:0;}
+  .product-name{font-size:12px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;}
+  .product-bar-wrap{width:100px;flex-shrink:0;}
+  .product-bar-bg{background:var(--cream-dark);border-radius:100px;height:6px;overflow:hidden;}
+  .product-bar-fill{background:var(--sage);height:6px;border-radius:100px;}
+  .product-sold{font-size:11px;color:var(--ink-muted);width:28px;text-align:right;flex-shrink:0;}
+
+  /* LOADING */
+  .loading-overlay{position:fixed;inset:0;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;}
+  .loading-overlay.hidden{display:none;}
+  .loading-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--sage);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:16px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-text{font-size:14px;color:var(--ink-muted);font-style:italic;font-family:'DM Serif Display',serif;}
+
+  @media(max-width:800px){
+    .row-3,.row-commission,.row-bottom{grid-template-columns:1fr;}
+    header{padding:20px;}
+    .dashboard{padding:16px 14px 40px;}
+    .big-number{font-size:44px;}
+    .highlight-grid{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Loading your data from Notion...</div>
+</div>
+
+<header>
+  <div>
+    <div class="eyebrow">@helloitskortny</div>
+    <h1>Sales<br><span>Dashboard</span></h1>
+  </div>
+  <div class="header-right">
+    <div class="header-date" id="header-date"></div>
+    <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+  </div>
+</header>
+
+<div class="dashboard">
+  <div class="row-3">
+    <div class="card">
+      <div class="card-title">GMV — last 7 days</div>
+      <div class="big-number" id="gmv7d">—</div>
+      <div class="big-number-label">total sales value</div>
+      <div class="big-number-sub" id="gmv7d-sub"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">GMV — last 30 days</div>
+      <div class="chart-wrap chart-wrap-h200"><canvas id="gmv30Chart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">GMV — by month</div>
+      <div class="chart-wrap chart-wrap-h200"><canvas id="gmv365Chart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="row-commission">
+    <div class="card">
+      <div class="card-title">Commissions — status</div>
+      <div class="donut-wrap">
+        <div class="donut-chart-wrap"><canvas id="commDonut"></canvas></div>
+        <div class="donut-legend">
+          <div class="donut-legend-item">
+            <div class="donut-legend-label"><span class="donut-legend-dot" style="background:#6b7a5a"></span>Settled</div>
+            <div class="donut-legend-val" id="settled-val">—</div>
+          </div>
+          <div class="donut-legend-item">
+            <div class="donut-legend-label"><span class="donut-legend-dot" style="background:#c9a87a"></span>Pending</div>
+            <div class="donut-legend-val" id="pending-val">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Commission rate trend — 30 days</div>
+      <div class="chart-wrap chart-wrap-h180"><canvas id="commRateChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Commission highlights</div>
+      <div class="highlight-grid">
+        <div class="highlight-card"><div class="highlight-label">All-time earned</div><div class="highlight-val green" id="hl-alltime">—</div><div class="highlight-sub">total settled</div></div>
+        <div class="highlight-card"><div class="highlight-label">Avg rate</div><div class="highlight-val tan" id="hl-rate">—</div><div class="highlight-sub">comm / GMV</div></div>
+        <div class="highlight-card"><div class="highlight-label">Best day</div><div class="highlight-val" id="hl-bestday">—</div><div class="highlight-sub" id="hl-bestday-date">—</div></div>
+        <div class="highlight-card"><div class="highlight-label">Active days</div><div class="highlight-val" id="hl-days">—</div><div class="highlight-sub">days with sales</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row-full card">
+    <div class="card-title">Daily GMV — all time</div>
+    <div class="chart-wrap chart-wrap-h220"><canvas id="dailyGmvChart"></canvas></div>
+  </div>
+
+  <div class="row-bottom">
+    <div class="card">
+      <div class="card-title">Sales by product — units sold</div>
+      <div class="product-list" id="product-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">GMV by product — top 6</div>
+      <div class="chart-wrap" style="height:220px"><canvas id="productGmvChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://kortny-api.vercel.app/api/notion';
+const DAILY_SALES_DB = 'a35bab03eb3544729b8019ddfc019e4e';
+const ORDERS_DB = '47a77144c4644149b499cef40bf72bf5';
+const PRODUCTS_DB = 'd99b6dec79ba46f1a564af4d00f7220d';
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+let charts = {};
+
+function fmt(n){return '$'+Math.round(n).toLocaleString('en-US');}
+function fmtD(n){return '$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+document.getElementById('header-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+async function queryDB(dbId, body={}) {
+  const res = await fetch(`${API}?endpoint=databases/${dbId}/query`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({page_size:100,...body})
+  });
+  const data = await res.json();
+  let results = data.results || [];
+  // handle pagination
+  let cursor = data.next_cursor;
+  while (cursor) {
+    const r2 = await fetch(`${API}?endpoint=databases/${dbId}/query`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({page_size:100,start_cursor:cursor,...body})
+    });
+    const d2 = await r2.json();
+    results = [...results, ...(d2.results||[])];
+    cursor = d2.next_cursor;
+  }
+  return results;
+}
+
+function destroyChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
+
+async function loadAll() {
+  document.getElementById('loading-overlay').classList.remove('hidden');
+
+  try {
+    const [salesPages, ordersPages, productPages] = await Promise.all([
+      queryDB(DAILY_SALES_DB, {sorts:[{property:'Date',direction:'ascending'}]}),
+      queryDB(ORDERS_DB),
+      queryDB(PRODUCTS_DB),
+    ]);
+
+    // Parse daily sales
+    const sales = salesPages.map(p => ({
+      date: p.properties.Date?.date?.start || '',
+      product: p.properties['Top Seller']?.title?.[0]?.plain_text || '',
+      gmv: p.properties.GMV?.number || 0,
+      commission: p.properties.Commission?.number || 0,
+    })).filter(r => r.date).sort((a,b) => a.date.localeCompare(b.date));
+
+    // Parse orders
+    const orders = ordersPages.map(p => ({
+      commission: p.properties.Commission?.number || 0,
+      status: p.properties.Status?.select?.name || '',
+    }));
+
+    // Parse products
+    const products = productPages.map(p => ({
+      name: p.properties.Product?.title?.[0]?.plain_text || '',
+      sold: p.properties.Sold?.number || 0,
+      gmv: p.properties.GMV?.number || 0,
+      brand: p.properties.Brand?.select?.name || '',
+    })).filter(p => p.name);
+
+    renderDashboard(sales, orders, products);
+  } catch(e) {
+    console.error(e);
+  }
+
+  document.getElementById('loading-overlay').classList.add('hidden');
+}
+
+function renderDashboard(sales, orders, products) {
+  const today = new Date();
+  const totalGMV = sales.reduce((s,r) => s+r.gmv, 0);
+  const totalComm = sales.reduce((s,r) => s+r.commission, 0);
+
+  // GMV 7d
+  const cutoff7 = new Date(today); cutoff7.setDate(today.getDate()-7);
+  const gmv7 = sales.filter(d => new Date(d.date+'T12:00:00') >= cutoff7).reduce((s,r) => s+r.gmv, 0);
+  document.getElementById('gmv7d').textContent = fmt(gmv7);
+  const best = sales.reduce((b,r) => r.gmv > b.gmv ? r : b, sales[0] || {gmv:0,date:''});
+  if (best.date) {
+    document.getElementById('gmv7d-sub').innerHTML = `<span>Best day:</span> ${fmt(best.gmv)} on ${new Date(best.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
+  }
+
+  // GMV 30d line
+  const days30 = [];
+  for (let i=29; i>=0; i--) {
+    const d = new Date(today); d.setDate(today.getDate()-i);
+    const key = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const entry = sales.find(r => r.date===key);
+    days30.push({label:d.toLocaleDateString('en-US',{month:'short',day:'numeric'}), gmv:entry?entry.gmv:0, comm:entry?entry.commission:0});
+  }
+  destroyChart('gmv30');
+  charts['gmv30'] = new Chart(document.getElementById('gmv30Chart'), {
+    type:'line', data:{labels:days30.map(d=>d.label),datasets:[{data:days30.map(d=>d.gmv),borderColor:'#6b7a5a',backgroundColor:'rgba(107,122,90,0.08)',fill:true,tension:0.4,pointRadius:2,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:6,font:{size:10},color:'#8a8078'},grid:{display:false}},y:{ticks:{font:{size:10},color:'#8a8078',callback:v=>'$'+v},grid:{color:'rgba(107,122,90,0.08)'}}}}
+  });
+
+  // GMV by month bar
+  const monthMap = {};
+  sales.forEach(r => { const m=r.date.substring(0,7); monthMap[m]=(monthMap[m]||0)+r.gmv; });
+  const months = Object.keys(monthMap).sort();
+  const MONTH_NAMES=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const monthLabels = months.map(m => { const [y,mo]=m.split('-'); return MONTH_NAMES[parseInt(mo,10)-1]+"'"+y.slice(2); });
+  destroyChart('gmv365');
+  charts['gmv365'] = new Chart(document.getElementById('gmv365Chart'), {
+    type:'bar', data:{labels:monthLabels,datasets:[{data:months.map(m=>Math.round(monthMap[m])),backgroundColor:'#8a9a6e',borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10},color:'#8a8078'},grid:{display:false}},y:{ticks:{font:{size:10},color:'#8a8078',callback:v=>'$'+v},grid:{color:'rgba(107,122,90,0.08)'}}}}
+  });
+
+  // Commission donut
+  const settled = orders.filter(r=>r.status==='Settled').reduce((s,r)=>s+r.commission,0);
+  const pending = orders.filter(r=>r.status==='Pending').reduce((s,r)=>s+r.commission,0);
+  document.getElementById('settled-val').textContent = fmtD(settled);
+  document.getElementById('pending-val').textContent = fmtD(pending);
+  destroyChart('donut');
+  charts['donut'] = new Chart(document.getElementById('commDonut'), {
+    type:'doughnut', data:{labels:['Settled','Pending'],datasets:[{data:[settled||0.01,pending||0.01],backgroundColor:['#6b7a5a','#c9a87a'],borderWidth:0,hoverOffset:4}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{display:false}}}
+  });
+
+  // Commission rate trend
+  const rate30 = days30.filter(d=>d.gmv>0).map(d=>({label:d.label,rate:Math.round(d.comm/d.gmv*1000)/10}));
+  destroyChart('commRate');
+  charts['commRate'] = new Chart(document.getElementById('commRateChart'), {
+    type:'line', data:{labels:rate30.map(d=>d.label),datasets:[{data:rate30.map(d=>d.rate),borderColor:'#9b6e3a',backgroundColor:'rgba(155,110,58,0.07)',fill:true,tension:0.4,pointRadius:3,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:6,font:{size:10},color:'#8a8078'},grid:{display:false}},y:{ticks:{font:{size:10},color:'#8a8078',callback:v=>v+'%'},grid:{color:'rgba(107,122,90,0.08)'}}}}
+  });
+
+  // Highlights
+  const avgRate = totalGMV ? (totalComm/totalGMV*100).toFixed(1) : '0';
+  document.getElementById('hl-alltime').textContent = fmtD(settled);
+  document.getElementById('hl-rate').textContent = avgRate+'%';
+  document.getElementById('hl-bestday').textContent = best.date ? fmt(best.gmv) : '—';
+  document.getElementById('hl-bestday-date').textContent = best.date ? new Date(best.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—';
+  document.getElementById('hl-days').textContent = sales.length;
+
+  // Daily GMV all time
+  destroyChart('dailyGmv');
+  charts['dailyGmv'] = new Chart(document.getElementById('dailyGmvChart'), {
+    type:'line', data:{labels:sales.map(r=>new Date(r.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})),datasets:[{data:sales.map(r=>r.gmv),borderColor:'#6b7a5a',backgroundColor:'rgba(107,122,90,0.07)',fill:true,tension:0.3,pointRadius:3,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:10,font:{size:10},color:'#8a8078'},grid:{display:false}},y:{ticks:{font:{size:10},color:'#8a8078',callback:v=>'$'+v},grid:{color:'rgba(107,122,90,0.08)'}}}}
+  });
+
+  // Products list
+  const sorted = [...products].sort((a,b)=>b.sold-a.sold).filter(p=>p.sold>0);
+  const maxSold = sorted[0]?.sold || 1;
+  const listEl = document.getElementById('product-list');
+  listEl.innerHTML = sorted.map((p,i) => `
+    <div class="product-row">
+      <div class="product-rank">${i+1}</div>
+      <div class="product-name" title="${p.name}">${p.name}</div>
+      <div class="product-bar-wrap"><div class="product-bar-bg"><div class="product-bar-fill" style="width:${Math.round(p.sold/maxSold*100)}%"></div></div></div>
+      <div class="product-sold">${p.sold}</div>
+    </div>`).join('');
+
+  // Product GMV chart
+  const topByGmv = [...products].sort((a,b)=>b.gmv-a.gmv).slice(0,6);
+  destroyChart('productGmv');
+  charts['productGmv'] = new Chart(document.getElementById('productGmvChart'), {
+    type:'bar', data:{labels:topByGmv.map(p=>p.name.length>22?p.name.substring(0,22)+'…':p.name),datasets:[{data:topByGmv.map(p=>Math.round(p.gmv)),backgroundColor:['#6b7a5a','#8a9a6e','#c9a87a','#9b6e3a','#b5c49a','#e8dcc8'],borderRadius:4}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:10},color:'#8a8078',callback:v=>'$'+v},grid:{color:'rgba(107,122,90,0.08)'}},y:{ticks:{font:{size:10},color:'#8a8078'},grid:{display:false}}}}
+  });
+}
+
+loadAll();
+</script>
+</body>
+</html>

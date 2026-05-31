@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hook Formula Bank</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sage:#6b7a5a;--sage-mid:#8a9a6e;--sage-light:#c5d4a8;
+    --tan:#c9a87a;--tan-dark:#9b6e3a;
+    --cream:#f4ede0;--cream-dark:#e8dcc8;
+    --ink:#2e2a24;--ink-mid:#5a5248;--ink-muted:#8a8078;
+    --border:rgba(107,122,90,0.15);--white:#faf7f2;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--white);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+  header{background:var(--ink);color:var(--white);padding:40px 48px 32px;position:relative;overflow:hidden;}
+  header::before{content:'🎣';position:absolute;right:-20px;top:-20px;font-size:180px;opacity:0.06;pointer-events:none;}
+  .header-label{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--tan);margin-bottom:14px;font-weight:500;}
+  header h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,8vw,100px);line-height:0.9;letter-spacing:0.01em;margin-bottom:20px;}
+  header h1 span{color:var(--tan);}
+  header p{font-size:15px;color:#a09888;max-width:440px;font-style:italic;font-family:'DM Serif Display',serif;}
+  .header-btns{display:flex;gap:8px;margin-top:24px;}
+  .add-category-btn{background:rgba(255,255,255,0.08);color:var(--white);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:9px 18px;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all 0.12s;}
+  .add-category-btn:hover{background:rgba(255,255,255,0.14);}
+
+  /* TOC */
+  .toc{background:var(--cream);border-bottom:1px solid var(--border);padding:16px 48px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;}
+  .toc-label{font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-muted);margin-right:4px;}
+  .toc-link{font-size:12px;color:var(--ink);text-decoration:none;padding:4px 12px;border:1px solid var(--border);border-radius:100px;transition:all 0.12s;white-space:nowrap;background:var(--white);}
+  .toc-link:hover{background:var(--ink);color:var(--white);border-color:var(--ink);}
+
+  /* SEARCH */
+  .search-bar{padding:20px 48px;background:var(--white);border-bottom:1px solid var(--border);}
+  .search-input{width:100%;max-width:480px;padding:10px 16px;border:1px solid var(--border);border-radius:100px;background:var(--cream);color:var(--ink);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;}
+  .search-input:focus{border-color:var(--sage-mid);background:var(--white);}
+
+  main{max-width:860px;margin:0 auto;padding:48px 48px 100px;}
+
+  /* SECTION */
+  .hook-section{margin-bottom:64px;scroll-margin-top:32px;}
+  .section-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:14px;border-bottom:2px solid var(--ink);}
+  .section-emoji{font-size:26px;}
+  .section-title-text{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:0.02em;line-height:1;flex:1;}
+  .section-count{font-size:12px;color:var(--ink-muted);font-style:italic;font-family:'DM Serif Display',serif;}
+  .section-actions{display:flex;gap:6px;margin-left:auto;}
+  .icon-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;color:var(--ink-muted);font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+  .icon-btn:hover{background:var(--ink);color:var(--white);border-color:var(--ink);}
+  .icon-btn.danger:hover{background:#8a2a2a;border-color:#8a2a2a;}
+
+  /* HOOKS */
+  .hooks-list{display:flex;flex-direction:column;gap:10px;}
+  .hook-card{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:16px 18px;display:flex;gap:14px;align-items:flex-start;transition:all 0.12s;position:relative;}
+  .hook-card:hover{border-color:var(--sage-mid);background:var(--white);transform:translateX(3px);}
+  .hook-num{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--tan);min-width:26px;line-height:1;margin-top:2px;}
+  .hook-text{font-size:14px;line-height:1.6;color:var(--ink-mid);flex:1;}
+  .hook-card-btns{display:flex;gap:4px;opacity:0;transition:opacity 0.12s;flex-shrink:0;}
+  .hook-card:hover .hook-card-btns{opacity:1;}
+  .hook-action{background:none;border:1px solid var(--border);border-radius:4px;padding:3px 8px;font-size:11px;cursor:pointer;color:var(--ink-muted);font-family:'DM Sans',sans-serif;transition:all 0.12s;white-space:nowrap;}
+  .hook-action:hover{background:var(--ink);color:var(--white);border-color:var(--ink);}
+  .hook-action.copy-btn.copied{background:#2d8a4e;color:white;border-color:#2d8a4e;opacity:1;}
+  .hook-action.del:hover{background:#8a2a2a;border-color:#8a2a2a;}
+  .add-hook-btn{width:100%;margin-top:8px;background:none;border:1px dashed var(--border);border-radius:8px;padding:12px;font-size:13px;color:var(--ink-muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s;text-align:center;}
+  .add-hook-btn:hover{border-color:var(--sage-mid);color:var(--sage);background:var(--cream);}
+
+  /* DELIVERY NOTES */
+  .notes-section{background:var(--ink);color:var(--white);border-radius:12px;padding:32px 36px;margin-bottom:64px;}
+  .notes-section .section-header{border-bottom-color:#333;}
+  .notes-section .section-title-text{color:var(--white);}
+  .notes-list{list-style:none;display:flex;flex-direction:column;gap:12px;}
+  .notes-list li{font-size:14px;line-height:1.6;padding-left:18px;position:relative;color:#ccc;display:flex;align-items:flex-start;gap:10px;}
+  .notes-list li::before{content:'—';position:absolute;left:0;color:var(--tan);}
+
+  /* VISUAL SECTION */
+  .visual-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+  .visual-card{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:14px 16px;transition:all 0.12s;position:relative;}
+  .visual-card:hover{border-color:var(--sage-mid);background:var(--white);}
+  .visual-card-num{font-size:11px;color:var(--tan);letter-spacing:0.1em;font-weight:500;margin-bottom:5px;}
+  .visual-card-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:6px;line-height:1.3;}
+  .visual-card-desc{font-size:12px;color:var(--ink-muted);line-height:1.5;}
+  .visual-card-btns{position:absolute;top:8px;right:8px;display:flex;gap:4px;opacity:0;transition:opacity 0.12s;}
+  .visual-card:hover .visual-card-btns{opacity:1;}
+  .tag-row{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;}
+  .vtag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:100px;background:var(--ink);color:var(--white);}
+
+  /* MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(46,42,36,0.55);z-index:200;align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--white);border-radius:14px;border:1px solid var(--border);padding:28px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,0.15);max-height:90vh;overflow-y:auto;}
+  .modal-title{font-family:'Bebas Neue',sans-serif;font-size:26px;margin-bottom:18px;color:var(--ink);}
+  .form-group{margin-bottom:14px;}
+  .form-label{display:block;font-size:11px;font-weight:500;color:var(--ink-mid);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:5px;}
+  .form-input,.form-select,.form-textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--cream);color:var(--ink);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.12s;}
+  .form-textarea{resize:vertical;min-height:90px;line-height:1.5;}
+  .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--sage-mid);background:var(--white);}
+  .modal-actions{display:flex;gap:8px;margin-top:18px;}
+  .btn-cancel{flex:1;background:none;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;cursor:pointer;color:var(--ink-muted);font-family:'DM Sans',sans-serif;}
+  .btn-cancel:hover{background:var(--cream);}
+  .btn-save{flex:2;background:var(--sage);border:none;border-radius:8px;padding:10px;font-size:13px;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;font-weight:500;}
+  .btn-save:hover{background:var(--sage-mid);}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:28px;right:28px;background:var(--ink);color:var(--white);padding:11px 18px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transform:translateY(12px);transition:all 0.18s;pointer-events:none;z-index:999;}
+  .toast.show{opacity:1;transform:translateY(0);}
+
+  @media(max-width:640px){
+    header{padding:28px 20px 24px;}
+    .toc{padding:12px 20px;}
+    .search-bar{padding:14px 20px;}
+    main{padding:28px 20px 80px;}
+    .visual-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">Content Strategy Resource</div>
+  <h1>Hook<br><span>Formula</span><br>Bank</h1>
+  <p>Your reusable hook library. Add, edit, and copy hooks for any product.</p>
+  <div class="header-btns">
+    <button class="add-category-btn" onclick="openCategoryModal()">+ Add Category</button>
+  </div>
+</header>
+
+<nav class="toc" id="toc"></nav>
+
+<div class="search-bar">
+  <input type="text" class="search-input" id="search-input" placeholder="Search hooks..." oninput="renderAll()">
+</div>
+
+<main id="main-content"></main>
+
+<div class="toast" id="toast"></div>
+
+<!-- HOOK MODAL -->
+<div class="modal-overlay" id="hook-modal">
+  <div class="modal">
+    <div class="modal-title" id="hook-modal-title">Add Hook</div>
+    <div class="form-group">
+      <label class="form-label">Hook Text</label>
+      <textarea class="form-textarea" id="hook-text" placeholder="Write your hook here..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select class="form-select" id="hook-category"></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeHookModal()">Cancel</button>
+      <button class="btn-save" onclick="saveHook()">Save Hook</button>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY MODAL -->
+<div class="modal-overlay" id="cat-modal">
+  <div class="modal">
+    <div class="modal-title" id="cat-modal-title">Add Category</div>
+    <div class="form-group">
+      <label class="form-label">Category Name</label>
+      <input type="text" class="form-input" id="cat-name" placeholder="e.g. Impulse Buy Hooks">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Emoji</label>
+      <input type="text" class="form-input" id="cat-emoji" placeholder="e.g. 🛒" maxlength="4">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCatModal()">Cancel</button>
+      <button class="btn-save" onclick="saveCategory()">Save Category</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'kortny-hooks-v2';
+
+const DEFAULT_DATA = {
+  categories: [
+    { id: 'c1', emoji: '💍', name: "Husband's GF Formula" },
+    { id: 'c2', emoji: '😤', name: "Same Vibe, Different Drama" },
+    { id: 'c3', emoji: '🌀', name: "Chaos Energy" },
+    { id: 'c4', emoji: '😂', name: "Husband / Partner Reaction" },
+    { id: 'c5', emoji: '🛒', name: "Impulse Buy" },
+    { id: 'c6', emoji: '🏠', name: "Home / Aesthetic Rage Bait" },
+    { id: 'c7', emoji: '👗', name: "Tall Girl Rage Bait" },
+    { id: 'c8', emoji: '🌊', name: "Beach / Sand Cloud" },
+    { id: 'c9', emoji: '🍽️', name: "Food / Hosting Rage Bait" },
+    { id: 'c10', emoji: '🔑', name: "Safety / She's Birdie" },
+    { id: 'c11', emoji: '💡', name: "Delivery Notes" },
+    { id: 'c12', emoji: '🎬', name: "Visual Hooks" },
+  ],
+  hooks: [
+    {id:'h1',catId:'c1',text:"My husband's girlfriend recommended this brand to me and honestly she has great taste so here we are."},
+    {id:'h2',catId:'c1',text:"My husband's boyfriend recommended this brand and honestly his taste is impeccable so here we are."},
+    {id:'h3',catId:'c1',text:"My husband's other woman put me onto this and honestly... she did me a favor."},
+    {id:'h4',catId:'c1',text:"The girl my husband left me for recommended this — now I understand why she looks like that."},
+    {id:'h5',catId:'c2',text:"My mother-in-law got this for me and I'm annoyed that I love it."},
+    {id:'h6',catId:'c2',text:"My sister's husband's ex's cousin posted this on her TikTok and I bought it right away."},
+    {id:'h7',catId:'c2',text:"The woman my dad left my mom for uses this and okay fine I bought it."},
+    {id:'h8',catId:'c3',text:"My therapist told me to stop buying things online but then I found this."},
+    {id:'h9',catId:'c3',text:"My divorce attorney mentioned this during our consultation and it's the only useful thing she said."},
+    {id:'h10',catId:'c3',text:"My therapist said I need to stop letting material possessions affect my emotions and then I found these and I think I need a new therapist."},
+    {id:'h11',catId:'c3',text:"Don't online shop drunk because you'll end up with this."},
+    {id:'h12',catId:'c3',text:"I saw these, blacked out, and woke up with a tracking number."},
+    {id:'h13',catId:'c4',text:"I showed my husband the sleeves still fit after washing this five times and he said 'okay..?' He just doesn't get it."},
+    {id:'h14',catId:'c4',text:"I set the table with these and my husband thought I hired someone to come decorate and I let him believe it."},
+    {id:'h15',catId:'c4',text:"My husband asked what these are for and I said 'happiness' and walked away."},
+    {id:'h16',catId:'c4',text:"I told my husband we needed these and he said 'you don't even bake' and reader, I do not bake."},
+    {id:'h17',catId:'c5',text:"Girlies who grew up wanting a Barbie dream house grow up to buy things like this and I am at peace with that."},
+    {id:'h18',catId:'c5',text:"My name is Kortny and I cannot be trusted on TikTok Shop after 9pm."},
+    {id:'h19',catId:'c5',text:"I have the impulse control of a golden retriever and TikTok Shop knows it."},
+    {id:'h20',catId:'c5',text:"POV you told yourself you were just browsing."},
+    {id:'h21',catId:'c5',text:"I said I wasn't buying anything this month and then QVC did this to me."},
+    {id:'h22',catId:'c6',text:"Ugly homes are a personality flaw and I said what I said."},
+    {id:'h23',catId:'c6',text:"If nobody in your life has told you your home looks sad I'm telling you now."},
+    {id:'h24',catId:'c6',text:"The way some people decorate their homes tells me everything I need to know about them."},
+    {id:'h25',catId:'c6',text:"A boring table is a cry for help and I'm here to answer it."},
+    {id:'h26',catId:'c7',text:"Brands that don't make clothes for tall women are idiots and I said what I said."},
+    {id:'h27',catId:'c7',text:"If you're short keep scrolling, this is not for you."},
+    {id:'h28',catId:'c7',text:"Every pajama brand that has ever sent tall girls capri pants when they ordered full length needs to be stopped."},
+    {id:'h29',catId:'c7',text:"If you're short and pajamas have always fit you perfectly I don't want to hear it."},
+    {id:'h30',catId:'c8',text:"Sand in everything you own after the beach is not a personality trait it's a problem and I found the solution."},
+    {id:'h31',catId:'c8',text:"If your beach towel doesn't cover your whole body you don't have a beach towel you have a hand towel."},
+    {id:'h32',catId:'c9',text:"Paper plates are for people who don't actually care about their guests."},
+    {id:'h33',catId:'c9',text:"If you're pouring bacon grease down the drain your mom obviously didn't teach you very well."},
+    {id:'h34',catId:'c9',text:"I stopped being friends with someone for double dipping and I will do it again."},
+    {id:'h35',catId:'c9',text:"I'm not letting my kids dip their grubby little fingers in my dip."},
+    {id:'h36',catId:'c10',text:"The fact that women can't walk to their car alone at night in 2026 is insane and I'm done pretending it's not."},
+    {id:'h37',catId:'c10',text:"I have two teenage daughters and there is not a single day I don't worry about them being out in this world without me."},
+    {id:'h38',catId:'c11',text:"Rage bait: say it completely straight, zero smile, stare at camera after, then pivot immediately.",isNote:true},
+    {id:'h39',catId:'c11',text:"Outrageous/chaos hooks: deadpan delivery is everything. The second you smirk it loses power.",isNote:true},
+    {id:'h40',catId:'c11',text:"Husband reaction hooks: warm and conversational, like you're texting a friend.",isNote:true},
+    {id:'h41',catId:'c11',text:"Tall girl hooks: matter of fact, like you've had this conversation a hundred times.",isNote:true},
+    {id:'h42',catId:'c12',text:"Open a cabinet with the camera inside",isVisual:true},
+    {id:'h43',catId:'c12',text:"Zoom in from far away",isVisual:true},
+    {id:'h44',catId:'c12',text:"Open a bag, with the camera inside",isVisual:true},
+    {id:'h45',catId:'c12',text:"Step on phone (on the floor) and when foot comes off, different location different clothes",isVisual:true},
+    {id:'h46',catId:'c12',text:"Duck under text",isVisual:true},
+    {id:'h47',catId:'c12',text:"Camera mounted high up somewhere, looking up as you talk",isVisual:true},
+    {id:'h48',catId:'c12',text:"Clap to reveal text between palms",isVisual:true},
+    {id:'h49',catId:'c12',text:"Clone hook",isVisual:true},
+    {id:'h50',catId:'c12',text:"Enter the scene",isVisual:true},
+    {id:'h51',catId:'c12',text:"Walking and talking",isVisual:true},
+    {id:'h52',catId:'c12',text:"Drop something out of frame, lean to pick up, come back into frame wearing something else",isVisual:true},
+  ]
+};
+
+function loadData() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) { try { return JSON.parse(saved); } catch(e) {} }
+  return JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+
+function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+
+let DATA = loadData();
+let editingHookId = null;
+let editingCatId = null;
+
+function buildTOC() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const toc = document.getElementById('toc');
+  toc.innerHTML = '<span class="toc-label">Jump to</span>';
+  DATA.categories.forEach(cat => {
+    const hooks = DATA.hooks.filter(h => h.catId === cat.id);
+    if (search && !hooks.some(h => h.text.toLowerCase().includes(search))) return;
+    const a = document.createElement('a');
+    a.href = '#cat-'+cat.id;
+    a.className = 'toc-link';
+    a.textContent = cat.emoji + ' ' + cat.name;
+    toc.appendChild(a);
+  });
+}
+
+function renderAll() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  buildTOC();
+  const main = document.getElementById('main-content');
+  let html = '';
+
+  DATA.categories.forEach(cat => {
+    let hooks = DATA.hooks.filter(h => h.catId === cat.id);
+    if (search) hooks = hooks.filter(h => h.text.toLowerCase().includes(search));
+    if (search && hooks.length === 0) return;
+
+    const isNotes = cat.id === 'c11';
+    const isVisual = cat.id === 'c12';
+
+    html += `<div class="hook-section" id="cat-${cat.id}">
+      <div class="section-header">
+        <span class="section-emoji">${cat.emoji}</span>
+        <span class="section-title-text">${cat.name}</span>
+        <span class="section-count">${hooks.length} ${isNotes?'notes':isVisual?'techniques':'hooks'}</span>
+        <div class="section-actions">
+          <button class="icon-btn" onclick="openHookModal(null,'${cat.id}')">+ Add</button>
+          <button class="icon-btn" onclick="editCat('${cat.id}')">✎</button>
+          <button class="icon-btn danger" onclick="deleteCat('${cat.id}')">✕</button>
+        </div>
+      </div>`;
+
+    if (isNotes) {
+      html += `<div class="notes-section" id="cat-${cat.id}-inner">
+        <ul class="notes-list">`;
+      hooks.forEach(h => {
+        html += `<li>
+          <span>${h.text}</span>
+          <div style="display:flex;gap:4px;flex-shrink:0">
+            <button class="hook-action" onclick="openHookModal('${h.id}','${cat.id}')">✎</button>
+            <button class="hook-action del" onclick="deleteHook('${h.id}')">✕</button>
+          </div>
+        </li>`;
+      });
+      html += `</ul></div>`;
+    } else if (isVisual) {
+      html += `<div class="visual-grid">`;
+      hooks.forEach((h,i) => {
+        html += `<div class="visual-card">
+          <div class="visual-card-btns">
+            <button class="hook-action" onclick="openHookModal('${h.id}','${cat.id}')">✎</button>
+            <button class="hook-action del" onclick="deleteHook('${h.id}')">✕</button>
+            <button class="hook-action copy-btn" onclick="copyHook(this,'${h.id}')">Copy</button>
+          </div>
+          <div class="visual-card-num">${String(i+1).padStart(2,'0')}</div>
+          <div class="visual-card-title">${h.title||h.text.split('.')[0]}</div>
+          <div class="visual-card-desc">${h.desc||h.text}</div>
+        </div>`;
+      });
+      html += `</div>`;
+    } else {
+      html += `<div class="hooks-list">`;
+      hooks.forEach((h,i) => {
+        html += `<div class="hook-card">
+          <span class="hook-num">${i+1}</span>
+          <p class="hook-text">${h.text}</p>
+          <div class="hook-card-btns">
+            <button class="hook-action copy-btn" onclick="copyHook(this,'${h.id}')">Copy</button>
+            <button class="hook-action" onclick="openHookModal('${h.id}','${cat.id}')">✎</button>
+            <button class="hook-action del" onclick="deleteHook('${h.id}')">✕</button>
+          </div>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    html += `<button class="add-hook-btn" onclick="openHookModal(null,'${cat.id}')">+ Add hook to ${cat.name}</button>`;
+    html += `</div>`;
+  });
+
+  if (!html) html = '<p style="text-align:center;padding:60px;color:var(--ink-muted);font-style:italic;font-family:DM Serif Display,serif">No hooks match your search</p>';
+  main.innerHTML = html;
+}
+
+// HOOK MODAL
+function openHookModal(hookId, catId) {
+  editingHookId = hookId;
+  const sel = document.getElementById('hook-category');
+  sel.innerHTML = DATA.categories.map(c => `<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');
+  if (hookId) {
+    const h = DATA.hooks.find(x => x.id === hookId);
+    document.getElementById('hook-modal-title').textContent = 'Edit Hook';
+    document.getElementById('hook-text').value = h.text;
+    sel.value = h.catId;
+  } else {
+    document.getElementById('hook-modal-title').textContent = 'Add Hook';
+    document.getElementById('hook-text').value = '';
+    sel.value = catId || DATA.categories[0]?.id;
+  }
+  document.getElementById('hook-modal').classList.add('open');
+}
+
+function closeHookModal() { document.getElementById('hook-modal').classList.remove('open'); }
+
+function saveHook() {
+  const text = document.getElementById('hook-text').value.trim();
+  const catId = document.getElementById('hook-category').value;
+  if (!text) return;
+  if (editingHookId) {
+    const h = DATA.hooks.find(x => x.id === editingHookId);
+    h.text = text; h.catId = catId;
+  } else {
+    DATA.hooks.push({ id: 'h'+Date.now(), catId, text });
+  }
+  saveData(DATA); renderAll(); closeHookModal();
+  showToast(editingHookId ? 'Hook updated!' : 'Hook added!');
+}
+
+function deleteHook(id) {
+  if (!confirm('Delete this hook?')) return;
+  DATA.hooks = DATA.hooks.filter(h => h.id !== id);
+  saveData(DATA); renderAll();
+  showToast('Hook deleted');
+}
+
+// CATEGORY MODAL
+function openCategoryModal() {
+  editingCatId = null;
+  document.getElementById('cat-modal-title').textContent = 'Add Category';
+  document.getElementById('cat-name').value = '';
+  document.getElementById('cat-emoji').value = '';
+  document.getElementById('cat-modal').classList.add('open');
+}
+
+function editCat(id) {
+  editingCatId = id;
+  const cat = DATA.categories.find(c => c.id === id);
+  document.getElementById('cat-modal-title').textContent = 'Edit Category';
+  document.getElementById('cat-name').value = cat.name;
+  document.getElementById('cat-emoji').value = cat.emoji;
+  document.getElementById('cat-modal').classList.add('open');
+}
+
+function closeCatModal() { document.getElementById('cat-modal').classList.remove('open'); }
+
+function saveCategory() {
+  const name = document.getElementById('cat-name').value.trim();
+  const emoji = document.getElementById('cat-emoji').value.trim() || '📌';
+  if (!name) return;
+  if (editingCatId) {
+    const cat = DATA.categories.find(c => c.id === editingCatId);
+    cat.name = name; cat.emoji = emoji;
+  } else {
+    DATA.categories.push({ id: 'c'+Date.now(), name, emoji });
+  }
+  saveData(DATA); renderAll(); closeCatModal();
+  showToast(editingCatId ? 'Category updated!' : 'Category added!');
+}
+
+function deleteCat(id) {
+  const cat = DATA.categories.find(c => c.id === id);
+  const hookCount = DATA.hooks.filter(h => h.catId === id).length;
+  if (!confirm(`Delete "${cat.name}" and its ${hookCount} hooks?`)) return;
+  DATA.categories = DATA.categories.filter(c => c.id !== id);
+  DATA.hooks = DATA.hooks.filter(h => h.catId !== id);
+  saveData(DATA); renderAll();
+  showToast('Category deleted');
+}
+
+function copyHook(btn, id) {
+  const h = DATA.hooks.find(x => x.id === id);
+  navigator.clipboard.writeText(h.text).then(() => {
+    btn.textContent = '✓';
+    btn.classList.add('copied');
+    showToast('Copied!');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// Close modals on overlay click
+document.getElementById('hook-modal').addEventListener('click', function(e) { if(e.target===this) closeHookModal(); });
+document.getElementById('cat-modal').addEventListener('click', function(e) { if(e.target===this) closeCatModal(); });
+
+renderAll();
+</script>
+</body>
+</html>

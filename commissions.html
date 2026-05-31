@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commissions Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sage:#6b7a5a;--sage-mid:#8a9a6e;--sage-light:#c5d4a8;
+    --tan:#c9a87a;--tan-dark:#9b6e3a;
+    --cream:#f4ede0;--cream-dark:#e8dcc8;
+    --ink:#2e2a24;--ink-mid:#5a5248;--ink-muted:#8a8078;
+    --border:rgba(107,122,90,0.15);--white:#faf7f2;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;}
+  header{background:var(--ink);padding:28px 36px 22px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+  .eyebrow{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--tan);margin-bottom:4px;font-weight:500;}
+  header h1{font-family:'Bebas Neue',sans-serif;font-size:48px;line-height:0.9;color:var(--white);}
+  header h1 span{color:var(--sage-light);}
+  .header-btns{display:flex;gap:8px;align-items:center;}
+  .add-btn{background:var(--sage);color:white;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:background 0.12s;}
+  .add-btn:hover{background:var(--sage-mid);}
+  .refresh-btn{background:none;border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 16px;font-size:13px;color:#7a7068;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+  .refresh-btn:hover{border-color:var(--sage-light);color:var(--sage-light);}
+
+  .main{max-width:960px;margin:0 auto;padding:24px 24px 80px;}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+  .stat{background:var(--white);border-radius:10px;border:1px solid var(--border);padding:14px 16px;}
+  .stat-label{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-muted);font-weight:500;margin-bottom:5px;}
+  .stat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;}
+  .stat-val.green{color:var(--sage);}
+  .stat-val.tan{color:var(--tan-dark);}
+  .stat-sub{font-size:11px;color:var(--ink-muted);margin-top:3px;font-style:italic;font-family:'DM Serif Display',serif;}
+
+  .filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+  .filter-btn{background:var(--white);border:1px solid var(--border);border-radius:100px;padding:5px 14px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;color:var(--ink-muted);transition:all 0.12s;}
+  .filter-btn.active{background:var(--ink);color:var(--white);border-color:var(--ink);}
+  .search-input{flex:1;min-width:160px;padding:7px 12px;border:1px solid var(--border);border-radius:100px;background:var(--white);color:var(--ink);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;}
+  .search-input:focus{border-color:var(--sage-mid);}
+
+  .table-wrap{background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden;}
+  table{width:100%;border-collapse:collapse;}
+  thead th{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-muted);padding:11px 14px;text-align:left;border-bottom:1px solid var(--border);background:var(--cream);font-weight:500;cursor:pointer;white-space:nowrap;}
+  thead th:hover{color:var(--ink);}
+  thead th.num{text-align:right;}
+  tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
+  tbody tr:last-child{border-bottom:none;}
+  tbody tr:hover{background:var(--cream);}
+  tbody td{padding:10px 14px;font-size:13px;color:var(--ink);}
+  tbody td.num{text-align:right;font-variant-numeric:tabular-nums;}
+  .order-num{font-family:'DM Serif Display',serif;font-style:italic;color:var(--ink-muted);font-size:12px;}
+  .product-name{font-weight:500;}
+  .comm-val{color:var(--sage);font-weight:500;}
+  .date-val{color:var(--ink-muted);font-size:12px;}
+  .status-pill{display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:500;}
+  .status-Settled{background:rgba(107,122,90,0.15);color:#3a5228;}
+  .status-Pending{background:rgba(201,168,122,0.2);color:#7a4a1a;}
+  .status-Ineligible{background:var(--cream-dark);color:var(--ink-muted);}
+  .action-btn{background:none;border:none;cursor:pointer;color:var(--ink-muted);font-size:13px;padding:2px 5px;border-radius:4px;}
+  .action-btn:hover{background:var(--cream-dark);color:var(--ink);}
+  .empty-state{text-align:center;padding:40px;color:var(--ink-muted);font-style:italic;font-family:'DM Serif Display',serif;}
+  .pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--ink-muted);}
+  .page-btns{display:flex;gap:4px;flex-wrap:wrap;}
+  .page-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--ink-muted);font-family:'DM Sans',sans-serif;}
+  .page-btn:hover,.page-btn.active{background:var(--ink);color:var(--white);border-color:var(--ink);}
+
+  .loading{text-align:center;padding:48px;color:var(--ink-muted);font-style:italic;font-family:'DM Serif Display',serif;}
+  .loading-spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--sage);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(46,42,36,0.5);z-index:200;align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--white);border-radius:14px;border:1px solid var(--border);padding:28px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.15);}
+  .modal-title{font-family:'Bebas Neue',sans-serif;font-size:28px;margin-bottom:20px;color:var(--ink);}
+  .form-group{margin-bottom:13px;}
+  .form-label{display:block;font-size:11px;font-weight:500;color:var(--ink-mid);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:5px;}
+  .form-input,.form-select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--cream);color:var(--ink);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.12s;}
+  .form-input:focus,.form-select:focus{border-color:var(--sage-mid);background:var(--white);}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .modal-actions{display:flex;gap:10px;margin-top:20px;}
+  .btn-cancel{flex:1;background:none;border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;cursor:pointer;color:var(--ink-muted);font-family:'DM Sans',sans-serif;}
+  .btn-cancel:hover{background:var(--cream);}
+  .btn-save{flex:2;background:var(--sage);border:none;border-radius:8px;padding:10px;font-size:13px;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;font-weight:500;}
+  .btn-save:hover{background:var(--sage-mid);}
+  .btn-save:disabled{opacity:0.6;cursor:not-allowed;}
+  .form-msg{font-size:12px;margin-top:10px;text-align:center;font-style:italic;font-family:'DM Serif Display',serif;min-height:18px;}
+  .form-msg.success{color:var(--sage);}
+  .form-msg.error{color:var(--tan-dark);}
+
+  @media(max-width:600px){
+    .stats{grid-template-columns:1fr 1fr;}
+    header{padding:20px;}
+    .main{padding:16px 12px 60px;}
+    .form-row{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="eyebrow">@helloitskortny</div>
+    <h1>Commissions<br><span>Tracker</span></h1>
+  </div>
+  <div class="header-btns">
+    <button class="refresh-btn" onclick="loadFromNotion()">↻ Refresh</button>
+    <button class="add-btn" onclick="openModal()">+ Add Entry</button>
+  </div>
+</header>
+
+<div class="main">
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Total Settled</div><div class="stat-val green" id="stat-settled">—</div><div class="stat-sub" id="stat-settled-sub">—</div></div>
+    <div class="stat"><div class="stat-label">Pending</div><div class="stat-val tan" id="stat-pending">—</div><div class="stat-sub" id="stat-pending-sub">—</div></div>
+    <div class="stat"><div class="stat-label">Total Earned</div><div class="stat-val" id="stat-total">—</div><div class="stat-sub">settled + pending</div></div>
+    <div class="stat"><div class="stat-label">Total Orders</div><div class="stat-val" id="stat-orders">—</div><div class="stat-sub">all time</div></div>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter('All',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('Settled',this)">Settled</button>
+    <button class="filter-btn" onclick="setFilter('Pending',this)">Pending</button>
+    <button class="filter-btn" onclick="setFilter('Ineligible',this)">Ineligible</button>
+    <input type="text" class="search-input" id="search-input" placeholder="Search product or order #..." oninput="goPage(1)">
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th onclick="sortBy('order')">Order #</th>
+        <th onclick="sortBy('product')">Brand / Product</th>
+        <th onclick="sortBy('commission')" class="num">Commission</th>
+        <th onclick="sortBy('status')">Status</th>
+        <th onclick="sortBy('orderDate')">Order Date</th>
+        <th onclick="sortBy('paidDate')">Paid Date</th>
+        <th></th>
+      </tr></thead>
+      <tbody id="table-body">
+        <tr><td colspan="7"><div class="loading"><div class="loading-spinner"></div>Loading from Notion...</div></td></tr>
+      </tbody>
+    </table>
+    <div class="pagination">
+      <span id="page-info"></span>
+      <div class="page-btns" id="page-btns"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Add Entry</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Order / Video #</label><input type="text" class="form-input" id="inp-order" placeholder="e.g. 5591"></div>
+      <div class="form-group"><label class="form-label">Commission ($)</label><input type="number" class="form-input" id="inp-commission" placeholder="0.00" step="0.01" min="0"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Brand / Product</label><input type="text" class="form-input" id="inp-product" placeholder="e.g. Shallow Bowls"></div>
+    <div class="form-group"><label class="form-label">Status</label>
+      <select class="form-select" id="inp-status"><option value="Pending">Pending</option><option value="Settled">Settled</option><option value="Ineligible">Ineligible</option></select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Order Date</label><input type="date" class="form-input" id="inp-order-date"></div>
+      <div class="form-group"><label class="form-label">Paid Date</label><input type="date" class="form-input" id="inp-paid-date"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Notes</label><input type="text" class="form-input" id="inp-notes" placeholder="Optional"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="btn-save" onclick="saveEntry()">Save to Notion</button>
+    </div>
+    <div class="form-msg" id="form-msg"></div>
+  </div>
+</div>
+
+<script>
+const API = 'https://kortny-api.vercel.app/api/notion';
+const DB_ID = '47a77144c4644149b499cef40bf72bf5';
+const PAGE_SIZE = 25;
+
+let DATA = [];
+let filterStatus = 'All';
+let sortField = 'orderDate';
+let sortDir = -1;
+let currentPage = 1;
+let editingId = null;
+
+function fmtD(n){return '$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtDate(s){if(!s)return'—';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'});}
+
+async function loadFromNotion() {
+  document.getElementById('table-body').innerHTML = '<tr><td colspan="7"><div class="loading"><div class="loading-spinner"></div>Loading from Notion...</div></td></tr>';
+  try {
+    let results = [];
+    let cursor = null;
+    do {
+      const body = {page_size:100, sorts:[{property:'Order date',direction:'descending'}]};
+      if (cursor) body.start_cursor = cursor;
+      const res = await fetch(`${API}?endpoint=databases/${DB_ID}/query`, {
+        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+      });
+      const data = await res.json();
+      results = [...results, ...(data.results||[])];
+      cursor = data.next_cursor;
+    } while (cursor);
+
+    DATA = results.map(p => ({
+      id: p.id,
+      order: p.properties['Order / Video']?.title?.[0]?.plain_text || '',
+      product: p.properties['Brand / Product']?.rich_text?.[0]?.plain_text || '',
+      commission: p.properties.Commission?.number || 0,
+      status: p.properties.Status?.status?.name || 'Pending',
+      orderDate: p.properties['Order date']?.date?.start || '',
+      paidDate: p.properties['Paid date']?.date?.start || '',
+      notes: p.properties.Notes?.rich_text?.[0]?.plain_text || '',
+    }));
+
+    updateStats();
+    goPage(1);
+  } catch(e) {
+    console.error(e);
+    document.getElementById('table-body').innerHTML = '<tr><td colspan="7" class="empty-state">Error loading data. Try refreshing.</td></tr>';
+  }
+}
+
+function updateStats() {
+  const settled = DATA.filter(r=>r.status==='Settled').reduce((s,r)=>s+r.commission,0);
+  const pending = DATA.filter(r=>r.status==='Pending').reduce((s,r)=>s+r.commission,0);
+  const sc = DATA.filter(r=>r.status==='Settled').length;
+  const pc = DATA.filter(r=>r.status==='Pending').length;
+  document.getElementById('stat-settled').textContent = fmtD(settled);
+  document.getElementById('stat-settled-sub').textContent = sc+' orders';
+  document.getElementById('stat-pending').textContent = fmtD(pending);
+  document.getElementById('stat-pending-sub').textContent = pc+' orders';
+  document.getElementById('stat-total').textContent = fmtD(settled+pending);
+  document.getElementById('stat-orders').textContent = DATA.length;
+}
+
+function setFilter(status, btn) {
+  filterStatus = status;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  goPage(1);
+}
+
+function sortBy(field) {
+  if (sortField===field) sortDir*=-1;
+  else { sortField=field; sortDir=-1; }
+  goPage(1);
+}
+
+function getFiltered() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  return DATA.filter(r => {
+    if (filterStatus!=='All' && r.status!==filterStatus) return false;
+    if (search && !r.product.toLowerCase().includes(search) && !r.order.toLowerCase().includes(search)) return false;
+    return true;
+  }).sort((a,b) => {
+    let av=a[sortField]||'', bv=b[sortField]||'';
+    if (sortField==='commission') { av=Number(a.commission); bv=Number(b.commission); }
+    if (av<bv) return -1*sortDir;
+    if (av>bv) return 1*sortDir;
+    return 0;
+  });
+}
+
+function goPage(p) { currentPage=p; renderTable(); }
+
+function renderTable() {
+  const filtered = getFiltered();
+  const total = filtered.length;
+  const pages = Math.ceil(total/PAGE_SIZE)||1;
+  if (currentPage>pages) currentPage=pages;
+  const start = (currentPage-1)*PAGE_SIZE;
+  const rows = filtered.slice(start, start+PAGE_SIZE);
+
+  document.getElementById('page-info').textContent = total ? `Showing ${start+1}–${Math.min(start+PAGE_SIZE,total)} of ${total}` : '';
+  const btns = document.getElementById('page-btns');
+  btns.innerHTML = '';
+  for (let i=1; i<=pages; i++) {
+    const b = document.createElement('button');
+    b.className = 'page-btn'+(i===currentPage?' active':'');
+    b.textContent = i;
+    b.onclick = (()=>{const pg=i;return()=>goPage(pg);})();
+    btns.appendChild(b);
+  }
+
+  const tbody = document.getElementById('table-body');
+  if (!rows.length) { tbody.innerHTML='<tr><td colspan="7" class="empty-state">No entries found</td></tr>'; return; }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="order-num">${r.order?'#'+r.order:'—'}</td>
+      <td class="product-name">${r.product||'—'}</td>
+      <td class="num comm-val">${fmtD(r.commission)}</td>
+      <td><span class="status-pill status-${r.status}">${r.status}</span></td>
+      <td class="date-val">${fmtDate(r.orderDate)}</td>
+      <td class="date-val">${fmtDate(r.paidDate)}</td>
+      <td>
+        <button class="action-btn" onclick="editEntry('${r.id}')" title="Edit">✎</button>
+      </td>
+    </tr>`).join('');
+}
+
+function openModal(id=null) {
+  editingId = id;
+  document.getElementById('form-msg').textContent = '';
+  document.getElementById('btn-save').disabled = false;
+  if (id) {
+    const r = DATA.find(x=>x.id===id);
+    document.getElementById('modal-title').textContent = 'Edit Entry';
+    document.getElementById('inp-order').value = r.order;
+    document.getElementById('inp-commission').value = r.commission;
+    document.getElementById('inp-product').value = r.product;
+    document.getElementById('inp-status').value = r.status;
+    document.getElementById('inp-order-date').value = r.orderDate;
+    document.getElementById('inp-paid-date').value = r.paidDate;
+    document.getElementById('inp-notes').value = r.notes;
+    document.getElementById('btn-save').textContent = 'Save Changes';
+  } else {
+    document.getElementById('modal-title').textContent = 'Add Entry';
+    document.getElementById('inp-order').value = '';
+    document.getElementById('inp-commission').value = '';
+    document.getElementById('inp-product').value = '';
+    document.getElementById('inp-status').value = 'Pending';
+    document.getElementById('inp-order-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('inp-paid-date').value = '';
+    document.getElementById('inp-notes').value = '';
+    document.getElementById('btn-save').textContent = 'Save to Notion';
+  }
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function editEntry(id) { openModal(id); }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+async function saveEntry() {
+  const order = document.getElementById('inp-order').value.trim();
+  const commission = parseFloat(document.getElementById('inp-commission').value);
+  const product = document.getElementById('inp-product').value.trim();
+  const status = document.getElementById('inp-status').value;
+  const orderDate = document.getElementById('inp-order-date').value;
+  const paidDate = document.getElementById('inp-paid-date').value;
+  const notes = document.getElementById('inp-notes').value.trim();
+  if (!product || isNaN(commission)) { showMsg('Please fill in product and commission.','error'); return; }
+
+  const btn = document.getElementById('btn-save');
+  btn.disabled = true; btn.textContent = 'Saving...';
+
+  const properties = {
+    'Order / Video': { title: [{text:{content:order||'—'}}] },
+    'Brand / Product': { rich_text: [{text:{content:product}}] },
+    'Commission': { number: commission },
+    'Status': { status: { name: status } },
+    'Notes': { rich_text: [{text:{content:notes}}] },
+    ...(orderDate ? {'Order date':{date:{start:orderDate}}} : {}),
+    ...(paidDate ? {'Paid date':{date:{start:paidDate}}} : {}),
+  };
+
+  try {
+    let res;
+    if (editingId) {
+      res = await fetch(`${API}?endpoint=pages/${editingId}`, {
+        method:'PATCH', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({properties})
+      });
+    } else {
+      res = await fetch(`${API}?endpoint=pages`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({parent:{database_id:DB_ID}, properties})
+      });
+    }
+
+    if (res.ok) {
+      showMsg(editingId ? 'Updated in Notion! ✓' : 'Saved to Notion! ✓', 'success');
+      btn.textContent = 'Saved ✓';
+      setTimeout(() => { closeModal(); loadFromNotion(); }, 1200);
+    } else {
+      showMsg('Error saving. Try again.','error');
+      btn.disabled=false; btn.textContent='Save to Notion';
+    }
+  } catch(e) {
+    showMsg('Network error. Try again.','error');
+    btn.disabled=false; btn.textContent='Save to Notion';
+  }
+}
+
+function showMsg(msg,type){const el=document.getElementById('form-msg');el.textContent=msg;el.className='form-msg '+type;}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+loadFromNotion();
+</script>
+</body>
+</html>
