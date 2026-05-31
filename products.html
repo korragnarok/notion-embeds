@@ -141,7 +141,7 @@
     <button class="filter-btn active" onclick="setFilter('All',this)">All</button>
     <button class="filter-btn" onclick="setFilter('Posted',this)">Posted</button>
     <button class="filter-btn" onclick="setFilter('To Do',this)">To Do</button>
-     <button class="filter-btn" onclick="setFilter('None',this)"> </button>
+     <button class="filter-btn" onclick="setFilter('None',this)">None</button>
     <button class="filter-btn" onclick="setFilter('In Stock',this)">In Stock</button>
     <button class="filter-btn" onclick="setFilter('Out of Stock',this)">Out of Stock</button>
     <input type="text" class="search-input" id="search-input" placeholder="Search products..." oninput="renderTable()">
@@ -188,7 +188,7 @@
     </div>
     <div class="form-row-3">
       <div class="form-group"><label class="form-label">Status</label>
-        <select class="form-select" id="inp-status"><option value="To Do">To Do</option><option value="Posted">Posted</option><option value="None">  </option></select>
+        <select class="form-select" id="inp-status"><option value="To Do">To Do</option><option value="Posted">Posted</option><option value="None">None</option></select>
       </div>
       <div class="form-group"><label class="form-label">Stock</label>
         <select class="form-select" id="inp-stock"><option value="In Stock">In Stock</option><option value="Low Stock">Low Stock</option><option value="Out of Stock">Out of Stock</option></select>
@@ -372,7 +372,7 @@ function renderTable() {
 
 function inlineEditStatus(id) {
   const r = DATA.find(x=>x.id===id);
-  const options = ['To Do','Posted'];
+  const options = ['To Do','Posted','None'];
   const td = document.querySelector(`#row-${id} td:nth-child(3)`);
   const sel = document.createElement('select');
   sel.className = 'inline-select';
