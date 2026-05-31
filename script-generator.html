@@ -439,7 +439,7 @@ ${productData?.sold>50?`NOTE: This product has strong sales proof (${productData
 Write the script now. Be specific, authentic, and conversational. No filler words like "honestly" or "literally". Lean hard into the ${toggleState.tone} angle.`;
 
   try {
-    const res = await fetch(ANTHROPIC_API, {
+   const res = await fetch('https://kortny-api.vercel.app/api/notion?service=anthropic', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
