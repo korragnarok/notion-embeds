@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Script Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sage:#6b7a5a;--sage-mid:#8a9a6e;--sage-light:#c5d4a8;
+    --tan:#c9a87a;--tan-dark:#9b6e3a;
+    --cream:#f4ede0;--cream-dark:#e8dcc8;
+    --ink:#2e2a24;--ink-mid:#5a5248;--ink-muted:#8a8078;
+    --border:rgba(107,122,90,0.15);--white:#faf7f2;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+  header{background:var(--ink);padding:32px 40px 26px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;overflow:hidden;}
+  header::before{content:'🎬';position:absolute;right:-10px;top:-10px;font-size:160px;opacity:0.05;pointer-events:none;}
+  .eyebrow{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--tan);margin-bottom:6px;font-weight:500;}
+  header h1{font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:0.9;color:var(--white);}
+  header h1 span{color:var(--sage-light);}
+  header p{font-size:13px;color:#7a7068;font-style:italic;font-family:'DM Serif Display',serif;max-width:320px;margin-top:8px;}
+
+  .layout{display:grid;grid-template-columns:380px 1fr;min-height:calc(100vh - 140px);}
+
+  /* SIDEBAR */
+  .sidebar{background:var(--white);border-right:1px solid var(--border);padding:28px 24px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;max-height:calc(100vh - 140px);position:sticky;top:0;}
+  .sidebar-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.04em;color:var(--ink);margin-bottom:2px;}
+  .sidebar-sub{font-size:11px;color:var(--ink-muted);font-style:italic;font-family:'DM Serif Display',serif;}
+
+  .form-group{display:flex;flex-direction:column;gap:6px;}
+  .form-label{font-size:11px;font-weight:500;color:var(--ink-mid);letter-spacing:0.08em;text-transform:uppercase;}
+  .form-input,.form-select,.form-textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--cream);color:var(--ink);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.12s;}
+  .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--sage-mid);background:var(--white);}
+  .form-textarea{resize:vertical;min-height:80px;line-height:1.5;}
+
+  .toggle-group{display:flex;gap:4px;flex-wrap:wrap;}
+  .toggle-btn{background:var(--cream);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;color:var(--ink-muted);transition:all 0.12s;}
+  .toggle-btn.active{background:var(--ink);color:var(--white);border-color:var(--ink);}
+
+  .divider{height:1px;background:var(--border);margin:4px 0;}
+
+  .generate-btn{background:var(--sage);color:white;border:none;border-radius:10px;padding:14px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:background 0.12s;width:100%;letter-spacing:0.02em;}
+  .generate-btn:hover{background:var(--sage-mid);}
+  .generate-btn:disabled{opacity:0.6;cursor:not-allowed;}
+
+  .hook-picker{background:var(--cream);border-radius:8px;border:1px solid var(--border);max-height:180px;overflow-y:auto;}
+  .hook-option{padding:10px 12px;font-size:12px;color:var(--ink-mid);cursor:pointer;border-bottom:1px solid var(--border);line-height:1.4;transition:background 0.1s;}
+  .hook-option:last-child{border-bottom:none;}
+  .hook-option:hover{background:var(--cream-dark);}
+  .hook-option.selected{background:rgba(107,122,90,0.12);color:var(--ink);}
+  .hook-option-cat{font-size:10px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px;}
+
+  /* MAIN */
+  .main-panel{padding:28px 32px;display:flex;flex-direction:column;gap:20px;}
+
+  .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;min-height:400px;text-align:center;color:var(--ink-muted);}
+  .empty-emoji{font-size:52px;margin-bottom:16px;opacity:0.6;}
+  .empty-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.03em;color:var(--ink-mid);margin-bottom:8px;}
+  .empty-sub{font-size:14px;font-style:italic;font-family:'DM Serif Display',serif;}
+
+  /* LOADING */
+  .generating{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;gap:16px;}
+  .gen-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--sage);border-radius:50%;animation:spin 0.8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .gen-text{font-size:14px;color:var(--ink-muted);font-style:italic;font-family:'DM Serif Display',serif;}
+
+  /* SCRIPT OUTPUT */
+  .script-card{background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden;}
+  .script-card-header{background:var(--ink);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .script-card-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--white);letter-spacing:0.03em;}
+  .script-card-meta{font-size:11px;color:#7a7068;display:flex;gap:12px;align-items:center;}
+  .script-card-meta span{background:rgba(255,255,255,0.08);padding:3px 8px;border-radius:4px;}
+  .script-card-btns{display:flex;gap:6px;}
+  .script-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;color:#a09888;font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+  .script-btn:hover{background:rgba(255,255,255,0.15);color:var(--white);}
+  .script-btn.copied{background:rgba(107,122,90,0.3);color:var(--sage-light);border-color:rgba(107,122,90,0.4);}
+
+  .script-body{padding:24px;}
+  .script-section{margin-bottom:20px;}
+  .script-section:last-child{margin-bottom:0;}
+  .script-section-label{font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:8px;}
+  .hook-box{background:var(--ink);color:var(--white);border-radius:8px;padding:14px 16px;font-size:15px;font-weight:500;line-height:1.5;font-family:'DM Serif Display',serif;font-style:italic;}
+  .script-box{background:var(--cream);border-radius:8px;padding:16px;font-size:14px;line-height:1.8;color:var(--ink-mid);border-left:3px solid var(--sage);}
+  .script-box p{margin-bottom:10px;}
+  .script-box p:last-child{margin-bottom:0;}
+  .script-box .timing{font-size:11px;color:var(--ink-muted);font-weight:500;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:3px;}
+  .compliance-box{background:rgba(107,122,90,0.06);border:1px solid rgba(107,122,90,0.2);border-radius:8px;padding:14px 16px;}
+  .compliance-item{font-size:12px;color:var(--ink-mid);display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;line-height:1.4;}
+  .compliance-item:last-child{margin-bottom:0;}
+  .compliance-item::before{content:'✓';color:var(--sage);font-weight:700;flex-shrink:0;}
+  .tip-box{background:rgba(201,168,122,0.1);border:1px solid rgba(201,168,122,0.25);border-radius:8px;padding:14px 16px;font-size:13px;color:var(--ink-mid);line-height:1.5;}
+  .tip-box::before{content:'💡 ';font-size:14px;}
+  .hashtags-box{font-size:14px;color:var(--sage);font-weight:500;letter-spacing:0.02em;}
+
+  .script-actions{display:flex;gap:8px;padding:0 24px 20px;}
+  .action-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer;color:var(--ink-muted);font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+  .action-btn:hover{background:var(--ink);color:var(--white);border-color:var(--ink);}
+  .action-btn.primary{background:var(--sage);color:white;border-color:var(--sage);}
+  .action-btn.primary:hover{background:var(--sage-mid);}
+
+  .history-label{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:10px;}
+  .history-list{display:flex;flex-direction:column;gap:8px;}
+  .history-item{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;cursor:pointer;transition:all 0.12s;}
+  .history-item:hover{border-color:var(--sage-mid);}
+  .history-item-product{font-size:13px;font-weight:500;color:var(--ink);}
+  .history-item-meta{font-size:11px;color:var(--ink-muted);margin-top:2px;}
+
+  @media(max-width:860px){
+    .layout{grid-template-columns:1fr;}
+    .sidebar{max-height:none;position:static;border-right:none;border-bottom:1px solid var(--border);}
+    header{padding:24px 20px;}
+    .main-panel{padding:20px 16px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">@helloitskortny</div>
+    <h1>Script<br><span>Generator</span></h1>
+    <p>Pick a product, choose your hook, customize the vibe — get a full TikTok script in seconds.</p>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div>
+      <div class="sidebar-title">Build Your Script</div>
+      <div class="sidebar-sub">Fill in the details below</div>
+    </div>
+
+    <!-- PRODUCT -->
+    <div class="form-group">
+      <label class="form-label">Product</label>
+      <select class="form-select" id="product-select" onchange="onProductSelect()">
+        <option value="">Loading products...</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="custom-product-group">
+      <label class="form-label">Or type a product name</label>
+      <input type="text" class="form-input" id="custom-product" placeholder="e.g. Temptations Shallow Bowls">
+      <div style="font-size:11px;color:var(--ink-muted);font-style:italic;font-family:'DM Serif Display',serif">Leave blank to use the dropdown above</div>
+    </div>
+
+    <!-- PRODUCT DETAILS -->
+    <div class="form-group">
+      <label class="form-label">What makes it special? <span style="color:var(--ink-muted);font-weight:400;text-transform:none;letter-spacing:0">(optional but makes it better)</span></label>
+      <textarea class="form-textarea" id="product-details" placeholder="Any details you want included — a result you noticed, something that surprised you, a specific feature..."></textarea>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- HOOK -->
+    <div class="form-group">
+      <label class="form-label">Hook Formula <span style="color:var(--ink-muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+      <input type="text" class="form-input" id="hook-search" placeholder="Search your hook bank..." oninput="filterHooks()">
+      <div class="hook-picker" id="hook-picker">
+        <div style="padding:12px;font-size:12px;color:var(--ink-muted);font-style:italic;text-align:center">Loading hooks...</div>
+      </div>
+      <div id="selected-hook-display" style="display:none;margin-top:6px;font-size:12px;color:var(--sage);padding:8px 10px;background:rgba(107,122,90,0.08);border-radius:6px;line-height:1.4;"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- TONE & LENGTH -->
+    <div class="form-group">
+      <label class="form-label">Video Length</label>
+      <div class="toggle-group" id="length-toggle">
+        <button class="toggle-btn" onclick="setToggle('length','15s',this)">15s</button>
+        <button class="toggle-btn active" onclick="setToggle('length','30s',this)">30s</button>
+        <button class="toggle-btn" onclick="setToggle('length','60s',this)">60s</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Script Angle</label>
+      <div class="toggle-group" id="tone-toggle">
+        <button class="toggle-btn active" onclick="setToggle('tone','story',this)">Story</button>
+        <button class="toggle-btn" onclick="setToggle('tone','curiosity',this)">Curiosity</button>
+        <button class="toggle-btn" onclick="setToggle('tone','rage bait',this)">Rage Bait</button>
+        <button class="toggle-btn" onclick="setToggle('tone','skit',this)">Skit</button>
+        <button class="toggle-btn" onclick="setToggle('tone','emotional',this)">Emotional</button>
+        <button class="toggle-btn" onclick="setToggle('tone','fear',this)">Fear</button>
+        <button class="toggle-btn" onclick="setToggle('tone','asmr',this)">ASMR</button>
+        <button class="toggle-btn" onclick="setToggle('tone','identity',this)">Identity</button>
+      </div>
+      <div id="angle-desc" style="font-size:11px;color:var(--ink-muted);font-style:italic;font-family:'DM Serif Display',serif;margin-top:4px;">Problem → discovery → result → CTA. Builds trust and relatability.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Opening Pattern</label>
+      <div class="toggle-group" id="pattern-toggle">
+        <button class="toggle-btn active" onclick="setToggle('pattern','hook-first',this)">Hook First</button>
+        <button class="toggle-btn" onclick="setToggle('pattern','product-first',this)">Product First</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Variations to Generate</label>
+      <div class="toggle-group" id="variations-toggle">
+        <button class="toggle-btn active" onclick="setToggle('variations','1',this)">1</button>
+        <button class="toggle-btn" onclick="setToggle('variations','2',this)">2</button>
+        <button class="toggle-btn" onclick="setToggle('variations','3',this)">3</button>
+      </div>
+    </div>
+
+    <button class="generate-btn" id="generate-btn" onclick="generateScript()">✦ Generate Script</button>
+  </div>
+
+  <!-- MAIN PANEL -->
+  <div class="main-panel" id="main-panel">
+    <div class="empty-state">
+      <div class="empty-emoji">🎬</div>
+      <div class="empty-title">Ready when you are</div>
+      <div class="empty-sub">Select a product and hit Generate — your script will appear here</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://kortny-api.vercel.app/api/notion';
+const PRODUCTS_DB = 'd99b6dec79ba46f1a564af4d00f7220d';
+const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
+const HOOKS_STORAGE_KEY = 'kortny-hooks-v2';
+
+const ANGLE_DESCS = {
+  'story': 'Problem → failed attempts → discovery → result → CTA. Builds trust.',
+  'curiosity': 'Withhold the product — open a loop the viewer has to stay to close.',
+  'rage bait': 'Deadpan, slightly provocative statement. Zero smile. Pivot immediately.',
+  'skit': 'Conversation or scenario format. Great for food & supplements.',
+  'emotional': 'Lead with feeling — aspiration, comfort, identity. Sell the lifestyle.',
+  'fear': 'What happens if they DON\'T have this? Loss aversion angle.',
+  'asmr': 'Sensory-led. Sounds, textures, visuals do the selling. Minimal talking.',
+  'identity': 'Call out a specific person — "if you\'re a [identity], this is for you."',
+};
+
+const DEFAULT_HOOKS = [
+  {id:'dh1',catName:"Husband's GF",catEmoji:'💍',text:"My husband's girlfriend recommended this brand to me and honestly she has great taste so here we are."},
+  {id:'dh2',catName:"Husband's GF",catEmoji:'💍',text:"The girl my husband left me for recommended this — now I understand why she looks like that."},
+  {id:'dh3',catName:'Chaos Energy',catEmoji:'🌀',text:"My therapist told me to stop buying things online but then I found this."},
+  {id:'dh4',catName:'Chaos Energy',catEmoji:'🌀',text:"I saw these, blacked out, and woke up with a tracking number."},
+  {id:'dh5',catName:'Chaos Energy',catEmoji:'🌀',text:"Don't online shop drunk because you'll end up with this."},
+  {id:'dh6',catName:'Partner Reaction',catEmoji:'😂',text:"My husband asked what these are for and I said 'happiness' and walked away."},
+  {id:'dh7',catName:'Partner Reaction',catEmoji:'😂',text:"I set the table with these and my husband thought I hired someone to come decorate and I let him believe it."},
+  {id:'dh8',catName:'Impulse Buy',catEmoji:'🛒',text:"My name is Kortny and I cannot be trusted on TikTok Shop after 9pm."},
+  {id:'dh9',catName:'Impulse Buy',catEmoji:'🛒',text:"POV you told yourself you were just browsing."},
+  {id:'dh10',catName:'Home Rage Bait',catEmoji:'🏠',text:"Ugly homes are a personality flaw and I said what I said."},
+  {id:'dh11',catName:'Home Rage Bait',catEmoji:'🏠',text:"If nobody in your life has told you your home looks sad I'm telling you now."},
+  {id:'dh12',catName:'Home Rage Bait',catEmoji:'🏠',text:"A boring table is a cry for help and I'm here to answer it."},
+  {id:'dh13',catName:'Tall Girl',catEmoji:'👗',text:"Brands that don't make clothes for tall women are idiots and I said what I said."},
+  {id:'dh14',catName:'Tall Girl',catEmoji:'👗',text:"If you're short keep scrolling, this is not for you."},
+  {id:'dh15',catName:'Food Rage Bait',catEmoji:'🍽️',text:"Paper plates are for people who don't actually care about their guests."},
+  {id:'dh16',catName:'Safety',catEmoji:'🔑',text:"The fact that women can't walk to their car alone at night in 2026 is insane and I'm done pretending it's not."},
+  {id:'dh17',catName:'Same Vibe',catEmoji:'😤',text:"My mother-in-law got this for me and I'm annoyed that I love it."},
+  {id:'dh18',catName:'Beach',catEmoji:'🌊',text:"If your beach towel doesn't cover your whole body you don't have a beach towel you have a hand towel."},
+];
+
+let PRODUCTS = [];
+let HOOKS = [];
+let selectedHookId = null;
+let toggleState = { length:'30s', tone:'story', pattern:'hook-first', variations:'1' };
+let scriptHistory = [];
+
+// LOAD PRODUCTS
+async function loadProducts() {
+  try {
+    let results = [], cursor = null;
+    do {
+      const body = {page_size:100,sorts:[{property:'Product',direction:'ascending'}]};
+      if (cursor) body.start_cursor = cursor;
+      const res = await fetch(`${API}?endpoint=databases/${PRODUCTS_DB}/query`,{
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+      });
+      const data = await res.json();
+      results = [...results,...(data.results||[])];
+      cursor = data.next_cursor;
+    } while(cursor);
+
+    PRODUCTS = results
+      .filter(p=>!p.archived&&!p.in_trash&&p.properties.Product?.title?.[0]?.plain_text)
+      .map(p=>({
+        name: p.properties.Product?.title?.[0]?.plain_text||'',
+        brand: p.properties.Brand?.select?.name||'',
+        gmv: p.properties.GMV?.number||0,
+        sold: p.properties.Sold?.number||0,
+        link: p.properties['TikTok Shop Link']?.url||'',
+      }))
+      .filter(p=>p.name);
+
+    const sel = document.getElementById('product-select');
+    sel.innerHTML = '<option value="">— Pick from your database —</option>' +
+      PRODUCTS.map(p=>`<option value="${p.name}">${p.brand?p.brand+' — ':''}${p.name}${p.sold?` (${p.sold} sold)`:''}</option>`).join('');
+  } catch(e) {
+    document.getElementById('product-select').innerHTML = '<option value="">Could not load products</option>';
+  }
+}
+
+// LOAD HOOKS — from localStorage if available, else use defaults
+function loadHooks() {
+  let loaded = false;
+  try {
+    const saved = localStorage.getItem(HOOKS_STORAGE_KEY);
+    if (saved) {
+      const data = JSON.parse(saved);
+      const cats = {};
+      (data.categories||[]).forEach(c=>{cats[c.id]=c;});
+      const filtered = (data.hooks||[]).filter(h=>!h.isNote&&!h.isVisual);
+      if (filtered.length > 0) {
+        HOOKS = filtered.map(h=>({...h, catName:cats[h.catId]?.name||'', catEmoji:cats[h.catId]?.emoji||''}));
+        loaded = true;
+      }
+    }
+  } catch(e){}
+  if (!loaded) HOOKS = DEFAULT_HOOKS;
+  renderHookPicker('');
+}
+
+function filterHooks() {
+  const q = document.getElementById('hook-search').value.toLowerCase();
+  renderHookPicker(q);
+}
+
+function renderHookPicker(query) {
+  const filtered = HOOKS.filter(h=>!query||h.text.toLowerCase().includes(query)||h.catName.toLowerCase().includes(query));
+  const picker = document.getElementById('hook-picker');
+  if (!filtered.length) {
+    picker.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--ink-muted);text-align:center;font-style:italic">No hooks found</div>';
+    return;
+  }
+  picker.innerHTML = filtered.slice(0,40).map(h=>`
+    <div class="hook-option${selectedHookId===h.id?' selected':''}" onclick="selectHook('${h.id}')">
+      <div class="hook-option-cat">${h.catEmoji} ${h.catName}</div>
+      ${h.text}
+    </div>`).join('');
+}
+
+function selectHook(id) {
+  if (selectedHookId === id) {
+    selectedHookId = null;
+    document.getElementById('selected-hook-display').style.display='none';
+  } else {
+    selectedHookId = id;
+    const h = HOOKS.find(x=>x.id===id);
+    const disp = document.getElementById('selected-hook-display');
+    disp.textContent = '✓ Using: "'+h.text+'"';
+    disp.style.display='block';
+  }
+  renderHookPicker(document.getElementById('hook-search').value.toLowerCase());
+}
+
+function onProductSelect() {
+  // nothing needed — custom input is always visible
+}
+
+function setToggle(group, val, btn) {
+  toggleState[group] = val;
+  btn.closest('.toggle-group').querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if (group === 'tone' && ANGLE_DESCS[val]) {
+    document.getElementById('angle-desc').textContent = ANGLE_DESCS[val];
+  }
+}
+
+// GENERATE
+async function generateScript() {
+  const productVal = document.getElementById('product-select').value;
+  const customProduct = document.getElementById('custom-product').value.trim();
+  const productName = customProduct || productVal;
+  if (!productName) { alert('Please select a product from the dropdown or type one in!'); return; }
+
+  const productDetails = document.getElementById('product-details').value.trim();
+  const selectedHook = selectedHookId ? HOOKS.find(h=>h.id===selectedHookId) : null;
+  const productData = PRODUCTS.find(p=>p.name===productName);
+
+  const btn = document.getElementById('generate-btn');
+  btn.disabled=true; btn.textContent='Generating...';
+
+  document.getElementById('main-panel').innerHTML = `
+    <div class="generating">
+      <div class="gen-spinner"></div>
+      <div class="gen-text">Writing your script${toggleState.variations>1?' variations':''}...</div>
+    </div>`;
+
+  const numVariations = parseInt(toggleState.variations)||1;
+
+  const systemPrompt = `You are a TikTok Shop affiliate script writer for @helloitskortny. You write high-converting, authentic-sounding scripts that feel like a real person talking to a friend — never like an ad.
+
+CORE RULES:
+- Hook-First pattern (default): Hook (0-3s) → Problem+Agitation (3-8s) → Product Intro (8-15s) → Demo/Proof (15-22s) → CTA (22-30s)
+- Product-First pattern: Product reveal (0-5s) → Why it matters (5-15s) → Demo/Proof (15-22s) → CTA (22-30s)
+- CTA always ends with "Grabbed it through TikTok Shop" or "picked this up through TikTok Shop" + soft reason to click
+- NEVER mention prices, guaranteed results, or medical claims
+- For supplements: use "If you're looking to support..." framing only
+- Short sentences. Conversational. First-person. Specific beats vague.
+- Always end with EXACTLY 5 hashtags: 1 broad niche, 1 category, 1 product-specific, 1 TikTok Shop (#tiktoken or #tiktokshop), 1 wildcard
+
+OUTPUT FORMAT for each script variation:
+🎬 HOOK:
+[Hook line]
+
+🗣️ SCRIPT:
+[Full script as spoken word, with timing markers like (0-3s), (3-8s) etc]
+
+⏱️ Est. time: [X seconds]
+
+✅ COMPLIANCE:
+[3-4 bullet points confirming compliance]
+
+💡 FILMING TIP:
+[One practical filming tip]
+
+#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5
+
+---
+
+If generating multiple variations, separate each with "--- VARIATION 2 ---" etc.`;
+
+  const userPrompt = `Write ${numVariations} TikTok script variation${numVariations>1?'s':''} for this product:
+
+PRODUCT: ${productName}
+${productData?`BRAND: ${productData.brand}
+UNITS SOLD: ${productData.sold||0}
+GMV: $${productData.gmv||0}`:''}
+${productDetails?`\nADDITIONAL DETAILS: ${productDetails}`:''}
+${selectedHook?`\nHOOK TO USE (incorporate this or use it directly as the opening line): "${selectedHook.text}"`:''}
+
+VIDEO LENGTH: ${toggleState.length}
+SCRIPT ANGLE: ${toggleState.tone} — ${ANGLE_DESCS[toggleState.tone]||''}
+OPENING PATTERN: ${toggleState.pattern}
+
+${productData?.sold>50?`NOTE: This product has strong sales proof (${productData.sold} units, $${productData.gmv} GMV) — you can reference this casually as social proof.`:''}
+
+Write the script now. Be specific, authentic, and conversational. No filler words like "honestly" or "literally". Lean hard into the ${toggleState.tone} angle.`;
+
+  try {
+    const res = await fetch(ANTHROPIC_API, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system: systemPrompt,
+        messages:[{role:'user',content:userPrompt}]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text||'';
+    renderScripts(text, productName, numVariations);
+
+    scriptHistory.unshift({product:productName, tone:toggleState.tone, length:toggleState.length, text, time:new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})});
+    if (scriptHistory.length>5) scriptHistory.pop();
+  } catch(e) {
+    document.getElementById('main-panel').innerHTML = `<div class="generating"><div class="gen-text">Error generating script. Please try again.</div></div>`;
+  }
+
+  btn.disabled=false; btn.textContent='✦ Generate Script';
+}
+
+function renderScripts(text, productName, numVariations) {
+  const parts = text.split(/---\s*VARIATION\s*\d+\s*---/i).map(s=>s.trim()).filter(Boolean);
+  let html = '';
+
+  parts.forEach((part,i)=>{
+    const hookMatch = part.match(/🎬\s*HOOK[:\s]*([\s\S]*?)(?=🗣️|$)/i);
+    const scriptMatch = part.match(/🗣️\s*SCRIPT[:\s]*([\s\S]*?)(?=⏱️|$)/i);
+    const timeMatch = part.match(/⏱️[^:]*:\s*([^\n]+)/i);
+    const complianceMatch = part.match(/✅[^:]*:\s*([\s\S]*?)(?=💡|$)/i);
+    const tipMatch = part.match(/💡[^:]*:\s*([\s\S]*?)(?=#|$)/i);
+    const hashMatch = part.match(/(#\w+[\s#\w]*)/);
+
+    const hook = hookMatch?hookMatch[1].trim():'';
+    const script = scriptMatch?scriptMatch[1].trim():'';
+    const time = timeMatch?timeMatch[1].trim():'';
+    const compliance = complianceMatch?complianceMatch[1].trim():'';
+    const tip = tipMatch?tipMatch[1].trim():'';
+    const hashtags = hashMatch?hashMatch[1].trim():'';
+
+    const scriptId = 'script-'+Date.now()+'-'+i;
+
+    html += `<div class="script-card" id="${scriptId}">
+      <div class="script-card-header">
+        <div>
+          <div class="script-card-title">${numVariations>1?`Variation ${i+1} — `:''}${productName}</div>
+          <div class="script-card-meta">
+            <span>${toggleState.length}</span>
+            <span>${toggleState.tone}</span>
+            ${time?`<span>~${time}</span>`:''}
+          </div>
+        </div>
+        <div class="script-card-btns">
+          <button class="script-btn" onclick="copyScript('${scriptId}', this)">Copy Script</button>
+          <button class="script-btn" onclick="copyFull('${scriptId}', this)">Copy All</button>
+        </div>
+      </div>
+      <div class="script-body">`;
+
+    if (hook) html += `<div class="script-section"><div class="script-section-label">🎬 Hook — say on camera</div><div class="hook-box">${hook}</div></div>`;
+    if (script) {
+      const lines = script.split('\n').filter(l=>l.trim());
+      html += `<div class="script-section"><div class="script-section-label">🗣️ Full Script</div><div class="script-box">`;
+      lines.forEach(l=>{
+        const timingMatch = l.match(/^\([\d–-]+s\)/);
+        if (timingMatch) html += `<div class="timing">${timingMatch[0]}</div>${l.replace(timingMatch[0],'').trim()}<br>`;
+        else html += `${l}<br>`;
+      });
+      html += `</div></div>`;
+    }
+    if (compliance) {
+      const items = compliance.split('\n').filter(l=>l.trim()).map(l=>l.replace(/^[-•*]\s*/,''));
+      html += `<div class="script-section"><div class="script-section-label">✅ Compliance Check</div><div class="compliance-box">`;
+      items.forEach(item=>{if(item.trim())html+=`<div class="compliance-item">${item}</div>`;});
+      html += `</div></div>`;
+    }
+    if (tip) html += `<div class="script-section"><div class="script-section-label">💡 Filming Tip</div><div class="tip-box">${tip}</div></div>`;
+    if (hashtags) html += `<div class="script-section"><div class="script-section-label">Hashtags</div><div class="hashtags-box">${hashtags}</div></div>`;
+    html += `</div></div>`;
+  });
+
+  if (scriptHistory.length>0) {
+    html += `<div style="margin-top:8px"><div class="history-label">Recent Scripts</div><div class="history-list">`;
+    scriptHistory.forEach((h,i)=>{
+      html += `<div class="history-item" onclick="showHistory(${i})">
+        <div class="history-item-product">${h.product}</div>
+        <div class="history-item-meta">${h.length} · ${h.tone} · ${h.time}</div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  document.getElementById('main-panel').innerHTML = html;
+}
+
+function copyScript(cardId, btn) {
+  const card = document.getElementById(cardId);
+  const scriptBox = card.querySelector('.script-box');
+  if (!scriptBox) return;
+  const text = scriptBox.innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='Copied ✓'; btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copy Script';btn.classList.remove('copied');},2000);
+  });
+}
+
+function copyFull(cardId, btn) {
+  const card = document.getElementById(cardId);
+  const hook = card.querySelector('.hook-box')?.innerText||'';
+  const script = card.querySelector('.script-box')?.innerText||'';
+  const hashtags = card.querySelector('.hashtags-box')?.innerText||'';
+  const full = [hook&&`HOOK:\n${hook}`, script&&`\nSCRIPT:\n${script}`, hashtags&&`\n${hashtags}`].filter(Boolean).join('\n');
+  navigator.clipboard.writeText(full).then(()=>{
+    btn.textContent='Copied ✓'; btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copy All';btn.classList.remove('copied');},2000);
+  });
+}
+
+function showHistory(idx) {
+  const h = scriptHistory[idx];
+  if (!h) return;
+  toggleState.length=h.length; toggleState.tone=h.tone;
+  renderScripts(h.text, h.product, 1);
+}
+
+loadProducts();
+loadHooks();
+</script>
+</body>
+</html>
