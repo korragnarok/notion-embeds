@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#120d09">
+<title>Script Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@0,300;0,400;0,500&display=swap" rel="stylesheet">
+<style>
+:root{--espresso:#120d09;--brown-deep:#1c1410;--brown-mid:#2a1e16;--brown-lift:#3d2a1e;--brown-surface:#4a3428;--sage:#7a9e7e;--sage-light:#a8c5a4;--sage-dim:#4a6b4e;--tan:#c9a87a;--tan-dim:#7a5e3a;--text-bright:#f0e8de;--text-mid:#a89880;--text-muted:#6a5848;--border:rgba(200,168,120,0.1);--border-lift:rgba(200,168,120,0.2);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--espresso);color:var(--text-bright);font-family:'DM Sans',sans-serif;min-height:100vh;}
+nav{background:rgba(18,13,9,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--text-bright);text-decoration:none;}
+.nav-logo span{color:var(--sage-light);font-style:italic;}
+.nav-right{display:flex;gap:8px;}
+.nav-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s;text-decoration:none;display:inline-flex;align-items:center;}
+.nav-btn:hover{border-color:var(--border-lift);color:var(--text-bright);}
+.page-header{background:var(--brown-deep);padding:28px 40px 24px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.page-header::before{content:'🎬';position:absolute;right:-10px;top:-10px;font-size:140px;opacity:0.04;pointer-events:none;}
+.page-eyebrow{font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--tan);margin-bottom:8px;font-weight:500;display:flex;align-items:center;gap:10px;}
+.page-eyebrow::before{content:'';display:inline-block;width:20px;height:1px;background:var(--tan-dim);}
+.page-title{font-family:'Playfair Display',serif;font-size:40px;font-weight:700;line-height:1;color:var(--text-bright);}
+.page-title em{font-style:italic;color:var(--sage-light);}
+.page-sub{font-size:13px;color:var(--text-muted);margin-top:6px;max-width:360px;}
+.layout{display:grid;grid-template-columns:380px 1fr;min-height:calc(100vh - 170px);}
+.sidebar{background:var(--brown-deep);border-right:1px solid var(--border);padding:24px 20px;display:flex;flex-direction:column;gap:18px;overflow-y:auto;max-height:calc(100vh - 170px);position:sticky;top:56px;}
+.sidebar-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--text-bright);margin-bottom:2px;}
+.sidebar-sub{font-size:11px;color:var(--text-muted);}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-label{font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;}
+.form-input,.form-select,.form-textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--brown-mid);color:var(--text-bright);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.12s;-webkit-appearance:none;}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text-muted);}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--sage-dim);}
+.form-select option{background:var(--brown-deep);}
+.form-textarea{resize:vertical;min-height:70px;line-height:1.5;}
+.toggle-group{display:flex;gap:4px;flex-wrap:wrap;}
+.toggle-btn{background:var(--brown-mid);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;color:var(--text-muted);transition:all 0.12s;}
+.toggle-btn.active{background:var(--text-bright);color:var(--espresso);border-color:var(--text-bright);}
+.divider{height:1px;background:var(--border);margin:2px 0;}
+.generate-btn{background:var(--sage);color:var(--espresso);border:none;border-radius:12px;padding:14px;font-size:15px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:background 0.12s;width:100%;}
+.generate-btn:hover{background:var(--sage-light);}
+.generate-btn:disabled{opacity:0.6;cursor:not-allowed;}
+.hook-picker{background:var(--brown-mid);border-radius:10px;border:1px solid var(--border);max-height:160px;overflow-y:auto;}
+.hook-option{padding:10px 12px;font-size:12px;color:var(--text-mid);cursor:pointer;border-bottom:1px solid var(--border);line-height:1.4;transition:background 0.1s;}
+.hook-option:last-child{border-bottom:none;}
+.hook-option:hover{background:var(--brown-lift);}
+.hook-option.selected{background:rgba(122,158,126,0.12);color:var(--text-bright);}
+.hook-option-cat{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px;}
+.main-panel{padding:24px 28px;display:flex;flex-direction:column;gap:18px;}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;min-height:400px;text-align:center;color:var(--text-muted);}
+.empty-emoji{font-size:48px;margin-bottom:14px;opacity:0.5;}
+.empty-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--text-mid);margin-bottom:6px;}
+.empty-sub{font-size:13px;}
+.generating{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;gap:14px;}
+.gen-spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--sage);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.gen-text{font-size:13px;color:var(--text-muted);}
+.script-card{background:var(--brown-mid);border-radius:14px;border:1px solid var(--border);overflow:hidden;}
+.script-card-header{background:var(--brown-lift);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--border);}
+.script-card-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--text-bright);}
+.script-card-meta{font-size:11px;color:var(--text-muted);display:flex;gap:8px;align-items:center;margin-top:2px;}
+.script-card-meta span{background:rgba(200,168,120,0.08);padding:2px 8px;border-radius:4px;border:1px solid var(--border);}
+.script-card-btns{display:flex;gap:6px;}
+.script-btn{background:var(--brown-surface);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--text-muted);font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+.script-btn:hover{background:var(--sage);color:var(--espresso);border-color:var(--sage);}
+.script-btn.copied{background:var(--sage-dim);color:var(--sage-light);}
+.script-body{padding:20px;}
+.script-section{margin-bottom:16px;}
+.script-section:last-child{margin-bottom:0;}
+.script-section-label{font-size:9px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;}
+.hook-box{background:var(--brown-lift);color:var(--text-bright);border-radius:10px;padding:14px 16px;font-size:15px;font-weight:500;line-height:1.5;font-family:'Playfair Display',serif;font-style:italic;border-left:3px solid var(--tan);}
+.script-box{background:var(--brown-deep);border-radius:10px;padding:16px;font-size:13px;line-height:1.8;color:var(--text-mid);border-left:3px solid var(--sage);}
+.script-box .timing{font-size:10px;color:var(--text-muted);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:2px;}
+.compliance-box{background:rgba(122,158,126,0.06);border:1px solid rgba(122,158,126,0.15);border-radius:10px;padding:12px 14px;}
+.compliance-item{font-size:12px;color:var(--text-mid);display:flex;align-items:flex-start;gap:8px;margin-bottom:5px;line-height:1.4;}
+.compliance-item:last-child{margin-bottom:0;}
+.compliance-item::before{content:'✓';color:var(--sage-light);font-weight:700;flex-shrink:0;}
+.tip-box{background:rgba(201,168,122,0.08);border:1px solid rgba(201,168,122,0.2);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--text-mid);line-height:1.5;}
+.tip-box::before{content:'💡 ';font-size:13px;}
+.hashtags-box{font-size:13px;color:var(--sage-light);font-weight:500;letter-spacing:0.02em;}
+.history-label{font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;}
+.history-list{display:flex;flex-direction:column;gap:6px;}
+.history-item{background:var(--brown-mid);border:1px solid var(--border);border-radius:10px;padding:10px 14px;cursor:pointer;transition:all 0.12s;}
+.history-item:hover{border-color:var(--border-lift);}
+.history-item-product{font-size:13px;font-weight:500;color:var(--text-bright);}
+.history-item-meta{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.angle-desc{font-size:11px;color:var(--text-muted);font-style:italic;margin-top:4px;}
+.custom-angle-input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--brown-mid);color:var(--text-bright);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.12s;}
+.custom-angle-input::placeholder{color:var(--text-muted);}
+.custom-angle-input:focus,.custom-angle-input.has-value{border-color:var(--sage-dim);}
+.custom-angle-input.has-value{background:rgba(122,158,126,0.06);}
+@media(max-width:860px){.layout{grid-template-columns:1fr;}.sidebar{max-height:none;position:static;border-right:none;border-bottom:1px solid var(--border);}.main-panel{padding:20px 16px;}}
+</style>
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js")
+          .then(reg => console.log("[SW] Registered", reg.scope))
+          .catch(err => console.warn("[SW] Failed", err));
+      });
+    }
+  </script>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">hello<span>itskortny</span></a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-btn">← Home</a>
+  </div>
+</nav>
+<div class="page-header">
+  <div class="page-eyebrow">@helloitskortny</div>
+  <div class="page-title">Script <em>Generator</em></div>
+  <div class="page-sub">Pick a product, choose your hook, get a full TikTok script in seconds.</div>
+</div>
+<div class="layout">
+  <div class="sidebar">
+    <div><div class="sidebar-title">Build Your Script</div><div class="sidebar-sub">Fill in the details below</div></div>
+    <div class="form-group">
+      <label class="form-label">Product</label>
+      <select class="form-select" id="product-select"><option value="">Loading products...</option></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Or type a product name</label>
+      <input type="text" class="form-input" id="custom-product" placeholder="e.g. Temptations Shallow Bowls">
+      <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Leave blank to use the dropdown</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Extra details <span style="color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:0">(optional override)</span></label>
+      <textarea class="form-textarea" id="product-details" placeholder="Add anything not in Notion yet..."></textarea>
+    </div>
+    <div class="divider"></div>
+    <div class="form-group">
+      <label class="form-label">Hook Formula <span style="color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+      <input type="text" class="form-input" id="hook-search" placeholder="Search your hook bank..." oninput="filterHooks()">
+      <div class="hook-picker" id="hook-picker"><div style="padding:12px;font-size:12px;color:var(--text-muted);text-align:center">Loading hooks...</div></div>
+      <div id="selected-hook-display" style="display:none;margin-top:5px;font-size:12px;color:var(--sage-light);padding:8px 10px;background:rgba(122,158,126,0.08);border-radius:8px;line-height:1.4;border:1px solid rgba(122,158,126,0.15);"></div>
+    </div>
+    <div class="divider"></div>
+    <div class="form-group">
+      <label class="form-label">Video Length</label>
+      <div class="toggle-group" id="length-toggle">
+        <button class="toggle-btn" onclick="setToggle('length','15s',this)">15s</button>
+        <button class="toggle-btn active" onclick="setToggle('length','30s',this)">30s</button>
+        <button class="toggle-btn" onclick="setToggle('length','60s',this)">60s</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Script Angle</label>
+      <div class="toggle-group" id="tone-toggle">
+        <button class="toggle-btn active" onclick="setToggle('tone','story',this)">Story</button>
+        <button class="toggle-btn" onclick="setToggle('tone','curiosity',this)">Curiosity</button>
+        <button class="toggle-btn" onclick="setToggle('tone','rage bait',this)">Rage Bait</button>
+        <button class="toggle-btn" onclick="setToggle('tone','skit',this)">Skit</button>
+        <button class="toggle-btn" onclick="setToggle('tone','emotional',this)">Emotional</button>
+        <button class="toggle-btn" onclick="setToggle('tone','fear',this)">Fear</button>
+        <button class="toggle-btn" onclick="setToggle('tone','asmr',this)">ASMR</button>
+        <button class="toggle-btn" onclick="setToggle('tone','identity',this)">Identity</button>
+      </div>
+      <div class="angle-desc" id="angle-desc">Problem → discovery → result → CTA. Builds trust.</div>
+      <input type="text" class="custom-angle-input" id="custom-angle" placeholder="Or type a custom angle… e.g. 'husband reaction skit'" oninput="onCustomAngle(this)" style="margin-top:6px;">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Opening Pattern</label>
+      <div class="toggle-group" id="pattern-toggle">
+        <button class="toggle-btn active" onclick="setToggle('pattern','hook-first',this)">Hook First</button>
+        <button class="toggle-btn" onclick="setToggle('pattern','product-first',this)">Product First</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Variations</label>
+      <div class="toggle-group" id="variations-toggle">
+        <button class="toggle-btn active" onclick="setToggle('variations','1',this)">1</button>
+        <button class="toggle-btn" onclick="setToggle('variations','2',this)">2</button>
+        <button class="toggle-btn" onclick="setToggle('variations','3',this)">3</button>
+      </div>
+    </div>
+    <button class="generate-btn" id="generate-btn" onclick="generateScript()">✦ Generate Script</button>
+  </div>
+  <div class="main-panel" id="main-panel">
+    <div class="empty-state">
+      <div class="empty-emoji">🎬</div>
+      <div class="empty-title">Ready when you are</div>
+      <div class="empty-sub">Select a product and hit Generate</div>
+    </div>
+  </div>
+</div>
+<script>
+const API='https://kortny-api.vercel.app/api/notion';
+const PRODUCTS_DB='d99b6dec79ba46f1a564af4d00f7220d';
+const HOOKS_STORAGE_KEY='kortny-hooks-v2';
+const ANGLE_DESCS={'story':'Problem → failed attempts → discovery → result → CTA. Builds trust.','curiosity':'Withhold the product — open a loop the viewer has to stay to close.','rage bait':'Deadpan, slightly provocative statement. Zero smile. Pivot immediately.','skit':'Conversation or scenario format. Great for food & supplements.','emotional':'Lead with feeling — aspiration, comfort, identity. Sell the lifestyle.','fear':'What happens if they DON\'T have this? Loss aversion angle.','asmr':'Sensory-led. Sounds, textures, visuals do the selling. Minimal talking.','identity':'Call out a specific person — "if you\'re a [identity], this is for you."'};
+const DEFAULT_HOOKS=[{id:'dh1',catName:"Husband's GF",catEmoji:'💍',text:"My husband's girlfriend recommended this brand to me and honestly she has great taste so here we are."},{id:'dh2',catName:'Chaos Energy',catEmoji:'🌀',text:"My therapist told me to stop buying things online but then I found this."},{id:'dh3',catName:'Chaos Energy',catEmoji:'🌀',text:"I saw these, blacked out, and woke up with a tracking number."},{id:'dh4',catName:'Partner Reaction',catEmoji:'😂',text:"My husband asked what these are for and I said 'happiness' and walked away."},{id:'dh5',catName:'Impulse Buy',catEmoji:'🛒',text:"My name is Kortny and I cannot be trusted on TikTok Shop after 9pm."},{id:'dh6',catName:'Impulse Buy',catEmoji:'🛒',text:"POV you told yourself you were just browsing."},{id:'dh7',catName:'Home Rage Bait',catEmoji:'🏠',text:"Ugly homes are a personality flaw and I said what I said."},{id:'dh8',catName:'Home Rage Bait',catEmoji:'🏠',text:"If nobody in your life has told you your home looks sad I'm telling you now."}];
+let PRODUCTS=[],HOOKS=[],selectedHookId=null,toggleState={length:'30s',tone:'story',pattern:'hook-first',variations:'1'},scriptHistory=[];
+async function loadProducts(){
+  try{
+    let results=[],cursor=null;
+    do{const body={page_size:100,sorts:[{property:'Product',direction:'ascending'}]};if(cursor)body.start_cursor=cursor;const res=await fetch(`${API}?endpoint=databases/${PRODUCTS_DB}/query`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();results=[...results,...(data.results||[])];cursor=data.next_cursor;}while(cursor);
+    PRODUCTS=results.filter(p=>!p.archived&&!p.in_trash&&p.properties.Product?.title?.[0]?.plain_text).map(p=>({name:p.properties.Product?.title?.[0]?.plain_text||'',brand:p.properties.Brand?.select?.name||'',gmv:p.properties.GMV?.number||0,sold:p.properties.Sold?.number||0,link:p.properties['TikTok Shop Link']?.url||'',features:p.properties.Features?.rich_text?.[0]?.plain_text||''})).filter(p=>p.name);
+    const sel=document.getElementById('product-select');sel.innerHTML='<option value="">— Pick from your database —</option>'+PRODUCTS.map(p=>`<option value="${p.name}">${p.brand?p.brand+' — ':''}${p.name}${p.sold?` (${p.sold} sold)`:''}</option>`).join('');
+  }catch(e){document.getElementById('product-select').innerHTML='<option value="">Could not load products</option>';}
+}
+function loadHooks(){
+  let loaded=false;
+  try{const saved=localStorage.getItem(HOOKS_STORAGE_KEY);if(saved){const data=JSON.parse(saved);const cats={};(data.categories||[]).forEach(c=>{cats[c.id]=c;});const filtered=(data.hooks||[]).filter(h=>!h.isNote&&!h.isVisual);if(filtered.length>0){HOOKS=filtered.map(h=>({...h,catName:cats[h.catId]?.name||'',catEmoji:cats[h.catId]?.emoji||''}));loaded=true;}}}catch(e){}
+  if(!loaded)HOOKS=DEFAULT_HOOKS;renderHookPicker('');
+}
+function filterHooks(){renderHookPicker(document.getElementById('hook-search').value.toLowerCase());}
+function renderHookPicker(query){
+  const filtered=HOOKS.filter(h=>!query||h.text.toLowerCase().includes(query)||h.catName.toLowerCase().includes(query));const picker=document.getElementById('hook-picker');
+  if(!filtered.length){picker.innerHTML='<div style="padding:12px;font-size:12px;color:var(--text-muted);text-align:center">No hooks found</div>';return;}
+  picker.innerHTML=filtered.slice(0,40).map(h=>`<div class="hook-option${selectedHookId===h.id?' selected':''}" onclick="selectHook('${h.id}')"><div class="hook-option-cat">${h.catEmoji} ${h.catName}</div>${h.text}</div>`).join('');
+}
+function selectHook(id){
+  if(selectedHookId===id){selectedHookId=null;document.getElementById('selected-hook-display').style.display='none';}
+  else{selectedHookId=id;const h=HOOKS.find(x=>x.id===id);const disp=document.getElementById('selected-hook-display');disp.textContent='✓ Using: "'+h.text+'"';disp.style.display='block';}
+  renderHookPicker(document.getElementById('hook-search').value.toLowerCase());
+}
+function setToggle(group,val,btn){
+  toggleState[group]=val;btn.closest('.toggle-group').querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  if(group==='tone'&&ANGLE_DESCS[val])document.getElementById('angle-desc').textContent=ANGLE_DESCS[val];
+  if(group==='tone'){const ci=document.getElementById('custom-angle');ci.value='';ci.classList.remove('has-value');}
+}
+function onCustomAngle(input){
+  if(input.value.trim()){toggleState.tone=input.value.trim();input.classList.add('has-value');document.getElementById('tone-toggle').querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));}
+  else{toggleState.tone='story';input.classList.remove('has-value');document.getElementById('tone-toggle').querySelector('.toggle-btn').classList.add('active');}
+}
+async function generateScript(){
+  const productVal=document.getElementById('product-select').value,customProduct=document.getElementById('custom-product').value.trim(),productName=customProduct||productVal;
+  if(!productName){alert('Please select a product or type one in!');return;}
+  const productDetails=document.getElementById('product-details').value.trim(),selectedHook=selectedHookId?HOOKS.find(h=>h.id===selectedHookId):null,productData=PRODUCTS.find(p=>p.name===productName);
+  const features=productData?.features||'';
+  const btn=document.getElementById('generate-btn');btn.disabled=true;btn.textContent='Generating...';
+  const numVariations=parseInt(toggleState.variations)||1;
+  document.getElementById('main-panel').innerHTML=`<div class="generating"><div class="gen-spinner"></div><div class="gen-text">Writing your script${numVariations>1?' variations':''}...</div></div>`;
+  const systemPrompt=`You are a TikTok Shop affiliate script writer for @helloitskortny. You write high-converting, authentic-sounding scripts that feel like a real person talking to a friend — never like an ad.\n\nCORE RULES:\n- Hook-First pattern (default): Hook (0-3s) → Problem+Agitation (3-8s) → Product Intro (8-15s) → Demo/Proof (15-22s) → CTA (22-30s)\n- Product-First pattern: Product reveal (0-5s) → Why it matters (5-15s) → Demo/Proof (15-22s) → CTA (22-30s)\n- CTA always ends with "Grabbed it through TikTok Shop" or "picked this up through TikTok Shop" + soft reason to click\n- NEVER mention prices, guaranteed results, or medical claims\n- For supplements: use "If you're looking to support..." framing only\n- Short sentences. Conversational. First-person. Specific beats vague.\n- Always end with EXACTLY 5 hashtags: 1 broad niche, 1 category, 1 product-specific, 1 TikTok Shop (#tiktoken or #tiktokshop), 1 wildcard\n\nOUTPUT FORMAT for each script variation:\n🎬 HOOK:\n[Hook line]\n\n🗣️ SCRIPT:\n[Full script as spoken word, with timing markers like (0-3s), (3-8s) etc]\n\n⏱️ Est. time: [X seconds]\n\n✅ COMPLIANCE:\n[3-4 bullet points confirming compliance]\n\n💡 FILMING TIP:\n[One practical filming tip]\n\n#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5\n\n---\n\nIf generating multiple variations, separate each with "--- VARIATION 2 ---" etc.`;
+  const userPrompt=`Write ${numVariations} TikTok script variation${numVariations>1?'s':''} for this product:\n\nPRODUCT: ${productName}\n${productData?`BRAND: ${productData.brand}\nUNITS SOLD: ${productData.sold||0}\nGMV: $${productData.gmv||0}`:''}\n${features?`\nPRODUCT FEATURES (use these facts — do not guess or fabricate):\n${features}`:''}\n${productDetails?`\nADDITIONAL NOTES: ${productDetails}`:''}\n${selectedHook?`\nHOOK FORMULA TO ADAPT: "${selectedHook.text}"\nUse this as the psychological blueprint — same energy, same angle, reworded to feel natural for this specific product. The viewer should never feel like a template was used.`:''}\n\nVIDEO LENGTH: ${toggleState.length}\nSCRIPT ANGLE: ${toggleState.tone} — ${ANGLE_DESCS[toggleState.tone]||''}\nOPENING PATTERN: ${toggleState.pattern}\n\n${productData?.sold>50?`NOTE: This product has strong sales proof (${productData.sold} units, $${productData.gmv} GMV) — you can reference this casually as social proof.`:''}\n\nWrite the script now. Be specific, authentic, and conversational. No filler words like "honestly" or "literally". Lean hard into the ${toggleState.tone} angle.`;
+  try{
+    const res=await fetch('https://kortny-api.vercel.app/api/notion?service=anthropic',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1000,system:systemPrompt,messages:[{role:'user',content:userPrompt}]})});
+    const data=await res.json();const text=data.content?.[0]?.text||'';
+    renderScripts(text,productName,numVariations);
+    scriptHistory.unshift({product:productName,tone:toggleState.tone,length:toggleState.length,text,time:new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})});
+    if(scriptHistory.length>5)scriptHistory.pop();
+  }catch(e){document.getElementById('main-panel').innerHTML=`<div class="generating"><div class="gen-text">Error generating. Please try again.</div></div>`;}
+  btn.disabled=false;btn.textContent='✦ Generate Script';
+}
+function renderScripts(text,productName,numVariations){
+  const parts=text.split(/---\s*VARIATION\s*\d+\s*---/i).map(s=>s.trim()).filter(Boolean);let html='';
+  parts.forEach((part,i)=>{
+    const hookMatch=part.match(/🎬\s*HOOK[:\s]*([\s\S]*?)(?=🗣️|$)/i),scriptMatch=part.match(/🗣️\s*SCRIPT[:\s]*([\s\S]*?)(?=⏱️|$)/i),timeMatch=part.match(/⏱️[^:]*:\s*([^\n]+)/i),complianceMatch=part.match(/✅[^:]*:\s*([\s\S]*?)(?=💡|$)/i),tipMatch=part.match(/💡[^:]*:\s*([\s\S]*?)(?=#|$)/i),hashMatch=part.match(/(#\w+[\s#\w]*)/);
+    const hook=hookMatch?hookMatch[1].trim():'',script=scriptMatch?scriptMatch[1].trim():'',time=timeMatch?timeMatch[1].trim():'',compliance=complianceMatch?complianceMatch[1].trim():'',tip=tipMatch?tipMatch[1].trim():'',hashtags=hashMatch?hashMatch[1].trim():'';
+    const scriptId='script-'+Date.now()+'-'+i;
+    html+=`<div class="script-card" id="${scriptId}"><div class="script-card-header"><div><div class="script-card-title">${numVariations>1?`Var ${i+1} — `:''}${productName}</div><div class="script-card-meta"><span>${toggleState.length}</span><span>${toggleState.tone}</span>${time?`<span>~${time}</span>`:''}</div></div><div class="script-card-btns"><button class="script-btn" onclick="copyScript('${scriptId}',this)">Copy Script</button><button class="script-btn" onclick="copyFull('${scriptId}',this)">Copy All</button></div></div><div class="script-body">`;
+    if(hook)html+=`<div class="script-section"><div class="script-section-label">🎬 Hook</div><div class="hook-box">${hook}</div></div>`;
+    if(script){const lines=script.split('\n').filter(l=>l.trim());html+=`<div class="script-section"><div class="script-section-label">🗣️ Full Script</div><div class="script-box">`;lines.forEach(l=>{const tm=l.match(/^\([\d–-]+s\)/);if(tm)html+=`<div class="timing">${tm[0]}</div>${l.replace(tm[0],'').trim()}<br>`;else html+=`${l}<br>`;});html+=`</div></div>`;}
+    if(compliance){const items=compliance.split('\n').filter(l=>l.trim()).map(l=>l.replace(/^[-•*]\s*/,''));html+=`<div class="script-section"><div class="script-section-label">✅ Compliance</div><div class="compliance-box">`;items.forEach(item=>{if(item.trim())html+=`<div class="compliance-item">${item}</div>`;});html+=`</div></div>`;}
+    if(tip)html+=`<div class="script-section"><div class="script-section-label">💡 Filming Tip</div><div class="tip-box">${tip}</div></div>`;
+    if(hashtags)html+=`<div class="script-section"><div class="script-section-label">Hashtags</div><div class="hashtags-box">${hashtags}</div></div>`;
+    html+=`</div></div>`;
+  });
+  if(scriptHistory.length>0){html+=`<div style="margin-top:8px"><div class="history-label">Recent Scripts</div><div class="history-list">`;scriptHistory.forEach((h,i)=>{html+=`<div class="history-item" onclick="showHistory(${i})"><div class="history-item-product">${h.product}</div><div class="history-item-meta">${h.length} · ${h.tone} · ${h.time}</div></div>`;});html+=`</div></div>`;}
+  document.getElementById('main-panel').innerHTML=html;
+}
+function copyScript(cardId,btn){const card=document.getElementById(cardId);const scriptBox=card.querySelector('.script-box');if(!scriptBox)return;navigator.clipboard.writeText(scriptBox.innerText).then(()=>{btn.textContent='Copied ✓';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copy Script';btn.classList.remove('copied');},2000);});}
+function copyFull(cardId,btn){const card=document.getElementById(cardId);const hook=card.querySelector('.hook-box')?.innerText||'';const script=card.querySelector('.script-box')?.innerText||'';const hashtags=card.querySelector('.hashtags-box')?.innerText||'';const full=[hook&&`HOOK:\n${hook}`,script&&`\nSCRIPT:\n${script}`,hashtags&&`\n${hashtags}`].filter(Boolean).join('\n');navigator.clipboard.writeText(full).then(()=>{btn.textContent='Copied ✓';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copy All';btn.classList.remove('copied');},2000);});}
+function showHistory(idx){const h=scriptHistory[idx];if(!h)return;toggleState.length=h.length;toggleState.tone=h.tone;renderScripts(h.text,h.product,1);}
+loadProducts();loadHooks();
+</script>
+</body>
+</html>
