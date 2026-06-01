@@ -457,7 +457,22 @@ function toggleDone(cardId,takeId){
   const take=card?.takes.find(t=>t.id===takeId);
   if(!take)return;
   take.done=!take.done;
-  saveTodo();render();
+  saveTodo();
+  if(take.done){
+    try {
+      const calPosts=JSON.parse(localStorage.getItem('kortny-posts')||'[]');
+      const hook=take.hookId?HOOKS.find(h=>h.id===take.hookId):null;
+      const label=hook?card.productName+' — '+hook.text.substring(0,30)+'…':card.productName;
+      calPosts.push({id:'todo-'+take.id,title:label,date:todayKey,type:'post'});
+      localStorage.setItem('kortny-posts',JSON.stringify(calPosts));
+    } catch(e){}
+  } else {
+    try {
+      const calPosts=JSON.parse(localStorage.getItem('kortny-posts')||'[]');
+      localStorage.setItem('kortny-posts',JSON.stringify(calPosts.filter(p=>p.id!=='todo-'+takeId)));
+    } catch(e){}
+  }
+  render();
 }
 
 function toggleLog(cardId,takeId){
