@@ -190,10 +190,14 @@ async function loadFromNotion() {
     })).filter(h => h.text);
 
     // Build categories from hooks
-    const catMap = {};
+   const catMap = {};
     HOOKS.forEach(h => {
-      if(h.catId && !catMap[h.catId]) {
-        catMap[h.catId] = {id:h.catId, name:h.catName, emoji:h.catEmoji};
+      if(h.catName) {
+        const normalizedId = h.catName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        if(!catMap[normalizedId]) {
+          catMap[normalizedId] = {id:normalizedId, name:h.catName, emoji:h.catEmoji};
+        }
+        h.catId = normalizedId;
       }
     });
     CATEGORIES = Object.values(catMap);
@@ -415,8 +419,8 @@ async function saveCategory() {
     if(cat){cat.name=name;cat.emoji=emoji;}
     syncToLocalStorage(); renderAll(); closeCatModal();
     showToast('Category updated!');
-  } else {
-    const newId = 'cat-'+Date.now();
+ } else {
+    const newId = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     CATEGORIES.push({id:newId,name,emoji});
     syncToLocalStorage(); renderAll(); closeCatModal();
     showToast('Category added!');
