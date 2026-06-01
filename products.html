@@ -217,7 +217,7 @@ const CORE_FIVE = ['Pet Lab Co','Sand Cloud','QVC'];
 let DATA = [];
 let currentBrand = 'All';
 let statusFilter = 'All';
-let sortField = 'day';
+let sortField = 'product';
 let sortDir = -1;
 let editingId = null;
 
@@ -381,7 +381,7 @@ function inlineEditStatus(id) {
 function inlineEditStock(id) {
   const r = DATA.find(x=>x.id===id);
   const options = ['In Stock','Low Stock','Out of Stock'];
-  const td = document.querySelector(`#row-${id} td:nth-child(4)`);
+  const td = document.querySelector(`#row-${id} td:nth-child(3)`);
   const sel = document.createElement('select');
   sel.className = 'inline-select';
   options.forEach(o => {
@@ -399,7 +399,7 @@ function inlineEditStock(id) {
 
 function inlineEditNumber(id, field) {
   const r = DATA.find(x=>x.id===id);
-  const colIdx = field==='sold' ? 5 : 6;
+const colIdx = field==='sold' ? 4 : 5;
   const td = document.querySelector(`#row-${id} td:nth-child(${colIdx})`);
   const inp = document.createElement('input');
   inp.type = 'number'; inp.min = '0'; inp.step = field==='gmv'?'0.01':'1';
