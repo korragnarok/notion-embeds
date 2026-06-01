@@ -220,7 +220,7 @@ async function loadAll() {
     const [salesPages, ordersPages, productPages] = await Promise.all([
       queryDB(DAILY_SALES_DB, {sorts:[{property:'Date',direction:'ascending'}]}),
       queryDB(ORDERS_DB),
-      queryDB(PRODUCTS_DB),
+      queryDB(PRODUCTS_DB, {sorts:[{property:'Product',direction:'ascending'}]}),
     ]);
 
     // Parse daily sales
