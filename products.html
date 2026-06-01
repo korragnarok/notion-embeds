@@ -140,9 +140,7 @@
 
   <div class="filter-bar">
     <button class="filter-btn active" onclick="setFilter('All',this)">All</button>
-    <button class="filter-btn" onclick="setFilter('Posted',this)">Posted</button>
-    <button class="filter-btn" onclick="setFilter('To Do',this)">To Do</button>
-     <button class="filter-btn" onclick="setFilter('None',this)">None</button>
+ 
     <button class="filter-btn" onclick="setFilter('In Stock',this)">In Stock</button>
     <button class="filter-btn" onclick="setFilter('Out of Stock',this)">Out of Stock</button>
     <input type="text" class="search-input" id="search-input" placeholder="Search products..." oninput="renderTable()">
@@ -153,11 +151,11 @@
       <thead><tr>
         <th onclick="sortBy('product')">Product</th>
         <th onclick="sortBy('brand')">Brand</th>
-        <th onclick="sortBy('status')">Status</th>
+  
         <th onclick="sortBy('stock')">Stock</th>
         <th onclick="sortBy('sold')" class="num">Sold</th>
         <th onclick="sortBy('gmv')" class="num">GMV</th>
-        <th onclick="sortBy('day')">Date</th>
+       
         <th>Link</th>
         <th></th>
       </tr></thead>
@@ -340,21 +338,13 @@ function renderTable() {
     return `<tr id="row-${r.id}">
       <td class="product-name">${r.product}${isCore?'<span class="core-badge">Core 5</span>':''}</td>
       <td>${r.brand||'—'}</td>
-      <td>
-        <span class="status-pill ${statusClass} editable-cell" onclick="inlineEditStatus('${r.id}')" title="Click to change">
-          ${r.status||'—'}
-        </span>
-      </td>
+     
       <td>
         <span class="${r.stock?`stock-pill ${stockClass}`:''} editable-cell" onclick="inlineEditStock('${r.id}')" title="Click to change">
           ${r.stock||'—'}
         </span>
       </td>
-      <td class="num">
-        <span class="editable-cell" onclick="inlineEditNumber('${r.id}','sold')" title="Click to edit">
-          ${r.sold||0}
-        </span>
-      </td>
+      
       <td class="num gmv-val">
         <span class="editable-cell" onclick="inlineEditNumber('${r.id}','gmv')" title="Click to edit">
           ${r.gmv?fmt(r.gmv):'—'}
