@@ -432,6 +432,11 @@ function calChangeMonth(dir) {
   renderContentCal();
 }
 
+  
+function renderContentCal() {
+  const y = calCurrent.getFullYear(), m = calCurrent.getMonth();
+  document.getElementById('cal-month-label').textContent = MONTHS[m]+' '+y;
+
 function renderContentCal() {
   const y = calCurrent.getFullYear(), m = calCurrent.getMonth();
   document.getElementById('cal-month-label').textContent = MONTHS[m]+' '+y;
@@ -498,7 +503,7 @@ window.addEventListener('scroll',()=>{
 });
 
 loadStats();
-renderContentCal();
+loadVideosToCalendar();
 </script>
 </body>
 </html>
