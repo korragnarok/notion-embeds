@@ -233,9 +233,9 @@ async function loadAll() {
 
     // Parse orders
     const orders = ordersPages.map(p => ({
-      commission: p.properties.Commission?.number || 0,
-      status: p.properties.Status?.select?.name || '',
-    }));
+  commission: p.properties.Commission?.number || 0,
+  status: p.properties.Status?.status?.name || '',
+}));
 
     // Parse products
     const products = productPages.map(p => ({
