@@ -247,7 +247,9 @@ async function loadAll() {
 
     renderDashboard(sales, orders, products);
   } catch(e) {
-    console.error(e);
+    console.error('DASHBOARD ERROR:', e);
+    document.getElementById('loading-overlay').classList.add('hidden');
+    alert('Error: ' + e.message);
   }
 
   document.getElementById('loading-overlay').classList.add('hidden');
