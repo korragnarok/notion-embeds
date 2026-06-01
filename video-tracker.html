@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#120d09">
+<title>Video Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@0,300;0,400;0,500&display=swap" rel="stylesheet">
+<style>
+:root{--espresso:#120d09;--brown-deep:#1c1410;--brown-mid:#2a1e16;--brown-lift:#3d2a1e;--brown-surface:#4a3428;--sage:#7a9e7e;--sage-light:#a8c5a4;--sage-dim:#4a6b4e;--tan:#c9a87a;--tan-dim:#7a5e3a;--text-bright:#f0e8de;--text-mid:#a89880;--text-muted:#6a5848;--border:rgba(200,168,120,0.1);--border-lift:rgba(200,168,120,0.2);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--espresso);color:var(--text-bright);font-family:'DM Sans',sans-serif;min-height:100vh;}
+nav{background:rgba(18,13,9,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:'Syne',serif;font-size:16px;font-weight:700;color:var(--text-bright);text-decoration:none;}
+.nav-logo span{color:var(--sage-light);font-style:italic;}
+.nav-right{display:flex;gap:8px;}
+.nav-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s;text-decoration:none;display:inline-flex;align-items:center;}
+.nav-btn:hover{border-color:var(--border-lift);color:var(--text-bright);}
+.nav-btn.primary{background:var(--sage);color:var(--espresso);border-color:var(--sage);font-weight:600;}
+.page-header{padding:24px 28px 18px;border-bottom:1px solid var(--border);}
+.page-eyebrow{font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--tan);margin-bottom:6px;font-weight:500;display:flex;align-items:center;gap:10px;}
+.page-eyebrow::before{content:'';display:inline-block;width:20px;height:1px;background:var(--tan-dim);}
+.page-title{font-family:'Syne',serif;font-size:32px;font-weight:700;line-height:1;color:var(--text-bright);}
+.page-title em{font-style:normal;color:var(--sage-light);opacity:0.85;}
+.main{max-width:1100px;margin:0 auto;padding:20px 24px 60px;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.stat{background:var(--brown-mid);border-radius:12px;border:1px solid var(--border);padding:14px 16px;}
+.stat-label{font-size:9px;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);font-weight:600;margin-bottom:6px;}
+.stat-val{font-family:'Syne',serif;font-size:26px;font-weight:700;line-height:1;color:var(--text-bright);}
+.stat-val.green{color:var(--sage-light);}
+.stat-sub{font-size:11px;color:var(--text-muted);margin-top:3px;}
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.filter-btn{background:var(--brown-mid);border:1px solid var(--border);border-radius:100px;padding:5px 14px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;color:var(--text-muted);transition:all 0.12s;}
+.filter-btn.active{background:var(--text-bright);color:var(--espresso);border-color:var(--text-bright);}
+.search-input{flex:1;min-width:160px;padding:7px 14px;border:1px solid var(--border);border-radius:100px;background:var(--brown-mid);color:var(--text-bright);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;}
+.search-input::placeholder{color:var(--text-muted);}
+.search-input:focus{border-color:var(--sage-dim);}
+.table-wrap{background:var(--brown-mid);border-radius:14px;border:1px solid var(--border);overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead th{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);padding:11px 14px;text-align:left;border-bottom:1px solid var(--border);background:var(--brown-lift);font-weight:600;cursor:pointer;white-space:nowrap;}
+thead th:hover{color:var(--text-bright);}
+thead th.num{text-align:right;}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--brown-lift);}
+tbody td{padding:11px 14px;font-size:13px;color:var(--text-bright);}
+tbody td.num{text-align:right;}
+.video-id{color:var(--text-muted);font-size:12px;}
+.product-name{font-weight:500;}
+.views-val{color:var(--sage-light);font-weight:500;}
+.date-val{color:var(--text-muted);font-size:12px;}
+.sales-yes{background:rgba(122,158,126,0.2);color:var(--sage-light);display:inline-block;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:500;}
+.sales-no{background:rgba(180,60,60,0.12);color:#d4604a;display:inline-block;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:500;}
+.type-pill{display:inline-block;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:500;background:var(--brown-lift);color:var(--text-mid);}
+.action-btn{background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:13px;padding:2px 5px;border-radius:4px;}
+.action-btn:hover{background:var(--brown-surface);color:var(--text-bright);}
+.empty-state{text-align:center;padding:48px;color:var(--text-muted);}
+.editable-cell{cursor:pointer;border-radius:4px;padding:2px 4px;transition:background 0.12s;}
+.editable-cell:hover{background:var(--brown-lift);}
+.inline-input{padding:4px 8px;border:1px solid var(--sage-dim);border-radius:6px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--brown-deep);color:var(--text-bright);outline:none;width:90px;}
+.inline-select{padding:4px 8px;border:1px solid var(--sage-dim);border-radius:6px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--brown-deep);color:var(--text-bright);outline:none;cursor:pointer;}
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--text-muted);}
+.page-btns{display:flex;gap:4px;flex-wrap:wrap;}
+.page-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--text-muted);font-family:'DM Sans',sans-serif;}
+.page-btn:hover,.page-btn.active{background:var(--sage);color:var(--espresso);border-color:var(--sage);}
+.loading-spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--sage);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(12,8,4,0.75);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--brown-mid);border-radius:24px 24px 0 0;border:1px solid var(--border);border-bottom:none;padding:24px 20px 32px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;box-shadow:0 -20px 60px rgba(0,0,0,0.5);}
+.modal-handle{width:36px;height:4px;background:var(--brown-surface);border-radius:2px;margin:0 auto 20px;}
+.modal-title{font-family:'Syne',serif;font-size:22px;font-weight:700;margin-bottom:20px;color:var(--text-bright);}
+.form-group{margin-bottom:13px;}
+.form-label{display:block;font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
+.form-input,.form-select{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:12px;background:var(--brown-deep);color:var(--text-bright);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;}
+.form-input::placeholder{color:var(--text-muted);}
+.form-input:focus,.form-select:focus{border-color:var(--sage-dim);}
+.form-select option{background:var(--brown-deep);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-actions{display:flex;gap:8px;margin-top:20px;}
+.btn-cancel{flex:1;background:var(--brown-lift);border:none;border-radius:12px;padding:13px;font-size:14px;cursor:pointer;color:var(--text-muted);font-family:'DM Sans',sans-serif;}
+.btn-save{flex:2;background:var(--sage);border:none;border-radius:12px;padding:13px;font-size:14px;cursor:pointer;color:var(--espresso);font-family:'DM Sans',sans-serif;font-weight:600;}
+.btn-save:disabled{opacity:0.6;cursor:not-allowed;}
+.form-msg{font-size:12px;margin-top:10px;text-align:center;min-height:18px;}
+.form-msg.success{color:var(--sage-light);}
+.form-msg.error{color:#d4604a;}
+@media(max-width:640px){.stats{grid-template-columns:1fr 1fr;}.main{padding:14px 12px 60px;}.form-row{grid-template-columns:1fr;}}
+</style>
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js")
+          .then(reg => console.log("[SW] Registered", reg.scope))
+          .catch(err => console.warn("[SW] Failed", err));
+      });
+    }
+  </script>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo">hello<span>itskortny</span></a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-btn">← Home</a>
+    <button class="nav-btn" onclick="loadFromNotion()">↻ Refresh</button>
+    <button class="nav-btn primary" onclick="openModal()">+ Log Video</button>
+  </div>
+</nav>
+<div class="page-header">
+  <div class="page-eyebrow">@helloitskortny</div>
+  <div class="page-title">Video <em>Tracker</em></div>
+</div>
+<div class="main">
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Total Videos</div><div class="stat-val green" id="stat-total">—</div><div class="stat-sub">all time</div></div>
+    <div class="stat"><div class="stat-label">Got Sales</div><div class="stat-val" id="stat-sales">—</div><div class="stat-sub" id="stat-sales-sub">—</div></div>
+    <div class="stat"><div class="stat-label">Avg 48hr Views</div><div class="stat-val" id="stat-views">—</div><div class="stat-sub">per video</div></div>
+    <div class="stat"><div class="stat-label">This Month</div><div class="stat-val" id="stat-month">—</div><div class="stat-sub">videos posted</div></div>
+  </div>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="setFilter('All',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('Sales',this)">✅ Got Sales</button>
+    <button class="filter-btn" onclick="setFilter('NoSales',this)">❌ No Sales</button>
+    <input type="text" class="search-input" id="search-input" placeholder="Search product or video ID..." oninput="goPage(1)">
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th onclick="sortBy('videoId')">Video ID</th>
+        <th onclick="sortBy('product')">Product</th>
+        <th onclick="sortBy('datePosted')">Date Posted</th>
+        <th>Time</th>
+        <th onclick="sortBy('views48')" class="num">Views 48hr</th>
+        <th onclick="sortBy('gotSales')">Got Sales</th>
+        <th onclick="sortBy('videoType')">Type</th>
+        <th></th>
+      </tr></thead>
+      <tbody id="table-body"><tr><td colspan="8"><div style="text-align:center;padding:32px"><div class="loading-spinner"></div><div style="color:var(--text-muted)">Loading...</div></div></td></tr></tbody>
+    </table>
+    <div class="pagination"><span id="page-info"></span><div class="page-btns" id="page-btns"></div></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title">Log Video</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Video ID</label><input type="text" class="form-input" id="inp-videoid" placeholder="e.g. 7384729103"></div>
+      <div class="form-group"><label class="form-label">Date Posted</label><input type="date" class="form-input" id="inp-date"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Product</label><input type="text" class="form-input" id="inp-product" placeholder="e.g. Shallow Bowls"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Time Posted</label><input type="text" class="form-input" id="inp-time" placeholder="e.g. 7:30 PM"></div>
+      <div class="form-group"><label class="form-label">Views (48hrs)</label><input type="number" class="form-input" id="inp-views" placeholder="0" min="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Got Sales?</label><select class="form-select" id="inp-sales"><option value="">— Select —</option><option value="✅ Yes">✅ Yes</option><option value="❌ No">❌ No</option></select></div>
+      <div class="form-group"><label class="form-label">Video Type</label><select class="form-select" id="inp-type"><option value="">— Select —</option><option>Talking-Head Review</option><option>Aesthetic B-Roll</option><option>Voiceover Demo</option><option>Problem/Solution</option><option>Storytime</option><option>Things I Wish I Bought Sooner</option><option>Comparison</option><option>Unboxing</option><option>First Impression</option><option>Before & After</option><option>Relatable Mom/Lifestyle Skit</option><option>Tutorial/How-To-Use</option><option>POV Style</option><option>ASMR</option></select></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="btn-save" onclick="saveVideo()">Save to Notion</button>
+    </div>
+    <div class="form-msg" id="form-msg"></div>
+  </div>
+</div>
+<script>
+const API='https://kortny-api.vercel.app/api/notion';
+const DB_ID='148a99ff772d437f91316d20a5526ffa';
+const PAGE_SIZE=25;
+let DATA=[],filterStatus='All',sortField='datePosted',sortDir=-1,currentPage=1,editingId=null;
+function fmtDate(s){if(!s)return'—';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'});}
+function fmtNum(n){if(!n&&n!==0)return'—';return Number(n).toLocaleString('en-US');}
+async function loadFromNotion(){
+  document.getElementById('table-body').innerHTML='<tr><td colspan="8"><div style="text-align:center;padding:32px"><div class="loading-spinner"></div><div style="color:var(--text-muted)">Loading...</div></div></td></tr>';
+  try{
+    let results=[],cursor=null;
+    do{const body={page_size:100,sorts:[{property:'Video ID',direction:'descending'}]};if(cursor)body.start_cursor=cursor;const res=await fetch(`${API}?endpoint=databases/${DB_ID}/query`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();results=[...results,...(data.results||[])];cursor=data.next_cursor;}while(cursor);
+    DATA=results.map(p=>({id:p.id,videoId:p.properties['Video ID']?.title?.[0]?.plain_text||'',product:p.properties.Product?.rich_text?.[0]?.plain_text||'',datePosted:p.properties['Date Posted']?.date?.start||'',timePosted:p.properties['Time Posted']?.rich_text?.[0]?.plain_text||'',views48:p.properties['Views (48hrs)']?.number||0,gotSales:p.properties['Got Sales?']?.select?.name||'',videoType:p.properties['Video Type']?.select?.name||''}));
+    updateStats();goPage(1);
+  }catch(e){document.getElementById('table-body').innerHTML='<tr><td colspan="8" class="empty-state">Error loading. Try refreshing.</td></tr>';}
+}
+function updateStats(){
+  const today=new Date(),monthPrefix=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0');
+  const withSales=DATA.filter(r=>r.gotSales==='✅ Yes').length;
+  const avgViews=DATA.filter(r=>r.views48>0).length?Math.round(DATA.filter(r=>r.views48>0).reduce((s,r)=>s+r.views48,0)/DATA.filter(r=>r.views48>0).length):0;
+  const thisMonth=DATA.filter(r=>r.datePosted.startsWith(monthPrefix)).length;
+  document.getElementById('stat-total').textContent=DATA.length;document.getElementById('stat-sales').textContent=withSales;document.getElementById('stat-sales-sub').textContent=DATA.length?Math.round(withSales/DATA.length*100)+'% conversion':'—';document.getElementById('stat-views').textContent=avgViews.toLocaleString();document.getElementById('stat-month').textContent=thisMonth;
+}
+function setFilter(f,btn){filterStatus=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');goPage(1);}
+function sortBy(field){if(sortField===field)sortDir*=-1;else{sortField=field;sortDir=-1;}goPage(1);}
+function getFiltered(){const search=document.getElementById('search-input').value.toLowerCase();return DATA.filter(r=>{if(filterStatus==='Sales'&&r.gotSales!=='✅ Yes')return false;if(filterStatus==='NoSales'&&r.gotSales!=='❌ No')return false;if(search&&!r.product.toLowerCase().includes(search)&&!r.videoId.toLowerCase().includes(search))return false;return true;}).sort((a,b)=>{let av=a[sortField]||'',bv=b[sortField]||'';if(sortField==='views48'){av=Number(a.views48||0);bv=Number(b.views48||0);}if(av<bv)return -1*sortDir;if(av>bv)return 1*sortDir;return 0;});}
+function goPage(p){currentPage=p;renderTable();}
+function renderTable(){
+  const filtered=getFiltered(),total=filtered.length,pages=Math.ceil(total/PAGE_SIZE)||1;
+  if(currentPage>pages)currentPage=pages;
+  const start=(currentPage-1)*PAGE_SIZE,rows=filtered.slice(start,start+PAGE_SIZE);
+  document.getElementById('page-info').textContent=total?`Showing ${start+1}–${Math.min(start+PAGE_SIZE,total)} of ${total}`:'';
+  const btns=document.getElementById('page-btns');btns.innerHTML='';
+  for(let i=1;i<=pages;i++){const b=document.createElement('button');b.className='page-btn'+(i===currentPage?' active':'');b.textContent=i;b.onclick=(()=>{const pg=i;return()=>goPage(pg);})();btns.appendChild(b);}
+  const tbody=document.getElementById('table-body');
+  if(!rows.length){tbody.innerHTML='<tr><td colspan="8" class="empty-state">No videos found</td></tr>';return;}
+  tbody.innerHTML=rows.map(r=>`<tr id="vrow-${r.id}"><td class="video-id">${r.videoId||'—'}</td><td class="product-name">${r.product||'—'}</td><td class="date-val">${fmtDate(r.datePosted)}</td><td class="date-val">${r.timePosted||'—'}</td><td class="num"><span class="editable-cell views-val" onclick="inlineEditViews('${r.id}')" title="Click to update">${fmtNum(r.views48)}</span></td><td><span class="editable-cell" onclick="inlineEditSales('${r.id}')" title="Click to change">${r.gotSales==='✅ Yes'?'<span class="sales-yes">✅ Yes</span>':r.gotSales==='❌ No'?'<span class="sales-no">❌ No</span>':'—'}</span></td><td>${r.videoType?`<span class="type-pill">${r.videoType}</span>`:'—'}</td><td><button class="action-btn" onclick="editVideo('${r.id}')">✎</button></td></tr>`).join('');
+}
+function inlineEditViews(id){const r=DATA.find(x=>x.id===id);const td=document.querySelector(`#vrow-${id} td:nth-child(5)`);const inp=document.createElement('input');inp.type='number';inp.min='0';inp.className='inline-input';inp.value=r.views48||0;td.innerHTML='';td.appendChild(inp);inp.focus();inp.select();inp.onblur=()=>inlineSave(id,'views48',parseInt(inp.value)||0);inp.onkeydown=e=>{if(e.key==='Enter')inp.blur();if(e.key==='Escape')renderTable();};}
+function inlineEditSales(id){const r=DATA.find(x=>x.id===id);const td=document.querySelector(`#vrow-${id} td:nth-child(6)`);const sel=document.createElement('select');sel.className='inline-select';['✅ Yes','❌ No'].forEach(o=>{const opt=document.createElement('option');opt.value=o;opt.textContent=o;if(o===r.gotSales)opt.selected=true;sel.appendChild(opt);});td.innerHTML='';td.appendChild(sel);sel.focus();sel.onchange=()=>inlineSave(id,'gotSales',sel.value);sel.onblur=()=>{if(document.activeElement!==sel)renderTable();};}
+async function inlineSave(id,field,value){const r=DATA.find(x=>x.id===id);if(!r||r[field]===value){renderTable();return;}r[field]=value;renderTable();const propMap={views48:{'Views (48hrs)':{number:value}},gotSales:{'Got Sales?':{select:{name:value}}}};try{await fetch(`${API}?endpoint=pages/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({properties:propMap[field]})});}catch(e){console.error(e);}}
+function openModal(id=null){
+  editingId=id;document.getElementById('form-msg').textContent='';document.getElementById('btn-save').disabled=false;
+  if(id){const r=DATA.find(x=>x.id===id);document.getElementById('modal-title').textContent='Edit Video';document.getElementById('inp-videoid').value=r.videoId;document.getElementById('inp-date').value=r.datePosted;document.getElementById('inp-product').value=r.product;document.getElementById('inp-time').value=r.timePosted;document.getElementById('inp-views').value=r.views48||0;document.getElementById('inp-sales').value=r.gotSales||'';document.getElementById('inp-type').value=r.videoType||'';document.getElementById('btn-save').textContent='Save Changes';}
+  else{document.getElementById('modal-title').textContent='Log Video';document.getElementById('inp-videoid').value='';document.getElementById('inp-date').value=new Date().toISOString().split('T')[0];document.getElementById('inp-product').value='';document.getElementById('inp-time').value='';document.getElementById('inp-views').value='';document.getElementById('inp-sales').value='';document.getElementById('inp-type').value='';document.getElementById('btn-save').textContent='Save to Notion';}
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function editVideo(id){openModal(id);}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+async function saveVideo(){
+  const videoId=document.getElementById('inp-videoid').value.trim(),datePosted=document.getElementById('inp-date').value,product=document.getElementById('inp-product').value.trim(),timePosted=document.getElementById('inp-time').value.trim(),views=parseInt(document.getElementById('inp-views').value)||0,gotSales=document.getElementById('inp-sales').value,videoType=document.getElementById('inp-type').value;
+  if(!product){showMsg('Please enter a product.','error');return;}
+  const btn=document.getElementById('btn-save');btn.disabled=true;btn.textContent='Saving...';
+  const properties={'Video ID':{title:[{text:{content:videoId||'—'}}]},'Product':{rich_text:[{text:{content:product}}]},'Time Posted':{rich_text:[{text:{content:timePosted}}]},'Views (48hrs)':{number:views},...(datePosted?{'Date Posted':{date:{start:datePosted}}}:{}),...(gotSales?{'Got Sales?':{select:{name:gotSales}}}:{}),...(videoType?{'Video Type':{select:{name:videoType}}}:{})};
+  try{let res;if(editingId){res=await fetch(`${API}?endpoint=pages/${editingId}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({properties})});}else{res=await fetch(`${API}?endpoint=pages`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({parent:{database_id:DB_ID},properties})});}
+  if(res.ok){showMsg(editingId?'Updated! ✓':'Saved! ✓','success');btn.textContent='Saved ✓';setTimeout(()=>{closeModal();loadFromNotion();},1200);}else{showMsg('Error saving.','error');btn.disabled=false;btn.textContent='Save to Notion';}}catch(e){showMsg('Network error.','error');btn.disabled=false;btn.textContent='Save to Notion';}
+}
+function showMsg(msg,type){const el=document.getElementById('form-msg');el.textContent=msg;el.className='form-msg '+type;}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+loadFromNotion();
+</script>
+</body>
+</html>
