@@ -335,22 +335,24 @@ function renderTable() {
     const isCore = CORE_FIVE.includes(r.brand);
     const statusClass = 'status-'+(r.status||'').replace(/\s/g,'-');
     const stockClass = r.stock ? 'stock-'+r.stock.replace(/\s/g,'-') : '';
-    return `<tr id="row-${r.id}">
+   return `<tr id="row-${r.id}">
       <td class="product-name">${r.product}${isCore?'<span class="core-badge">Core 5</span>':''}</td>
       <td>${r.brand||'—'}</td>
-     
       <td>
         <span class="${r.stock?`stock-pill ${stockClass}`:''} editable-cell" onclick="inlineEditStock('${r.id}')" title="Click to change">
           ${r.stock||'—'}
         </span>
       </td>
-      
+      <td class="num">
+        <span class="editable-cell" onclick="inlineEditNumber('${r.id}','sold')" title="Click to edit">
+          ${r.sold||0}
+        </span>
+      </td>
       <td class="num gmv-val">
         <span class="editable-cell" onclick="inlineEditNumber('${r.id}','gmv')" title="Click to edit">
           ${r.gmv?fmt(r.gmv):'—'}
         </span>
       </td>
-     
       <td>${r.link?`<a href="${r.link}" target="_blank" class="link-btn">Shop ↗</a>`:'—'}</td>
       <td><button class="action-btn" onclick="editProduct('${r.id}')" title="Edit all">✎</button></td>
     </tr>`;
