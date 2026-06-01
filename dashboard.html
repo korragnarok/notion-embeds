@@ -348,11 +348,48 @@ function renderDashboard(sales, orders, products) {
   });
 
   // Commission rate trend
-  const rate30 = days30.filter(d=>d.gmv>0).map(d=>({label:d.label,rate:Math.round(d.comm/d.gmv*1000)/10}));
+ const rate30 = days30.filter(d=>d.gmv>0).map(d=>({label:d.label,rate:Math.round(d.comm/d.gmv*1000)/10}));
+  const prevRate30 = prevDays30.map((gmv,i)=>{
+    const comm = days30[i]?.comm || 0;
+    return gmv>0 ? Math.round(comm/gmv*1000)/10 : null;
+  });
   destroyChart('commRate');
   charts['commRate'] = new Chart(document.getElementById('commRateChart'), {
-    type:'line', data:{labels:rate30.map(d=>d.label),datasets:[{data:rate30.map(d=>d.rate),borderColor:'#9b6e3a',backgroundColor:'rgba(155,110,58,0.07)',fill:true,tension:0.4,pointRadius:3,borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:6,font:{size:10},color:'#8a8078'},grid:{display:false}},y:{ticks:{font:{size:10},color:'#8a8078',callback:v=>v+'%'},grid:{color:'rgba(107,122,90,0.08)'}}}}
+    type:'line',
+    data:{
+      labels:rate30.map(d=>d.label),
+      datasets:[
+        {
+          label:'This period',
+          data:rate30.map(d=>d.rate),
+          borderColor:'#9b6e3a',
+          backgroundColor:'rgba(155,110,58,0.07)',
+          fill:true,tension:0.4,pointRadius:3,borderWidth:2
+        },
+        {
+          label:'Prior period',
+          data:prevRate30,
+          borderColor:'#c9a87a',
+          borderDash:[4,4],
+          backgroundColor:'transparent',
+          fill:false,tension:0.4,pointRadius:0,borderWidth:1.5,
+          spanGaps:true
+        }
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{
+          display:true,position:'top',align:'end',
+          labels:{font:{size:10},color:'#8a8078',boxWidth:12,boxHeight:2,padding:12}
+        }
+      },
+      scales:{
+        x:{ticks:{maxTicksLimit:6,font:{size:10},color:'#8a8078'},grid:{display:false}},
+        y:{ticks:{font:{size:10},color:'#8a8078',callback:v=>v+'%'},grid:{color:'rgba(107,122,90,0.08)'}}
+      }
+    }
   });
 
   // Highlights
