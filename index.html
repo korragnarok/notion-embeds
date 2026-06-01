@@ -432,10 +432,34 @@ function calChangeMonth(dir) {
   renderContentCal();
 }
 
-  
-function renderContentCal() {
-  const y = calCurrent.getFullYear(), m = calCurrent.getMonth();
-  document.getElementById('cal-month-label').textContent = MONTHS[m]+' '+y;
+  async function loadVideosToCalendar() {
+  try {
+    let results = [], cursor = null;
+    do {
+      const body = {page_size:100};
+      if(cursor) body.start_cursor = cursor;
+      const res = await fetch(`${API}?endpoint=databases/148a99ff772d437f91316d20a5526ffa/query`, {
+        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+      });
+      const data = await res.json();
+      results = [...results, ...(data.results||[])];
+      cursor = data.next_cursor;
+    } while(cursor);
+    const existingPosts = JSON.parse(localStorage.getItem('kortny-posts')||'[]');
+    const localOnly = existingPosts.filter(p=>!p.id.startsWith('notion-'));
+    const notionPosts = results
+      .filter(p => p.properties['Date Posted']?.date?.start)
+      .map(p => ({
+        id: 'notion-'+p.id,
+        title: p.properties.Product?.rich_text?.[0]?.plain_text || 'Video',
+        date: p.properties['Date Posted'].date.start,
+        type: p.properties['Got Sales?']?.select?.name === '✅ Yes' ? 'post' : 'todo'
+      }));
+    POSTS = [...localOnly, ...notionPosts];
+    localStorage.setItem('kortny-posts', JSON.stringify(POSTS));
+  } catch(e) { console.error(e); }
+  renderContentCal();
+}
 
 function renderContentCal() {
   const y = calCurrent.getFullYear(), m = calCurrent.getMonth();
