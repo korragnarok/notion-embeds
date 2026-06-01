@@ -232,10 +232,9 @@ async function loadAll() {
     })).filter(r => r.date).sort((a,b) => a.date.localeCompare(b.date));
 
     // Parse orders
-  const orders = ordersPages.map(p => ({
+ const orders = ordersPages.map(p => ({
   commission: p.properties.Commission?.number || 0,
   status: p.properties.Status?.status?.name || '',
-}));
 }));
 
     // Parse products
