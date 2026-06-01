@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#f0e8d8">
+<title>helloitskortny</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<script>if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js"));</script>
+
+<style>
+/* ── TOKENS ─────────────────────────────────────── */
+:root {
+  --butt:       #f5eed8;
+  --biscuit:    #f0e0c8;
+  --caramel:    #d4a870;
+  --butterscotch:#c8904a;
+  --nutmeg:     #7a4830;
+  --tobacco:    #5a2e18;
+  --husk:       #b0a060;
+  --sage:       #8a9870;
+  --moss:       #6a7858;
+  --taupe:      #9a8878;
+  --snuff:      #6a5848;
+  --ink:        #281808;
+  --white:      #fdfaf4;
+
+  --page-bg:    #ede4d0;
+  --card-warm:  #f5eed8;
+  --card-tan:   #e8d8b8;
+  --card-sage:  #d8e0c8;
+  --card-rust:  #e8c8a8;
+
+  --border:     rgba(90,46,24,0.12);
+  --border-mid: rgba(90,46,24,0.22);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--page-bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* grain */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 9999;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px;
+}
+
+/* ── NAV ─────────────────────────────────────────── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(237,228,208,0.88);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-mid);
+  padding: 0 40px;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  text-decoration: none;
+  line-height: 1;
+}
+.nav-logo span { color: var(--butterscotch); }
+.nav-right {
+  display: flex; gap: 6px; align-items: center;
+}
+.nav-tag {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--taupe); padding: 5px 12px;
+  border: 1px solid var(--border-mid);
+  border-radius: 100px;
+  background: rgba(255,255,255,0.4);
+}
+
+/* ── HERO ────────────────────────────────────────── */
+.hero {
+  padding: 72px 40px 56px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: end;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.hero-left {}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--card-warm);
+  border: 1px solid var(--border-mid);
+  border-radius: 100px;
+  padding: 5px 14px 5px 8px;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--snuff);
+  margin-bottom: 24px;
+}
+.hero-eyebrow-dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--butterscotch);
+  display: inline-block;
+}
+.hero-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(64px, 9vw, 120px);
+  line-height: 0.88;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  margin-bottom: 28px;
+}
+.hero-title .line-accent { color: var(--butterscotch); }
+.hero-title .line-sage { color: var(--moss); }
+.hero-desc {
+  font-size: 15px; line-height: 1.7;
+  color: var(--snuff);
+  max-width: 340px;
+  margin-bottom: 32px;
+}
+.hero-cta-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.cta-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 22px;
+  border-radius: 100px;
+  font-size: 13px; font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: all 0.15s;
+}
+.cta-pill.primary {
+  background: var(--ink); color: var(--butt);
+}
+.cta-pill.primary:hover { background: var(--tobacco); }
+.cta-pill.secondary {
+  background: transparent;
+  border: 1.5px solid var(--border-mid);
+  color: var(--snuff);
+}
+.cta-pill.secondary:hover { background: var(--card-warm); }
+
+/* Hero right — big stat cards */
+.hero-right {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.hero-stat {
+  background: var(--card-warm);
+  border: 1px solid var(--border-mid);
+  border-radius: 18px;
+  padding: 22px 20px;
+  position: relative; overflow: hidden;
+}
+.hero-stat:first-child {
+  grid-column: 1 / -1;
+  background: var(--ink);
+  color: var(--butt);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: end;
+}
+.hero-stat-big {
+  font-family: 'Syne', sans-serif;
+  font-size: 42px; line-height: 1;
+  letter-spacing: 0.01em;
+}
+.hero-stat-big.light { color: var(--butt); }
+.hero-stat-big.caramel { color: var(--caramel); }
+.hero-stat-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--taupe); margin-bottom: 6px;
+}
+.hero-stat-label.light { color: rgba(245,238,216,0.6); }
+.hero-stat-desc { font-size: 12px; color: rgba(245,238,216,0.5); margin-top: 4px; }
+.hero-stat-mini {
+  font-family: 'Syne', sans-serif;
+  font-size: 36px; line-height: 1; letter-spacing: 0.02em;
+  color: var(--ink); margin-bottom: 4px;
+}
+.hero-stat-sub { font-size: 11px; color: var(--taupe); font-weight: 500; }
+
+/* ── SECTION DIVIDER ─────────────────────────────── */
+.section-rule {
+  max-width: 1200px; margin: 0 auto;
+  padding: 0 40px;
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 24px;
+}
+.section-rule-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--taupe); white-space: nowrap;
+}
+.section-rule-line {
+  flex: 1; height: 1px; background: var(--border-mid);
+}
+
+/* ── TOOLS GRID ──────────────────────────────────── */
+.tools-section {
+  max-width: 1200px; margin: 0 auto;
+  padding: 0 40px 80px;
+}
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: min-content;
+  gap: 12px;
+}
+
+/* Tool cards */
+.tool-card {
+  border-radius: 20px;
+  border: 1px solid var(--border-mid);
+  padding: 24px;
+  text-decoration: none;
+  color: var(--ink);
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  transition: transform 0.18s, box-shadow 0.18s;
+  cursor: pointer;
+}
+.tool-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px rgba(90,46,24,0.12);
+}
+.tool-card::after {
+  content: '↗';
+  position: absolute; top: 20px; right: 22px;
+  font-size: 16px; color: var(--border-mid);
+  transition: color 0.15s, transform 0.15s;
+}
+.tool-card:hover::after { color: var(--butterscotch); transform: translate(2px,-2px); }
+
+/* sizes */
+.span-4  { grid-column: span 4; }
+.span-6  { grid-column: span 6; }
+.span-3  { grid-column: span 3; }
+.span-5  { grid-column: span 5; }
+.span-7  { grid-column: span 7; }
+.span-8  { grid-column: span 8; }
+.span-12 { grid-column: span 12; }
+
+/* color themes */
+.card-cream  { background: var(--card-warm); }
+.card-tan    { background: var(--card-tan); }
+.card-sage   { background: var(--card-sage); }
+.card-rust   { background: var(--card-rust); }
+.card-ink    { background: var(--ink); color: var(--butt); }
+.card-ink .tool-label,
+.card-ink .tool-desc { color: rgba(245,238,216,0.6); }
+.card-ink::after { color: rgba(245,238,216,0.2); }
+.card-ink:hover::after { color: var(--caramel); }
+.card-ink .tool-name { color: var(--butt); }
+.card-caramel { background: var(--caramel); }
+.card-caramel .tool-label { color: rgba(40,24,8,0.55); }
+.card-caramel .tool-desc { color: rgba(40,24,8,0.6); }
+
+.tool-icon {
+  font-size: 28px; margin-bottom: 20px; line-height: 1;
+}
+.tool-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--taupe); margin-bottom: 6px;
+}
+.tool-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 32px; line-height: 0.95;
+  letter-spacing: 0.03em;
+  margin-bottom: 10px;
+}
+.tool-name.large { font-size: 48px; }
+.tool-name.xl    { font-size: 64px; }
+.tool-desc {
+  font-size: 12px; color: var(--snuff);
+  line-height: 1.6; margin-top: auto;
+}
+
+/* Featured wide card */
+.tool-card.wide-feature {
+  flex-direction: row;
+  align-items: center;
+  gap: 32px;
+  padding: 32px 36px;
+}
+.wide-feature .tool-text { flex: 1; }
+.wide-feature .tool-visual {
+  width: 120px; height: 80px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px; flex-shrink: 0;
+}
+
+/* Banner card */
+.tool-card.banner {
+  flex-direction: row; align-items: center;
+  justify-content: space-between; padding: 20px 28px;
+  min-height: unset;
+}
+.banner .tool-name { font-size: 22px; margin-bottom: 0; }
+.banner .tool-label { margin-bottom: 0; }
+.banner-right {
+  font-family: 'Syne', sans-serif;
+  font-size: 44px; letter-spacing: 0.03em;
+  color: var(--butterscotch); line-height: 1;
+}
+
+/* Hook bank editorial card */
+.hook-card-inner {
+  display: flex; flex-direction: column; height: 100%;
+}
+.hook-quote {
+  font-family: 'Syne', serif;
+  font-size: 15px; font-style: italic;
+  line-height: 1.6;
+  color: var(--snuff);
+  border-left: 2px solid var(--caramel);
+  padding-left: 14px;
+  margin: 16px 0;
+  flex: 1;
+}
+
+/* Stat strip */
+.stat-strip {
+  display: flex; gap: 0;
+  background: var(--ink);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-mid);
+  margin-bottom: 0;
+}
+.strip-item {
+  flex: 1; padding: 20px 24px;
+  border-right: 1px solid rgba(255,255,255,0.07);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.strip-item:last-child { border-right: none; }
+.strip-item:hover { background: rgba(255,255,255,0.05); }
+.strip-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 36px; line-height: 1;
+  color: var(--caramel); letter-spacing: 0.03em;
+}
+.strip-label {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(245,238,216,0.45); margin-top: 4px;
+}
+
+/* ── FOOTER ──────────────────────────────────────── */
+footer {
+  max-width: 1200px; margin: 0 auto;
+  padding: 24px 40px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid var(--border-mid);
+}
+.footer-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px; letter-spacing: 0.06em;
+  color: var(--taupe);
+}
+.footer-logo span { color: var(--caramel); }
+.footer-note { font-size: 11px; color: var(--taupe); }
+
+/* ── ANIMATIONS ──────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-left  { animation: fadeUp 0.6s ease both; }
+.hero-right { animation: fadeUp 0.6s 0.12s ease both; }
+.tool-card  { animation: fadeUp 0.5s ease both; }
+.tool-card:nth-child(1)  { animation-delay: 0.05s; }
+.tool-card:nth-child(2)  { animation-delay: 0.10s; }
+.tool-card:nth-child(3)  { animation-delay: 0.15s; }
+.tool-card:nth-child(4)  { animation-delay: 0.20s; }
+.tool-card:nth-child(5)  { animation-delay: 0.25s; }
+.tool-card:nth-child(6)  { animation-delay: 0.30s; }
+.tool-card:nth-child(7)  { animation-delay: 0.35s; }
+.tool-card:nth-child(8)  { animation-delay: 0.40s; }
+.tool-card:nth-child(9)  { animation-delay: 0.45s; }
+
+/* ── RESPONSIVE ──────────────────────────────────── */
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; padding: 48px 24px 40px; gap: 32px; }
+  .hero-right { grid-template-columns: 1fr 1fr; }
+  .tools-section { padding: 0 20px 60px; }
+  .section-rule { padding: 0 20px; }
+  .tools-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .span-4,.span-6,.span-3,.span-5,.span-7,.span-8 { grid-column: span 2; }
+  .span-3.half { grid-column: span 1; }
+  nav { padding: 0 24px; }
+  footer { padding: 20px 24px 40px; flex-direction: column; gap: 8px; text-align: center; }
+}
+@media (max-width: 560px) {
+  .tools-grid { grid-template-columns: 1fr; }
+  .span-4,.span-6,.span-3,.span-5,.span-7,.span-8,.span-12 { grid-column: span 1; }
+  .hero-right { grid-template-columns: 1fr; }
+  .hero-stat:first-child { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .tool-card.wide-feature { flex-direction: column; }
+  .stat-strip { flex-direction: column; }
+  .strip-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">hello<span>itskortny</span></a>
+  <div class="nav-right">
+    <span class="nav-tag">@helloitskortny</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      <span class="hero-eyebrow-dot"></span>
+      TikTok Shop Creator Hub
+    </div>
+    <h1 class="hero-title">
+      YOUR<br>
+      <span class="line-accent">CREATOR</span><br>
+      <span class="line-sage">COMMAND</span><br>
+      CENTER
+    </h1>
+    <p class="hero-desc">Scripts, sales tracking, commissions, hooks — everything in one place. Built for how you actually work.</p>
+    <div class="hero-cta-row">
+      <a href="daily-todo.html" class="cta-pill primary">✦ Today's To Do</a>
+      <a href="script-generator.html" class="cta-pill secondary">Generate Script</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-stat" id="hs-main">
+      <div>
+        <div class="hero-stat-label light">Month-to-date GMV</div>
+        <div class="hero-stat-big light" id="hs-gmv">—</div>
+        <div class="hero-stat-desc" id="hs-month">Loading...</div>
+      </div>
+      <div style="text-align:right;align-self:end;">
+        <div class="hero-stat-label light" style="margin-bottom:6px;">Commission</div>
+        <div class="hero-stat-big caramel" id="hs-comm">—</div>
+      </div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-label">Videos posted</div>
+      <div class="hero-stat-mini" id="hs-videos">—</div>
+      <div class="hero-stat-sub" id="hs-videos-sub">this month</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-label">Sales conversion</div>
+      <div class="hero-stat-mini" id="hs-conv">—</div>
+      <div class="hero-stat-sub">videos w/ sales</div>
+    </div>
+  </div>
+</section>
+
+<!-- STAT STRIP -->
+<div class="tools-section" style="padding-bottom:16px">
+  <div class="stat-strip" id="stat-strip">
+    <a href="commissions.html" class="strip-item">
+      <div class="strip-num" id="strip-settled">—</div>
+      <div class="strip-label">Settled commissions</div>
+    </a>
+    <a href="commissions.html" class="strip-item">
+      <div class="strip-num" id="strip-pending">—</div>
+      <div class="strip-label">Pending</div>
+    </a>
+    <a href="video-tracker.html" class="strip-item">
+      <div class="strip-num" id="strip-videos">—</div>
+      <div class="strip-label">Total videos</div>
+    </a>
+    <a href="products.html" class="strip-item">
+      <div class="strip-num" id="strip-products">—</div>
+      <div class="strip-label">Products tracked</div>
+    </a>
+    <a href="level-ladder.html" class="strip-item">
+      <div class="strip-num" id="strip-level">—</div>
+      <div class="strip-label">Current level</div>
+    </a>
+  </div>
+</div>
+
+<!-- SECTION LABEL -->
+<div class="section-rule" style="margin-top:28px">
+  <span class="section-rule-label">Your tools</span>
+  <div class="section-rule-line"></div>
+</div>
+
+<!-- TOOLS GRID -->
+<div class="tools-section">
+  <div class="tools-grid">
+
+    <!-- TODAY'S TO DO — wide feature -->
+    <a href="daily-todo.html" class="tool-card card-ink span-8 wide-feature">
+      <div class="tool-text">
+        <div class="tool-label">Daily workflow</div>
+        <div class="tool-name xl">TODAY'S<br>TO DO</div>
+        <p class="tool-desc">Pick products, generate scripts, log videos — your whole posting day in one place.</p>
+      </div>
+      <div class="tool-visual">✦</div>
+    </a>
+
+    <!-- SCRIPT GENERATOR -->
+    <a href="script-generator.html" class="tool-card card-caramel span-4">
+      <div class="tool-icon">🎬</div>
+      <div class="tool-label">AI-powered</div>
+      <div class="tool-name large">SCRIPT<br>GEN</div>
+      <p class="tool-desc">Hook bank, product data, angle controls. Pick & generate.</p>
+    </a>
+
+    <!-- HOOK BANK -->
+    <a href="hooks.html" class="tool-card card-sage span-4">
+      <div class="hook-card-inner">
+        <div class="tool-icon">🎣</div>
+        <div class="tool-label">Content strategy</div>
+        <div class="tool-name">HOOK<br>BANK</div>
+        <div class="hook-quote">"My husband asked what these are for and I said 'happiness' and walked away."</div>
+        <p class="tool-desc">125+ formulas, synced to Notion.</p>
+      </div>
+    </a>
+
+    <!-- DASHBOARD -->
+    <a href="dashboard.html" class="tool-card card-cream span-4">
+      <div class="tool-icon">📊</div>
+      <div class="tool-label">Analytics</div>
+      <div class="tool-name large">DASH<br>BOARD</div>
+      <p class="tool-desc">GMV charts, commission rates, product rankings.</p>
+    </a>
+
+    <!-- COMMISSIONS -->
+    <a href="commissions.html" class="tool-card card-rust span-4">
+      <div class="tool-icon">💸</div>
+      <div class="tool-label">Money tracking</div>
+      <div class="tool-name large">COMM-<br>ISSIONS</div>
+      <p class="tool-desc">Log orders, track settled vs. pending, never lose a payout.</p>
+    </a>
+
+    <!-- DAILY SALES BANNER -->
+    <a href="daily-sales-calendar.html" class="tool-card card-tan span-6 banner">
+      <div>
+        <div class="tool-label">Calendar view</div>
+        <div class="tool-name">DAILY SALES</div>
+      </div>
+      <div class="banner-right">CAL</div>
+    </a>
+
+    <!-- VIDEO TRACKER BANNER -->
+    <a href="video-tracker.html" class="tool-card card-cream span-6 banner">
+      <div>
+        <div class="tool-label">Performance log</div>
+        <div class="tool-name">VIDEO TRACKER</div>
+      </div>
+      <div class="banner-right">VID</div>
+    </a>
+
+    <!-- LEVEL LADDER -->
+    <a href="level-ladder.html" class="tool-card card-ink span-4">
+      <div class="tool-icon">🏆</div>
+      <div class="tool-label">GMV goals</div>
+      <div class="tool-name large">LEVEL<br>LADDER</div>
+      <p class="tool-desc">Bronze → Sapphire. Track your tier progress month by month.</p>
+    </a>
+
+    <!-- PRODUCTS -->
+    <a href="products.html" class="tool-card card-sage span-8 wide-feature">
+      <div class="tool-text">
+        <div class="tool-label">Inventory</div>
+        <div class="tool-name xl">PRODUCT<br>DATABASE</div>
+        <p class="tool-desc">Every brand, every SKU. Stock status, sold units, GMV, features — the source of truth for your scripts.</p>
+      </div>
+      <div class="tool-visual">🛍️</div>
+    </a>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">hello<span>itskortny</span></div>
+  <div class="footer-note">TikTok Shop Creator Hub · Built with ✦</div>
+</footer>
+
+<script>
+const API = 'https://kortny-api.vercel.app/api/notion';
+const DAILY_DB = 'a35bab03eb3544729b8019ddfc019e4e';
+const ORDERS_DB = '47a77144c4644149b499cef40bf72bf5';
+const VIDEO_DB  = '148a99ff772d437f91316d20a5526ffa';
+const PRODUCT_DB= 'd99b6dec79ba46f1a564af4d00f7220d';
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const LEVELS = ['Bronze','Silver','Gold','Platinum','Ruby','Emerald','Sapphire'];
+const LEVEL_MIN = [0,1000,5000,25000,60000,150000,400000];
+
+function fmtD(n){return'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmt(n){return'$'+Math.round(n).toLocaleString('en-US');}
+
+async function queryDB(dbId, body={}) {
+  const res = await fetch(`${API}?endpoint=databases/${dbId}/query`,{
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({page_size:100,...body})
+  });
+  const data = await res.json();
+  let results = data.results||[];
+  let cursor = data.next_cursor;
+  while(cursor){
+    const r2 = await fetch(`${API}?endpoint=databases/${dbId}/query`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({page_size:100,start_cursor:cursor})});
+    const d2 = await r2.json();
+    results = [...results,...(d2.results||[])];
+    cursor = d2.next_cursor;
+  }
+  return results;
+}
+
+async function loadStats() {
+  try {
+    const today = new Date();
+    const y = today.getFullYear(), m = today.getMonth();
+    const monthStart = `${y}-${String(m+1).padStart(2,'0')}-01`;
+    const nextM = new Date(y, m+1, 1);
+    const monthEnd = `${nextM.getFullYear()}-${String(nextM.getMonth()+1).padStart(2,'0')}-01`;
+
+    const [salesPages, ordersPages, videoPages, productPages] = await Promise.all([
+      queryDB(DAILY_DB, {filter:{and:[{property:'Date',date:{on_or_after:monthStart}},{property:'Date',date:{before:monthEnd}}]}}),
+      queryDB(ORDERS_DB),
+      queryDB(VIDEO_DB),
+      queryDB(PRODUCT_DB)
+    ]);
+
+    // Hero stats
+    const monthGMV = salesPages.reduce((s,p)=>s+(p.properties.GMV?.number||0),0);
+    const monthComm = salesPages.reduce((s,p)=>s+(p.properties.Commission?.number||0),0);
+    document.getElementById('hs-gmv').textContent = fmt(monthGMV);
+    document.getElementById('hs-comm').textContent = fmtD(monthComm);
+    document.getElementById('hs-month').textContent = MONTHS[m]+' '+y;
+
+    // Videos this month
+    const monthPrefix = `${y}-${String(m+1).padStart(2,'0')}`;
+    const videosThisMonth = videoPages.filter(p=>p.properties['Date Posted']?.date?.start?.startsWith(monthPrefix)).length;
+    const withSales = videoPages.filter(p=>p.properties['Got Sales?']?.select?.name==='✅ Yes').length;
+    const convPct = videoPages.length ? Math.round(withSales/videoPages.length*100) : 0;
+    document.getElementById('hs-videos').textContent = videosThisMonth;
+    document.getElementById('hs-conv').textContent = convPct+'%';
+
+    // Strip stats
+    const settled = ordersPages.filter(p=>p.properties.Status?.status?.name==='Settled').reduce((s,p)=>s+(p.properties.Commission?.number||0),0);
+    const pending = ordersPages.filter(p=>p.properties.Status?.status?.name==='Pending').reduce((s,p)=>s+(p.properties.Commission?.number||0),0);
+    document.getElementById('strip-settled').textContent = fmtD(settled);
+    document.getElementById('strip-pending').textContent = fmtD(pending);
+    document.getElementById('strip-videos').textContent = videoPages.length;
+    document.getElementById('strip-products').textContent = productPages.filter(p=>!p.archived&&p.properties.Product?.title?.[0]?.plain_text).length;
+
+    // Level
+    let levelIdx = 0;
+    for(let i=LEVEL_MIN.length-1;i>=0;i--){if(monthGMV>=LEVEL_MIN[i]){levelIdx=i;break;}}
+    document.getElementById('strip-level').textContent = LEVELS[levelIdx];
+
+  } catch(e) { console.error(e); }
+}
+
+loadStats();
+</script>
+</body>
+</html>
