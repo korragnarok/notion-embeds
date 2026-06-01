@@ -485,12 +485,21 @@ function renderContentCal() {
     const clickAttr=!isOther?`onclick="openPostModalForDate('${dateStr}')"`:' ';
     html+=`<div class="cal-day${isOther?' other':''}${posts.length?' has-post':''}${isToday?' today':''}" ${clickAttr}>`;
     html+=`<div class="cal-day-num">${dayNum}</div>`;
-    posts.forEach(p=>{html+=`<div class="cal-post ${p.type||'post'}">${p.title}</div>`;});
+    posts.forEach(p=>{
+  const isNotion = p.id.startsWith('notion-');
+  html+=`<div class="cal-post ${p.type||'post'}" style="display:flex;align-items:center;justify-content:space-between;gap:4px;">
+    <span style="overflow:hidden;text-overflow:ellipsis">${p.title}</span>
+    ${!isNotion?`<span onclick="event.stopPropagation();removePost('${p.id}')" style="cursor:pointer;opacity:0.7;flex-shrink:0">✕</span>`:''}
+  </div>`;
+});
     html+='</div>';
   }
   document.getElementById('content-cal-grid').innerHTML=html;
 }
-
+function removePost(id){
+  POSTS = POSTS.filter(p=>p.id!==id);
+  savePosts();renderContentCal();
+}
 function openPostModal(){
   document.getElementById('post-date').value=today.toISOString().split('T')[0];
   document.getElementById('post-title').value='';
