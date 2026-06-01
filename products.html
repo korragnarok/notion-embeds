@@ -350,11 +350,7 @@ function renderTable() {
           ${r.gmv?fmt(r.gmv):'—'}
         </span>
       </td>
-      <td class="date-val">
-        <span class="editable-cell" onclick="inlineEditDate('${r.id}')" title="Click to edit">
-          ${fmtDate(r.day)}
-        </span>
-      </td>
+     
       <td>${r.link?`<a href="${r.link}" target="_blank" class="link-btn">Shop ↗</a>`:'—'}</td>
       <td><button class="action-btn" onclick="editProduct('${r.id}')" title="Edit all">✎</button></td>
     </tr>`;
