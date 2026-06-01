@@ -277,10 +277,51 @@ function renderDashboard(sales, orders, products) {
     const entry = sales.find(r => r.date===key);
     days30.push({label:d.toLocaleDateString('en-US',{month:'short',day:'numeric'}), gmv:entry?entry.gmv:0, comm:entry?entry.commission:0});
   }
+ const prevDays30 = [];
+  for (let i=29; i>=0; i--) {
+    const d = new Date(today); d.setDate(today.getDate()-i-30);
+    const key = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const entry = sales.find(r => r.date===key);
+    prevDays30.push(entry?entry.gmv:0);
+  }
   destroyChart('gmv30');
   charts['gmv30'] = new Chart(document.getElementById('gmv30Chart'), {
-    type:'line', data:{labels:days30.map(d=>d.label),datasets:[{data:days30.map(d=>d.gmv),borderColor:'#6b7a5a',backgroundColor:'rgba(107,122,90,0.08)',fill:true,tension:0.4,pointRadius:2,borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:6,font:{size:10},color:'#8a8078'},grid:{display:false}},y:{ticks:{font:{size:10},color:'#8a8078',callback:v=>'$'+v},grid:{color:'rgba(107,122,90,0.08)'}}}}
+    type:'line',
+    data:{
+      labels:days30.map(d=>d.label),
+      datasets:[
+        {
+          label:'This period',
+          data:days30.map(d=>d.gmv),
+          borderColor:'#6b7a5a',
+          backgroundColor:'rgba(107,122,90,0.08)',
+          fill:true,tension:0.4,pointRadius:2,borderWidth:2
+        },
+        {
+          label:'Prior period',
+          data:prevDays30,
+          borderColor:'#c9a87a',
+          borderDash:[4,4],
+          backgroundColor:'transparent',
+          fill:false,tension:0.4,pointRadius:0,borderWidth:1.5
+        }
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{
+          display:true,
+          position:'top',
+          align:'end',
+          labels:{font:{size:10},color:'#8a8078',boxWidth:12,boxHeight:2,padding:12}
+        }
+      },
+      scales:{
+        x:{ticks:{maxTicksLimit:6,font:{size:10},color:'#8a8078'},grid:{display:false}},
+        y:{ticks:{font:{size:10},color:'#8a8078',callback:v=>'$'+v},grid:{color:'rgba(107,122,90,0.08)'}}
+      }
+    }
   });
 
   // GMV by month bar
