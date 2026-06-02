@@ -948,7 +948,7 @@ async function loadAll() {
     document.getElementById('top-products').innerHTML=topProds.map((p,i)=>{
       const name=p.properties.Product?.title?.[0]?.plain_text||'';
       const g=p.properties.GMV?.number||0;
-      return`<div class="prod-row"><div class="prod-img" style="background:var(--brown-lift)"></div>
+     return`<div class="prod-row"><div class="prod-img" style="background:var(--brown-lift)"></div><div class="prod-name">${name}</div><div class="prod-bar-wrap"><div class="prod-bar-bg"><div class="prod-bar-fill" style="width:${Math.round(g/maxGmv*100)}%"></div></div></div><div class="prod-gmv">${fmt(g)}</div></div>`;
     }).join('');
 
   } catch(e) { console.error(e); }
