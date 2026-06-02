@@ -274,7 +274,12 @@ nav{position:sticky;top:0;z-index:200;background:rgba(245,239,230,0.92);backdrop
     <div>
       <div class="page-eyebrow">Daily Workflow</div>
       <div class="page-title">Today's <em>To Do</em></div>
-      <div class="page-date" id="page-date"></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:8px;">
+        <button onclick="changeDay(-1)" style="background:none;border:1px solid var(--border-mid);border-radius:8px;padding:5px 12px;font-size:16px;cursor:pointer;color:var(--taupe);transition:all 0.12s;" onmouseover="this.style.background='var(--parchment)'" onmouseout="this.style.background='none'">‹</button>
+        <div id="page-date" style="font-size:14px;font-weight:600;color:var(--ink);min-width:220px;text-align:center;cursor:pointer;" onclick="goToToday()" title="Click to go to today"></div>
+        <button onclick="changeDay(1)" style="background:none;border:1px solid var(--border-mid);border-radius:8px;padding:5px 12px;font-size:16px;cursor:pointer;color:var(--taupe);transition:all 0.12s;" onmouseover="this.style.background='var(--parchment)'" onmouseout="this.style.background='none'">›</button>
+        <span id="today-badge" style="display:none;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--caramel);background:rgba(200,134,74,0.12);padding:3px 10px;border-radius:100px;">Today</span>
+      </div>
     </div>
     <div class="header-actions">
       <button class="btn btn-ghost" onclick="restartDay()" title="Clear all cards">↺ Restart</button>
@@ -353,8 +358,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(245,239,230,0.92);backdrop
 <div class="toast" id="toast"></div>
 
 <script>
-const _d = new Date();
-document.getElementById('page-date').textContent = _d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+// date display handled by updateDateDisplay()
 </script>
 
 
@@ -370,7 +374,12 @@ const TODO_DB = '7b6af2e38d1f49ac904506332061b77f';
 const HOOKS_KEY = 'kortny-hooks-v2';
 
 const today = new Date();
-const todayKey = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+let currentDate = new Date(today);
+function getDateKey(d) {
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+// Keep todayKey for backward compat references
+const todayKey = getDateKey(today);
 
 
 let ALL_PRODUCTS = [];
@@ -381,7 +390,37 @@ let hookTargetId = null;
 let scriptTargetCardId = null;
 let scriptAngle = 'story';
 
+function updateDateDisplay() {
+  const key = getDateKey(currentDate);
+  const isToday = key === todayKey;
+  const label = currentDate.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('page-date').textContent = isToday ? 'Today — ' + label : label;
+  document.getElementById('today-badge').style.display = isToday ? 'none' : 'inline-block';
+  document.getElementById('today-badge').textContent = key > todayKey ? 'Future' : 'Past';
+  document.getElementById('today-badge').style.color = key > todayKey ? 'var(--sage-dark)' : 'var(--taupe)';
+  document.getElementById('today-badge').style.background = key > todayKey ? 'rgba(74,96,64,0.1)' : 'rgba(154,136,112,0.12)';
+}
+
+function changeDay(dir) {
+  currentDate = new Date(currentDate);
+  currentDate.setDate(currentDate.getDate() + dir);
+  TODO = [];
+  document.getElementById('main-content').innerHTML = '<div class="loading-wrap"><div class="spinner"></div>Loading...</div>';
+  updateDateDisplay();
+  loadTodoFromNotion().then(() => render());
+}
+
+function goToToday() {
+  if (getDateKey(currentDate) === todayKey) return;
+  currentDate = new Date(today);
+  TODO = [];
+  document.getElementById('main-content').innerHTML = '<div class="loading-wrap"><div class="spinner"></div>Loading...</div>';
+  updateDateDisplay();
+  loadTodoFromNotion().then(() => render());
+}
+
 async function init() {
+  updateDateDisplay();
   loadHooks();
   await Promise.all([loadProducts(), loadTodoFromNotion()]);
   render();
@@ -437,7 +476,7 @@ async function loadTodoFromNotion() {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         page_size:100,
-        filter:{property:'Date',date:{equals:todayKey}},
+        filter:{property:'Date',date:{equals:getDateKey(currentDate)}},
         sorts:[{property:'Take Number',direction:'ascending'}]
       })
     });
@@ -623,7 +662,7 @@ async function createNotionTake(card, takeNum, hookText='') {
       parent: {database_id: TODO_DB},
       properties: {
         'Product Name': {title:[{text:{content:card.productName}}]},
-        'Date': {date:{start:todayKey}},
+        'Date': {date:{start:getDateKey(currentDate)}},
         'Brand': {rich_text:[{text:{content:card.brand||''}}]},
         'Script': {rich_text:[{text:{content:card.script||''}}]},
         'Take Number': {number: takeNum},
@@ -697,7 +736,7 @@ async function toggleDone(cardId, takeId) {
     try {
       const calPosts = JSON.parse(localStorage.getItem('kortny-posts')||'[]');
       const label = take.hookText ? card.productName+' — '+take.hookText.substring(0,30)+'…' : card.productName;
-      calPosts.push({id:'todo-'+take.id, title:label, date:todayKey, type:'post'});
+      calPosts.push({id:'todo-'+take.id, title:label, date:getDateKey(currentDate), type:'post'});
       localStorage.setItem('kortny-posts', JSON.stringify(calPosts));
     } catch(e){}
   } else {
@@ -939,7 +978,7 @@ async function logVideo(cardId, takeId) {
       body:JSON.stringify({parent:{database_id:VIDEO_DB},properties:{
         'Video ID':{title:[{text:{content:videoId||'—'}}]},
         'Product':{rich_text:[{text:{content:card.productName}}]},
-        'Date Posted':{date:{start:todayKey}},
+        'Date Posted':{date:{start:getDateKey(currentDate)}},
         ...(timePosted?{'Time Posted':{rich_text:[{text:{content:timePosted}}]}}:{}),
         ...(videoType?{'Video Type':{select:{name:videoType}}}:{}),
         ...(gotSales?{'Got Sales?':{select:{name:gotSales}}}:{}),
