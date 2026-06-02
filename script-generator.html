@@ -334,7 +334,7 @@ function renderScripts(text,productName,numVariations){
 }
 function copyScript(cardId,btn){const card=document.getElementById(cardId);const scriptBox=card.querySelector('.script-box');if(!scriptBox)return;navigator.clipboard.writeText(scriptBox.innerText).then(()=>{btn.textContent='Copied ✓';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copy Script';btn.classList.remove('copied');},2000);});}
 function copyFull(cardId,btn){const card=document.getElementById(cardId);const hook=card.querySelector('.hook-box')?.innerText||'';const script=card.querySelector('.script-box')?.innerText||'';const hashtags=card.querySelector('.hashtags-box')?.innerText||'';const full=[hook&&`HOOK:\n${hook}`,script&&`\nSCRIPT:\n${script}`,hashtags&&`\n${hashtags}`].filter(Boolean).join('\n');navigator.clipboard.writeText(full).then(()=>{btn.textContent='Copied ✓';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copy All';btn.classList.remove('copied');},2000);});}
-function showHistory(idx){const h=scriptHistory[idx];if(!h)return;toggleState.length=h.length;toggleState.tone=h.tone;renderScripts(h.text,h.product,1);}
+function showHistory(idx){const history=loadHistory();const h=history[idx];if(!h)return;toggleState.length=h.length;toggleState.tone=h.tone;renderScripts(h.text,h.product,1);}
 
 // ── SCRIPT HISTORY (localStorage) ────────────────────────────────
 const HISTORY_KEY = 'kortny-script-history-v1';
@@ -391,10 +391,13 @@ function clearHistory() {
   showToast('History cleared');
 }
 
-loadProducts();loadHooks();renderHistory();
+loadProducts();
+try{loadHooks();}catch(e){console.error("loadHooks failed",e);}
+try{renderHistory();}catch(e){console.error("renderHistory failed",e);}
 </script>
 
 <div class="tab-bar"><a href="index.html" class="tab-item"><img src="icons/tabs/home.png" class="tab-icon-img" alt="Home"><div class="tab-label">Home</div></a><a href="daily-todo.html" class="tab-item"><img src="icons/tabs/todo.png" class="tab-icon-img" alt="To Do"><div class="tab-label">To Do</div></a><a href="script-generator.html" class="tab-item active"><img src="icons/tabs/scripts.png" class="tab-icon-img" alt="Scripts"><div class="tab-label">Scripts</div></a><a href="products.html" class="tab-item"><img src="icons/tabs/products.png" class="tab-icon-img" alt="Products"><div class="tab-label">Products</div></a><a href="dashboard.html" class="tab-item"><img src="icons/tabs/dashboard.png" class="tab-icon-img" alt="Dashboard"><div class="tab-label">Dashboard</div></a></div>
 <div class="toast" id="toast" style="position:fixed;bottom:28px;right:28px;background:var(--brown-lift);color:var(--text-bright);border-radius:10px;padding:10px 16px;font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:all 0.18s;pointer-events:none;z-index:9999;"></div>
 </body>
 </html>
+
