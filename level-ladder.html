@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f5efe6">
+<title>Level Ladder — helloitskortny</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<script>if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js"));</script>
+
+<style>
+
+:root {
+  --cream:#f5efe6;--cream-mid:#ede4d6;--cream-dark:#e0d4c0;
+  --parchment:#f9f5ef;--sand:#d4c4a8;
+  --caramel:#c8864a;--caramel-lt:#dba870;--rust:#b86040;
+  --sage:#7a9068;--sage-lt:#a8b898;--sage-dark:#4a6040;
+  --brown:#3a2a18;--brown-mid:#6a4a2a;--taupe:#9a8870;
+  --ink:#2a1e10;--white:#fdfaf6;
+  --border:rgba(58,42,24,0.1);--border-mid:rgba(58,42,24,0.18);
+  --shadow-sm:0 2px 8px rgba(58,42,24,0.08);
+  --shadow-md:0 4px 20px rgba(58,42,24,0.10);
+  --r:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:0.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px;}
+a{text-decoration:none;color:inherit;}
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:rgba(245,239,230,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 60px;height:68px;display:flex;align-items:center;gap:0;}
+.nav-brand{display:flex;flex-direction:column;align-items:center;margin-right:56px;flex-shrink:0;}
+.nav-k{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:700;line-height:0.85;color:var(--ink);letter-spacing:-0.02em;}
+.nav-name{font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:var(--brown-mid);margin-top:1px;}
+.nav-links{display:flex;gap:36px;flex:1;align-items:center;}
+.nav-link{font-size:13px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;color:var(--taupe);transition:color 0.15s;position:relative;padding-bottom:3px;}
+.nav-link:hover{color:var(--ink);}
+.nav-link.active{color:var(--caramel);}
+.nav-link.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:var(--caramel);border-radius:1px;}
+.nav-cta{background:var(--caramel);color:white;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;transition:background 0.15s,transform 0.1s;display:flex;align-items:center;gap:8px;margin-left:auto;}
+.nav-cta:hover{background:var(--rust);transform:translateY(-1px);}
+/* PAGE */
+.page{max-width:1100px;margin:0 auto;padding:0 40px 80px;}
+/* PAGE HEADER */
+.page-header{padding:40px 0 32px;border-bottom:1px solid var(--border-mid);margin-bottom:32px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.page-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--caramel);margin-bottom:8px;}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:700;line-height:0.9;letter-spacing:-0.02em;color:var(--ink);}
+.page-title em{font-style:italic;color:var(--caramel-lt);}
+.page-sub{font-size:13px;color:var(--taupe);margin-top:8px;}
+.header-actions{display:flex;gap:8px;align-items:center;}
+/* SECTION HEAD */
+.section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;padding-top:32px;}
+.section-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink);}
+.section-script{font-family:'Dancing Script',cursive;font-size:18px;color:var(--caramel-lt);}
+.section-line{flex:1;height:1px;background:var(--border-mid);}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:600;letter-spacing:0.05em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;border:none;}
+.btn-primary{background:var(--caramel);color:white;}
+.btn-primary:hover{background:var(--rust);}
+.btn-ghost{background:transparent;color:var(--taupe);border:1px solid var(--border-mid);}
+.btn-ghost:hover{background:var(--parchment);color:var(--ink);}
+/* FILTER PILLS */
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+.pill{background:var(--parchment);border:1px solid var(--border-mid);border-radius:100px;padding:5px 14px;font-size:12px;font-weight:500;cursor:pointer;color:var(--taupe);transition:all 0.12s;font-family:'DM Sans',sans-serif;}
+.pill.active{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+.pill:hover:not(.active){background:var(--cream-dark);}
+.search-box{flex:1;min-width:160px;padding:8px 16px;border:1px solid var(--border-mid);border-radius:100px;background:var(--parchment);color:var(--ink);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;}
+.search-box::placeholder{color:var(--sand);}
+.search-box:focus{border-color:var(--sage);}
+/* TABLE */
+.table-card{background:var(--parchment);border-radius:var(--r);border:1px solid var(--border-mid);overflow:hidden;box-shadow:var(--shadow-sm);}
+table{width:100%;border-collapse:collapse;}
+thead th{font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:var(--taupe);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border-mid);background:var(--cream-mid);font-weight:700;cursor:pointer;white-space:nowrap;}
+thead th:hover{color:var(--ink);}
+thead th.num{text-align:right;}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(200,134,74,0.04);}
+tbody td{padding:12px 16px;font-size:13px;color:var(--ink);}
+tbody td.num{text-align:right;}
+tbody td.muted{color:var(--taupe);font-size:12px;}
+.tbl-action{background:none;border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+.tbl-action:hover{background:var(--caramel);color:white;border-color:var(--caramel);}
+/* STATUS PILLS */
+.status{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;letter-spacing:0.04em;}
+.status-settled,.status-posted,.status-in-stock{background:rgba(74,96,64,0.12);color:var(--sage-dark);}
+.status-pending,.status-to-do,.status-low-stock{background:rgba(200,134,74,0.15);color:var(--caramel);}
+.status-ineligible,.status-none,.status-out-of-stock{background:rgba(58,42,24,0.08);color:var(--taupe);}
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--taupe);background:var(--cream-mid);}
+.page-btns{display:flex;gap:4px;}
+.page-btn{background:none;border:1px solid var(--border-mid);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+.page-btn:hover,.page-btn.active{background:var(--caramel);color:white;border-color:var(--caramel);}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(42,30,16,0.5);z-index:300;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--parchment);border-radius:24px 24px 0 0;border:1px solid var(--border-mid);border-bottom:none;padding:24px 24px 36px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 -20px 60px rgba(42,30,16,0.15);}
+.modal-handle{width:36px;height:4px;background:var(--cream-dark);border-radius:2px;margin:0 auto 20px;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;margin-bottom:20px;color:var(--ink);}
+.form-group{margin-bottom:14px;}
+.form-label{display:block;font-size:10px;font-weight:700;color:var(--taupe);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;}
+.form-input,.form-select,.form-textarea{width:100%;padding:11px 14px;border:1px solid var(--border-mid);border-radius:10px;background:var(--cream);color:var(--ink);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;transition:border-color 0.12s;}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--sand);}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--sage);}
+.form-select option{background:var(--cream);}
+.form-textarea{resize:vertical;min-height:80px;line-height:1.5;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-actions{display:flex;gap:8px;margin-top:20px;}
+.btn-cancel{flex:1;background:var(--cream-dark);border:none;border-radius:10px;padding:13px;font-size:13px;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:background 0.12s;}
+.btn-cancel:hover{background:var(--sand);}
+.btn-save{flex:2;background:var(--caramel);border:none;border-radius:10px;padding:13px;font-size:13px;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;font-weight:600;transition:background 0.12s;}
+.btn-save:hover{background:var(--rust);}
+.btn-save:disabled{opacity:0.6;cursor:not-allowed;}
+.form-msg{font-size:12px;margin-top:10px;text-align:center;min-height:18px;}
+.form-msg.success{color:var(--sage-dark);}
+.form-msg.error{color:var(--rust);}
+/* STAT CARDS */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-row.three{grid-template-columns:repeat(3,1fr);}
+.scard{background:var(--parchment);border-radius:var(--r);border:1px solid var(--border);padding:18px 20px;box-shadow:var(--shadow-sm);}
+.scard-label{font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--taupe);margin-bottom:8px;}
+.scard-val{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;line-height:1;color:var(--ink);}
+.scard-val.accent{color:var(--caramel);}
+.scard-val.sage{color:var(--sage-dark);}
+.scard-sub{font-size:11px;color:var(--taupe);margin-top:4px;}
+/* INLINE EDIT */
+.editable{cursor:pointer;border-radius:4px;padding:1px 4px;transition:background 0.1s;}
+.editable:hover{background:rgba(200,134,74,0.1);}
+.inline-input{padding:4px 8px;border:1px solid var(--sage);border-radius:6px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);outline:none;width:90px;}
+.inline-select{padding:4px 8px;border:1px solid var(--sage);border-radius:6px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);outline:none;cursor:pointer;}
+/* LOADING */
+.loading-wrap{text-align:center;padding:48px;color:var(--taupe);}
+.spinner{width:28px;height:28px;border:2px solid var(--border-mid);border-top-color:var(--caramel);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.empty-state{text-align:center;padding:48px;color:var(--sand);font-size:13px;}
+/* FOOTER */
+footer{border-top:1px solid var(--border-mid);padding:24px 40px;max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+.footer-brand{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--taupe);}
+.footer-brand span{font-style:italic;color:var(--caramel);}
+.footer-note{font-size:11px;color:var(--sand);}
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--ink);color:var(--cream);border-radius:10px;padding:11px 18px;font-size:13px;font-weight:500;opacity:0;transform:translateY(12px);transition:all 0.18s;pointer-events:none;z-index:999;}
+.toast.show{opacity:1;transform:translateY(0);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fadeUp 0.5s ease both;}
+@media(max-width:900px){nav{padding:0 24px;}.nav-links{gap:20px;}.page{padding:0 20px 60px;}.stat-row,.stat-row.three{grid-template-columns:1fr 1fr;}.form-row{grid-template-columns:1fr;}footer{padding:20px 24px;}}
+@media(max-width:600px){.nav-links{display:none;}}
+
+{}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.383.0/umd/lucide.min.js"></script>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">
+    <div class="nav-k">K</div>
+    <div class="nav-name">Kortny</div>
+  </div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="products.html" class="nav-link">Products</a>
+    <a href="dashboard.html" class="nav-link">Revenue</a>
+    <a href="#" class="nav-link active">Tools</a>
+  </div>
+  <a href="dashboard.html" class="nav-cta">Dashboard →</a>
+</nav>
+
+<div class="page">
+<div class="page-header">
+  <div>
+    <div class="page-eyebrow">GMV Goals</div>
+    <div class="page-title">Level <em>Ladder</em></div>
+    <div class="page-sub">Track your tier progress month by month.</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="loadFromNotion()">↻ Refresh</button>
+  </div>
+</div>
+<div style="max-width:600px;margin:0 auto" id="main-content">
+  <div class="loading-wrap"><div class="spinner"></div>Loading from Notion...</div>
+</div>
+</div>
+<script>
+const API='https://kortny-api.vercel.app/api/notion',DB_ID='a35bab03eb3544729b8019ddfc019e4e';
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const LEVELS=[{name:'Bronze',icon:'bronze',min:0,max:999,color:'#c9a87a'},{name:'Silver',icon:'silver',min:1000,max:4999,color:'#9a9890'},{name:'Gold',icon:'gold',min:5000,max:24999,color:'#ba7517'},{name:'Platinum',icon:'platinum',min:25000,max:59999,color:'#7a9068'},{name:'Ruby',icon:'ruby',min:60000,max:149999,color:'#b86040'},{name:'Emerald',icon:'emerald',min:150000,max:399999,color:'#4a6040'},{name:'Sapphire',icon:'sapphire',min:400000,max:1499999,color:'#185fa5'},{name:'Diamond',icon:'diamond',min:1500000,max:999999999,color:'#2a2a2a'}];
+function fmt(n){return'$'+Math.round(n).toLocaleString('en-US');}
+function fmtD(n){return'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+async function loadFromNotion(){
+  document.getElementById('main-content').innerHTML='<div class="loading-wrap"><div class="spinner"></div>Loading...</div>';
+  try{
+    const today=new Date(),y=today.getFullYear(),m=today.getMonth();
+    const ms=`${y}-${String(m+1).padStart(2,'0')}-01`;
+    const nm=new Date(y,m+1,1),me=`${nm.getFullYear()}-${String(nm.getMonth()+1).padStart(2,'0')}-01`;
+    const res=await fetch(`${API}?endpoint=databases/${DB_ID}/query`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({page_size:100,filter:{and:[{property:'Date',date:{on_or_after:ms}},{property:'Date',date:{before:me}}]}})});
+    const data=await res.json();
+    const gmv=(data.results||[]).reduce((s,p)=>s+(p.properties.GMV?.number||0),0);
+    renderLadder(gmv,MONTHS[m]+' '+y);
+  }catch(e){document.getElementById('main-content').innerHTML='<div class="loading-wrap" style="color:var(--rust)">Error loading. Try refreshing.</div>';}
+}
+function renderLadder(gmv,monthLabel){
+  let lvlIdx=0;for(let i=LEVELS.length-1;i>=0;i--){if(gmv>=LEVELS[i].min){lvlIdx=i;break;}}
+  const lvl=LEVELS[lvlIdx],next=LEVELS[lvlIdx+1];
+  const pct=next?Math.min(100,Math.round((gmv-lvl.min)/(lvl.max-lvl.min)*100)):100;
+  let html=`
+  <div class="scard" style="margin-bottom:16px;background:var(--parchment);border:1px solid var(--border-mid)">
+    <div style="font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--caramel);margin-bottom:12px">Current Level</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <img src="icons/levels/${lvl.icon}.png" style="width:52px;height:52px;object-fit:contain" alt="${lvl.name}">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:40px;font-weight:800;color:${lvl.color};line-height:1">${lvl.name.toUpperCase()}</div>
+        <div style="font-size:11px;color:var(--taupe);margin-top:2px">${monthLabel}</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+      <div><div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--taupe);margin-bottom:4px">GMV This Month</div><div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--ink)">${fmtD(gmv)}</div></div>
+      <div><div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--taupe);margin-bottom:4px">${next?'To '+next.name:'Status'}</div><div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--caramel)">${next?fmt(next.min-gmv):'MAX'}</div></div>
+    </div>
+    <div style="background:var(--cream-dark);border-radius:100px;height:8px;overflow:hidden;margin-bottom:6px"><div style="height:8px;border-radius:100px;background:${lvl.color};width:${pct}%;transition:width 0.8s ease"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--taupe)"><span>${pct}% through this tier</span><span>${fmt(lvl.min)} – ${next?fmt(lvl.max):'+'}</span></div>
+    ${next?`<div style="margin-top:14px;background:rgba(74,96,64,0.08);border:1px solid rgba(74,96,64,0.15);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--taupe)">You need <strong style="color:var(--ink)">${fmtD(next.min-gmv)} more</strong> in GMV to reach ${next.name}.</div>`:'<div style="margin-top:14px;background:rgba(200,134,74,0.1);border-radius:10px;padding:12px 14px;font-size:13px;font-weight:600;color:var(--caramel)">Top tier achieved! 👸</div>'}
+  </div>
+  <div style="font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--taupe);margin-bottom:10px">All Levels</div>
+  <div class="table-card">`;
+  LEVELS.forEach((l,i)=>{
+    const reached=i<lvlIdx,isCurrent=i===lvlIdx,locked=i>lvlIdx;
+    const statusLabel=reached?'REACHED ✓':isCurrent?'CURRENT ★':'LOCKED 🔒';
+    const statusColor=reached?'var(--sage-dark)':isCurrent?'var(--caramel)':'var(--sand)';
+    const miniPct=isCurrent?pct:reached?100:0;
+    html+=`<div style="display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--border);${isCurrent?'background:rgba(200,134,74,0.04)':''}">
+      <img src="icons/levels/${l.icon}.png" style="width:26px;height:26px;object-fit:contain" alt="${l.name}">
+      <div style="flex:1">
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:${isCurrent?l.color:'var(--ink)'};${locked?'opacity:0.4':''}">${l.name}</div>
+        <div style="font-size:11px;color:var(--taupe);${locked?'opacity:0.4':''}">${l.max>999999?fmt(l.min)+'+':fmt(l.min)+' – '+fmt(l.max)}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${statusColor};margin-bottom:4px">${statusLabel}</div>
+        <div style="width:80px;height:4px;background:var(--cream-dark);border-radius:2px;overflow:hidden"><div style="height:4px;background:${l.color};width:${miniPct}%;border-radius:2px"></div></div>
+      </div>
+    </div>`;
+  });
+  html+='</div>';
+  document.getElementById('main-content').innerHTML=html;
+}
+loadFromNotion();
+</script>
+<footer>
+  <div class="footer-brand">hello<span>itskortny</span></div>
+  <div class="footer-note">TikTok Shop Creator Hub · Built with ✦</div>
+</footer>
+<div class="toast" id="toast"></div>
+<script>
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+</script>
+<script>lucide.createIcons();</script>
+</body>
+</html>
