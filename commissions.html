@@ -4,210 +4,141 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#f5efe6">
-<title>Commissions — helloitskortny</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
-<link rel="manifest" href="manifest.json">
-<script>if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js"));</script>
-
+<meta name="theme-color" content="#120d09">
+<title>Commissions</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@0,300;0,400;0,500&display=swap" rel="stylesheet">
 <style>
-
-:root {
-  --cream:#f5efe6;--cream-mid:#ede4d6;--cream-dark:#e0d4c0;
-  --parchment:#f9f5ef;--sand:#d4c4a8;
-  --caramel:#c8864a;--caramel-lt:#dba870;--rust:#b86040;
-  --sage:#7a9068;--sage-lt:#a8b898;--sage-dark:#4a6040;
-  --brown:#3a2a18;--brown-mid:#6a4a2a;--taupe:#9a8870;
- --ink: #9E7A55;--white:#fdfaf6;
-  --border:rgba(58,42,24,0.1);--border-mid:rgba(58,42,24,0.18);
-  --shadow-sm:0 2px 8px rgba(58,42,24,0.08);
-  --shadow-md:0 4px 20px rgba(58,42,24,0.10);
-  --r:14px;
-}
+:root{--espresso:#120d09;--brown-deep:#1c1410;--brown-mid:#2a1e16;--brown-lift:#3d2a1e;--brown-surface:#4a3428;--sage:#7a9e7e;--sage-light:#a8c5a4;--sage-dim:#4a6b4e;--tan:#c9a87a;--tan-dim:#7a5e3a;--text-bright:#f0e8de;--text-mid:#a89880;--text-muted:#6a5848;--border:rgba(200,168,120,0.1);--border-lift:rgba(200,168,120,0.2);}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
-body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:0.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px;}
-a{text-decoration:none;color:inherit;}
-/* NAV */
-nav{position:sticky;top:0;z-index:200;background:rgba(245,239,230,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 60px;height:68px;display:flex;align-items:center;gap:0;}
-.nav-brand{display:flex;flex-direction:column;align-items:center;margin-right:56px;flex-shrink:0;}
-.nav-k{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:700;line-height:0.85;color:var(--ink);letter-spacing:-0.02em;}
-.nav-name{font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:var(--brown-mid);margin-top:1px;}
-.nav-links{display:flex;gap:36px;flex:1;align-items:center;}
-.nav-link{font-size:13px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;color:var(--taupe);transition:color 0.15s;position:relative;padding-bottom:3px;}
-.nav-link:hover{color:var(--ink);}
-.nav-link.active{color:var(--caramel);}
-.nav-link.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:var(--caramel);border-radius:1px;}
-.nav-cta{background:var(--caramel);color:white;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;transition:background 0.15s,transform 0.1s;display:flex;align-items:center;gap:8px;margin-left:auto;}
-.nav-cta:hover{background:var(--rust);transform:translateY(-1px);}
-/* PAGE */
-.page{max-width:1100px;margin:0 auto;padding:0 40px 80px;}
-/* PAGE HEADER */
-.page-header{padding:40px 0 32px;border-bottom:1px solid var(--border-mid);margin-bottom:32px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;}
-.page-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--caramel);margin-bottom:8px;}
-.page-title{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:700;line-height:0.9;letter-spacing:-0.02em;color:var(--ink);}
-.page-title em{font-style:italic;color:var(--caramel-lt);}
-.page-sub{font-size:13px;color:var(--taupe);margin-top:8px;}
-.header-actions{display:flex;gap:8px;align-items:center;}
-/* SECTION HEAD */
-.section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;padding-top:32px;}
-.section-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink);}
-.section-script{font-family:'Dancing Script',cursive;font-size:18px;color:var(--caramel-lt);}
-.section-line{flex:1;height:1px;background:var(--border-mid);}
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:600;letter-spacing:0.05em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;border:none;}
-.btn-primary{background:var(--caramel);color:white;}
-.btn-primary:hover{background:var(--rust);}
-.btn-ghost{background:transparent;color:var(--taupe);border:1px solid var(--border-mid);}
-.btn-ghost:hover{background:var(--parchment);color:var(--ink);}
-/* FILTER PILLS */
-.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
-.pill{background:var(--parchment);border:1px solid var(--border-mid);border-radius:100px;padding:5px 14px;font-size:12px;font-weight:500;cursor:pointer;color:var(--taupe);transition:all 0.12s;font-family:'DM Sans',sans-serif;}
-.pill.active{background:var(--ink);color:var(--cream);border-color:var(--ink);}
-.pill:hover:not(.active){background:var(--cream-dark);}
-.search-box{flex:1;min-width:160px;padding:8px 16px;border:1px solid var(--border-mid);border-radius:100px;background:var(--parchment);color:var(--ink);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;}
-.search-box::placeholder{color:var(--sand);}
-.search-box:focus{border-color:var(--sage);}
-/* TABLE */
-.table-card{background:var(--parchment);border-radius:var(--r);border:1px solid var(--border-mid);overflow:hidden;box-shadow:var(--shadow-sm);}
+body{background:var(--espresso);color:var(--text-bright);font-family:'DM Sans',sans-serif;min-height:100vh;}
+nav{background:rgba(18,13,9,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--text-bright);text-decoration:none;}
+.nav-logo span{color:var(--sage-light);font-style:italic;}
+.nav-right{display:flex;gap:8px;}
+.nav-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s;text-decoration:none;display:inline-flex;align-items:center;}
+.nav-btn:hover{border-color:var(--border-lift);color:var(--text-bright);}
+.nav-btn.primary{background:var(--sage);color:var(--espresso);border-color:var(--sage);font-weight:600;}
+.page-header{padding:24px 28px 18px;border-bottom:1px solid var(--border);}
+.page-eyebrow{font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--tan);margin-bottom:6px;font-weight:500;display:flex;align-items:center;gap:10px;}
+.page-eyebrow::before{content:'';display:inline-block;width:20px;height:1px;background:var(--tan-dim);}
+.page-title{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;line-height:1;color:var(--text-bright);}
+.page-title em{font-style:italic;color:var(--sage-light);}
+.main{max-width:1100px;margin:0 auto;padding:20px 24px 60px;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.stat{background:var(--brown-mid);border-radius:12px;border:1px solid var(--border);padding:14px 16px;}
+.stat-label{font-size:9px;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);font-weight:600;margin-bottom:6px;}
+.stat-val{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;line-height:1;color:var(--text-bright);}
+.stat-val.green{color:var(--sage-light);}
+.stat-val.tan{color:var(--tan);}
+.stat-sub{font-size:11px;color:var(--text-muted);margin-top:3px;}
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.filter-btn{background:var(--brown-mid);border:1px solid var(--border);border-radius:100px;padding:5px 14px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;color:var(--text-muted);transition:all 0.12s;}
+.filter-btn.active{background:var(--text-bright);color:var(--espresso);border-color:var(--text-bright);}
+.search-input{flex:1;min-width:160px;padding:7px 14px;border:1px solid var(--border);border-radius:100px;background:var(--brown-mid);color:var(--text-bright);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;}
+.search-input::placeholder{color:var(--text-muted);}
+.search-input:focus{border-color:var(--sage-dim);}
+.table-wrap{background:var(--brown-mid);border-radius:14px;border:1px solid var(--border);overflow:hidden;}
 table{width:100%;border-collapse:collapse;}
-thead th{font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:var(--taupe);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border-mid);background:var(--cream-mid);font-weight:700;cursor:pointer;white-space:nowrap;}
-thead th:hover{color:var(--ink);}
+thead th{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);padding:11px 14px;text-align:left;border-bottom:1px solid var(--border);background:var(--brown-lift);font-weight:600;cursor:pointer;white-space:nowrap;}
+thead th:hover{color:var(--text-bright);}
 thead th.num{text-align:right;}
 tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
 tbody tr:last-child{border-bottom:none;}
-tbody tr:hover{background:rgba(200,134,74,0.04);}
-tbody td{padding:12px 16px;font-size:13px;color:var(--ink);}
+tbody tr:hover{background:var(--brown-lift);}
+tbody td{padding:11px 14px;font-size:13px;color:var(--text-bright);}
 tbody td.num{text-align:right;}
-tbody td.muted{color:var(--taupe);font-size:12px;}
-.tbl-action{background:none;border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:all 0.12s;}
-.tbl-action:hover{background:var(--caramel);color:white;border-color:var(--caramel);}
-/* STATUS PILLS */
-.status{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;letter-spacing:0.04em;}
-.status-settled,.status-posted,.status-in-stock{background:rgba(74,96,64,0.12);color:var(--sage-dark);}
-.status-pending,.status-to-do,.status-low-stock{background:rgba(200,134,74,0.15);color:var(--caramel);}
-.status-ineligible,.status-none,.status-out-of-stock{background:rgba(58,42,24,0.08);color:var(--taupe);}
-/* PAGINATION */
-.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--taupe);background:var(--cream-mid);}
-.page-btns{display:flex;gap:4px;}
-.page-btn{background:none;border:1px solid var(--border-mid);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:all 0.12s;}
-.page-btn:hover,.page-btn.active{background:var(--caramel);color:white;border-color:var(--caramel);}
-/* MODAL */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(42,30,16,0.5);z-index:300;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+.order-num{color:var(--text-muted);font-size:12px;}
+.product-name{font-weight:500;}
+.comm-val{color:var(--sage-light);font-weight:500;}
+.date-val{color:var(--text-muted);font-size:12px;}
+.status-pill{display:inline-block;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:500;}
+.status-Settled{background:rgba(122,158,126,0.2);color:var(--sage-light);}
+.status-Pending{background:rgba(201,168,122,0.15);color:var(--tan);}
+.status-Ineligible{background:rgba(106,88,72,0.3);color:var(--text-muted);}
+.action-btn{background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:13px;padding:2px 5px;border-radius:4px;}
+.action-btn:hover{background:var(--brown-surface);color:var(--text-bright);}
+.empty-state{text-align:center;padding:48px;color:var(--text-muted);}
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--text-muted);}
+.page-btns{display:flex;gap:4px;flex-wrap:wrap;}
+.page-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--text-muted);font-family:'DM Sans',sans-serif;}
+.page-btn:hover,.page-btn.active{background:var(--sage);color:var(--espresso);border-color:var(--sage);}
+.loading-spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--sage);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(12,8,4,0.75);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--parchment);border-radius:24px 24px 0 0;border:1px solid var(--border-mid);border-bottom:none;padding:24px 24px 36px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 -20px 60px rgba(42,30,16,0.15);}
-.modal-handle{width:36px;height:4px;background:var(--cream-dark);border-radius:2px;margin:0 auto 20px;}
-.modal-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;margin-bottom:20px;color:var(--ink);}
-.form-group{margin-bottom:14px;}
-.form-label{display:block;font-size:10px;font-weight:700;color:var(--taupe);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;}
-.form-input,.form-select,.form-textarea{width:100%;padding:11px 14px;border:1px solid var(--border-mid);border-radius:10px;background:var(--cream);color:var(--ink);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;transition:border-color 0.12s;}
-.form-input::placeholder,.form-textarea::placeholder{color:var(--sand);}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--sage);}
-.form-select option{background:var(--cream);}
-.form-textarea{resize:vertical;min-height:80px;line-height:1.5;}
+.modal{background:var(--brown-mid);border-radius:24px 24px 0 0;border:1px solid var(--border);border-bottom:none;padding:24px 20px 32px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;box-shadow:0 -20px 60px rgba(0,0,0,0.5);}
+.modal-handle{width:36px;height:4px;background:var(--brown-surface);border-radius:2px;margin:0 auto 20px;}
+.modal-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:20px;color:var(--text-bright);}
+.form-group{margin-bottom:13px;}
+.form-label{display:block;font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
+.form-input,.form-select{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:12px;background:var(--brown-deep);color:var(--text-bright);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;transition:border-color 0.12s;}
+.form-input::placeholder{color:var(--text-muted);}
+.form-input:focus,.form-select:focus{border-color:var(--sage-dim);}
+.form-select option{background:var(--brown-deep);}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .modal-actions{display:flex;gap:8px;margin-top:20px;}
-.btn-cancel{flex:1;background:var(--cream-dark);border:none;border-radius:10px;padding:13px;font-size:13px;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:background 0.12s;}
-.btn-cancel:hover{background:var(--sand);}
-.btn-save{flex:2;background:var(--caramel);border:none;border-radius:10px;padding:13px;font-size:13px;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;font-weight:600;transition:background 0.12s;}
-.btn-save:hover{background:var(--rust);}
+.btn-cancel{flex:1;background:var(--brown-lift);border:none;border-radius:12px;padding:13px;font-size:14px;cursor:pointer;color:var(--text-muted);font-family:'DM Sans',sans-serif;}
+.btn-save{flex:2;background:var(--sage);border:none;border-radius:12px;padding:13px;font-size:14px;cursor:pointer;color:var(--espresso);font-family:'DM Sans',sans-serif;font-weight:600;}
 .btn-save:disabled{opacity:0.6;cursor:not-allowed;}
 .form-msg{font-size:12px;margin-top:10px;text-align:center;min-height:18px;}
-.form-msg.success{color:var(--sage-dark);}
-.form-msg.error{color:var(--rust);}
-/* STAT CARDS */
-.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
-.stat-row.three{grid-template-columns:repeat(3,1fr);}
-.scard{background:var(--parchment);border-radius:var(--r);border:1px solid var(--border);padding:18px 20px;box-shadow:var(--shadow-sm);}
-.scard-label{font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--taupe);margin-bottom:8px;}
-.scard-val{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;line-height:1;color:var(--ink);}
-.scard-val.accent{color:var(--caramel);}
-.scard-val.sage{color:var(--sage-dark);}
-.scard-sub{font-size:11px;color:var(--taupe);margin-top:4px;}
-/* INLINE EDIT */
-.editable{cursor:pointer;border-radius:4px;padding:1px 4px;transition:background 0.1s;}
-.editable:hover{background:rgba(200,134,74,0.1);}
-.inline-input{padding:4px 8px;border:1px solid var(--sage);border-radius:6px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);outline:none;width:90px;}
-.inline-select{padding:4px 8px;border:1px solid var(--sage);border-radius:6px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);outline:none;cursor:pointer;}
-/* LOADING */
-.loading-wrap{text-align:center;padding:48px;color:var(--taupe);}
-.spinner{width:28px;height:28px;border:2px solid var(--border-mid);border-top-color:var(--caramel);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.empty-state{text-align:center;padding:48px;color:var(--sand);font-size:13px;}
-/* FOOTER */
-footer{border-top:1px solid var(--border-mid);padding:24px 40px;max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
-.footer-brand{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--taupe);}
-.footer-brand span{font-style:italic;color:var(--caramel);}
-.footer-note{font-size:11px;color:var(--sand);}
-/* TOAST */
-.toast{position:fixed;bottom:28px;right:28px;background:var(--ink);color:var(--cream);border-radius:10px;padding:11px 18px;font-size:13px;font-weight:500;opacity:0;transform:translateY(12px);transition:all 0.18s;pointer-events:none;z-index:999;}
-.toast.show{opacity:1;transform:translateY(0);}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-.fade-up{animation:fadeUp 0.5s ease both;}
-@media(max-width:900px){nav{padding:0 24px;}.nav-links{gap:20px;}.page{padding:0 20px 60px;}.stat-row,.stat-row.three{grid-template-columns:1fr 1fr;}.form-row{grid-template-columns:1fr;}footer{padding:20px 24px;}}
-@media(max-width:600px){.nav-links{display:none;}}
-
-
+.form-msg.success{color:var(--sage-light);}
+.form-msg.error{color:#d4604a;}
+@media(max-width:640px){.stats{grid-template-columns:1fr 1fr;}.main{padding:14px 12px 60px;}.form-row{grid-template-columns:1fr;}}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.383.0/umd/lucide.min.js"></script>
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js")
+          .then(reg => console.log("[SW] Registered", reg.scope))
+          .catch(err => console.warn("[SW] Failed", err));
+      });
+    }
+  </script>
 </head>
 <body>
 <nav>
-  <div class="nav-brand">
-    <div class="nav-k">K</div>
-    <div class="nav-name">Kortny</div>
+  <a href="index.html" class="nav-logo">hello<span>itskortny</span></a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-btn">← Home</a>
+    <button class="nav-btn" onclick="loadFromNotion()">↻ Refresh</button>
+    <button class="nav-btn primary" onclick="openModal()">+ Add Entry</button>
   </div>
-  <div class="nav-links">
-    <a href="index.html" class="nav-link">Home</a>
-    <a href="products.html" class="nav-link">Products</a>
-    <a href="dashboard.html" class="nav-link active">Revenue</a>
-    <a href="#" class="nav-link">Tools</a>
-  </div>
-  <a href="dashboard.html" class="nav-cta">Dashboard →</a>
 </nav>
-
-<div class="page">
 <div class="page-header">
-  <div>
-    <div class="page-eyebrow">Money Tracking</div>
-    <div class="page-title">Commissions <em>Tracker</em></div>
-    <div class="page-sub">Log orders, track status, never lose a payout.</div>
+  <div class="page-eyebrow">@helloitskortny</div>
+  <div class="page-title">Commissions <em>Tracker</em></div>
+</div>
+<div class="main">
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Total Settled</div><div class="stat-val green" id="stat-settled">—</div><div class="stat-sub" id="stat-settled-sub">—</div></div>
+    <div class="stat"><div class="stat-label">Pending</div><div class="stat-val tan" id="stat-pending">—</div><div class="stat-sub" id="stat-pending-sub">—</div></div>
+    <div class="stat"><div class="stat-label">Total Earned</div><div class="stat-val" id="stat-total">—</div><div class="stat-sub">settled + pending</div></div>
+    <div class="stat"><div class="stat-label">Total Orders</div><div class="stat-val" id="stat-orders">—</div><div class="stat-sub">all time</div></div>
   </div>
-  <div class="header-actions">
-    <button class="btn btn-ghost" onclick="loadFromNotion()">↻ Refresh</button>
-    <button class="btn btn-primary" onclick="openModal()">+ Add Entry</button>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="setFilter('All',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('Settled',this)">Settled</button>
+    <button class="filter-btn" onclick="setFilter('Pending',this)">Pending</button>
+    <button class="filter-btn" onclick="setFilter('Ineligible',this)">Ineligible</button>
+    <input type="text" class="search-input" id="search-input" placeholder="Search product or order #..." oninput="goPage(1)">
   </div>
-</div>
-<div class="stat-row" id="stats-row">
-  <div class="scard"><div class="scard-label">Total Settled</div><div class="scard-val sage" id="s-settled">—</div><div class="scard-sub" id="s-settled-sub">—</div></div>
-  <div class="scard"><div class="scard-label">Pending</div><div class="scard-val accent" id="s-pending">—</div><div class="scard-sub" id="s-pending-sub">—</div></div>
-  <div class="scard"><div class="scard-label">Total Earned</div><div class="scard-val" id="s-total">—</div><div class="scard-sub">settled + pending</div></div>
-  <div class="scard"><div class="scard-label">Total Orders</div><div class="scard-val" id="s-orders">—</div><div class="scard-sub">all time</div></div>
-</div>
-<div class="filter-bar">
-  <button class="pill active" onclick="setFilter('All',this)">All</button>
-  <button class="pill" onclick="setFilter('Settled',this)">Settled</button>
-  <button class="pill" onclick="setFilter('Pending',this)">Pending</button>
-  <button class="pill" onclick="setFilter('Ineligible',this)">Ineligible</button>
-  <input type="text" class="search-box" id="search" placeholder="Search product or order #..." oninput="goPage(1)">
-</div>
-<div class="table-card">
-  <table>
-    <thead><tr>
-      <th onclick="sortBy('order')">Order #</th>
-      <th onclick="sortBy('product')">Brand / Product</th>
-      <th onclick="sortBy('commission')" class="num">Commission</th>
-      <th onclick="sortBy('status')">Status</th>
-      <th onclick="sortBy('orderDate')">Order Date</th>
-      <th onclick="sortBy('paidDate')">Paid Date</th>
-      <th></th>
-    </tr></thead>
-    <tbody id="tbody"><tr><td colspan="7"><div class="loading-wrap"><div class="spinner"></div>Loading...</div></td></tr></tbody>
-  </table>
-  <div class="pagination"><span id="page-info"></span><div class="page-btns" id="page-btns"></div></div>
-</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th onclick="sortBy('order')">Order #</th>
+        <th onclick="sortBy('product')">Brand / Product</th>
+        <th onclick="sortBy('commission')" class="num">Commission</th>
+        <th onclick="sortBy('status')">Status</th>
+        <th onclick="sortBy('orderDate')">Order Date</th>
+        <th onclick="sortBy('paidDate')">Paid Date</th>
+        <th></th>
+      </tr></thead>
+      <tbody id="table-body"><tr><td colspan="7"><div style="text-align:center;padding:32px"><div class="loading-spinner"></div><div style="color:var(--text-muted)">Loading from Notion...</div></div></td></tr></tbody>
+    </table>
+    <div class="pagination"><span id="page-info"></span><div class="page-btns" id="page-btns"></div></div>
+  </div>
 </div>
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
@@ -217,7 +148,7 @@ footer{border-top:1px solid var(--border-mid);padding:24px 40px;max-width:1100px
       <div class="form-group"><label class="form-label">Order / Video #</label><input type="text" class="form-input" id="inp-order" placeholder="e.g. 5591"></div>
       <div class="form-group"><label class="form-label">Commission ($)</label><input type="number" class="form-input" id="inp-commission" placeholder="0.00" step="0.01" min="0"></div>
     </div>
-    <div class="form-group"><label class="form-label">Brand / Product</label><input type="text" class="form-input" id="inp-product" placeholder="e.g. PetLab Probiotic Chews"></div>
+    <div class="form-group"><label class="form-label">Brand / Product</label><input type="text" class="form-input" id="inp-product" placeholder="e.g. Shallow Bowls"></div>
     <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="inp-status"><option value="Pending">Pending</option><option value="Settled">Settled</option><option value="Ineligible">Ineligible</option></select></div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Order Date</label><input type="date" class="form-input" id="inp-order-date"></div>
@@ -232,30 +163,32 @@ footer{border-top:1px solid var(--border-mid);padding:24px 40px;max-width:1100px
   </div>
 </div>
 <script>
-const API='https://kortny-api.vercel.app/api/notion',DB_ID='47a77144c4644149b499cef40bf72bf5',PAGE_SIZE=25;
+const API='https://kortny-api.vercel.app/api/notion';
+const DB_ID='47a77144c4644149b499cef40bf72bf5';
+const PAGE_SIZE=25;
 let DATA=[],filterStatus='All',sortField='orderDate',sortDir=-1,currentPage=1,editingId=null;
 function fmtD(n){return'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmtDate(s){if(!s)return'—';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'});}
 async function loadFromNotion(){
-  document.getElementById('tbody').innerHTML='<tr><td colspan="7"><div class="loading-wrap"><div class="spinner"></div>Loading...</div></td></tr>';
+  document.getElementById('table-body').innerHTML='<tr><td colspan="7"><div style="text-align:center;padding:32px"><div class="loading-spinner"></div><div style="color:var(--text-muted)">Loading...</div></div></td></tr>';
   try{
     let results=[],cursor=null;
     do{const body={page_size:100,sorts:[{property:'Order date',direction:'descending'}]};if(cursor)body.start_cursor=cursor;const res=await fetch(`${API}?endpoint=databases/${DB_ID}/query`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();results=[...results,...(data.results||[])];cursor=data.next_cursor;}while(cursor);
     DATA=results.map(p=>({id:p.id,order:p.properties['Order / Video']?.title?.[0]?.plain_text||'',product:p.properties['Brand / Product']?.rich_text?.[0]?.plain_text||'',commission:p.properties.Commission?.number||0,status:p.properties.Status?.status?.name||'Pending',orderDate:p.properties['Order date']?.date?.start||'',paidDate:p.properties['Paid date']?.date?.start||'',notes:p.properties.Notes?.rich_text?.[0]?.plain_text||''}));
     updateStats();goPage(1);
-  }catch(e){document.getElementById('tbody').innerHTML='<tr><td colspan="7" class="empty-state">Error loading. Try refreshing.</td></tr>';}
+  }catch(e){document.getElementById('table-body').innerHTML='<tr><td colspan="7" class="empty-state">Error loading. Try refreshing.</td></tr>';}
 }
 function updateStats(){
   const settled=DATA.filter(r=>r.status==='Settled').reduce((s,r)=>s+r.commission,0);
   const pending=DATA.filter(r=>r.status==='Pending').reduce((s,r)=>s+r.commission,0);
   const sc=DATA.filter(r=>r.status==='Settled').length,pc=DATA.filter(r=>r.status==='Pending').length;
-  document.getElementById('s-settled').textContent=fmtD(settled);document.getElementById('s-settled-sub').textContent=sc+' orders';
-  document.getElementById('s-pending').textContent=fmtD(pending);document.getElementById('s-pending-sub').textContent=pc+' orders';
-  document.getElementById('s-total').textContent=fmtD(settled+pending);document.getElementById('s-orders').textContent=DATA.length;
+  document.getElementById('stat-settled').textContent=fmtD(settled);document.getElementById('stat-settled-sub').textContent=sc+' orders';
+  document.getElementById('stat-pending').textContent=fmtD(pending);document.getElementById('stat-pending-sub').textContent=pc+' orders';
+  document.getElementById('stat-total').textContent=fmtD(settled+pending);document.getElementById('stat-orders').textContent=DATA.length;
 }
-function setFilter(s,btn){filterStatus=s;document.querySelectorAll('.pill').forEach(b=>b.classList.remove('active'));btn.classList.add('active');goPage(1);}
-function sortBy(f){if(sortField===f)sortDir*=-1;else{sortField=f;sortDir=-1;}goPage(1);}
-function getFiltered(){const q=document.getElementById('search').value.toLowerCase();return DATA.filter(r=>{if(filterStatus!=='All'&&r.status!==filterStatus)return false;if(q&&!r.product.toLowerCase().includes(q)&&!r.order.toLowerCase().includes(q))return false;return true;}).sort((a,b)=>{let av=a[sortField]||'',bv=b[sortField]||'';if(sortField==='commission'){av=Number(a.commission);bv=Number(b.commission);}return av<bv?-1*sortDir:av>bv?1*sortDir:0;});}
+function setFilter(status,btn){filterStatus=status;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');goPage(1);}
+function sortBy(field){if(sortField===field)sortDir*=-1;else{sortField=field;sortDir=-1;}goPage(1);}
+function getFiltered(){const search=document.getElementById('search-input').value.toLowerCase();return DATA.filter(r=>{if(filterStatus!=='All'&&r.status!==filterStatus)return false;if(search&&!r.product.toLowerCase().includes(search)&&!r.order.toLowerCase().includes(search))return false;return true;}).sort((a,b)=>{let av=a[sortField]||'',bv=b[sortField]||'';if(sortField==='commission'){av=Number(a.commission);bv=Number(b.commission);}if(av<bv)return -1*sortDir;if(av>bv)return 1*sortDir;return 0;});}
 function goPage(p){currentPage=p;renderTable();}
 function renderTable(){
   const filtered=getFiltered(),total=filtered.length,pages=Math.ceil(total/PAGE_SIZE)||1;
@@ -264,14 +197,14 @@ function renderTable(){
   document.getElementById('page-info').textContent=total?`Showing ${start+1}–${Math.min(start+PAGE_SIZE,total)} of ${total}`:'';
   const btns=document.getElementById('page-btns');btns.innerHTML='';
   for(let i=1;i<=pages;i++){const b=document.createElement('button');b.className='page-btn'+(i===currentPage?' active':'');b.textContent=i;b.onclick=(()=>{const pg=i;return()=>goPage(pg);})();btns.appendChild(b);}
-  const tbody=document.getElementById('tbody');
+  const tbody=document.getElementById('table-body');
   if(!rows.length){tbody.innerHTML='<tr><td colspan="7" class="empty-state">No entries found</td></tr>';return;}
-  tbody.innerHTML=rows.map(r=>`<tr><td class="muted">${r.order?'#'+r.order:'—'}</td><td style="font-weight:500">${r.product||'—'}</td><td class="num" style="color:var(--sage-dark);font-weight:600">${fmtD(r.commission)}</td><td><span class="status status-${r.status.toLowerCase()}">${r.status}</span></td><td class="muted">${fmtDate(r.orderDate)}</td><td class="muted">${fmtDate(r.paidDate)}</td><td><button class="tbl-action" onclick="editEntry('${r.id}')">Edit</button></td></tr>`).join('');
+  tbody.innerHTML=rows.map(r=>`<tr><td class="order-num">${r.order?'#'+r.order:'—'}</td><td class="product-name">${r.product||'—'}</td><td class="num comm-val">${fmtD(r.commission)}</td><td><span class="status-pill status-${r.status}">${r.status}</span></td><td class="date-val">${fmtDate(r.orderDate)}</td><td class="date-val">${fmtDate(r.paidDate)}</td><td><button class="action-btn" onclick="editEntry('${r.id}')">✎</button></td></tr>`).join('');
 }
 function openModal(id=null){
   editingId=id;document.getElementById('form-msg').textContent='';document.getElementById('btn-save').disabled=false;
   if(id){const r=DATA.find(x=>x.id===id);document.getElementById('modal-title').textContent='Edit Entry';document.getElementById('inp-order').value=r.order;document.getElementById('inp-commission').value=r.commission;document.getElementById('inp-product').value=r.product;document.getElementById('inp-status').value=r.status;document.getElementById('inp-order-date').value=r.orderDate;document.getElementById('inp-paid-date').value=r.paidDate;document.getElementById('inp-notes').value=r.notes;document.getElementById('btn-save').textContent='Save Changes';}
-  else{document.getElementById('modal-title').textContent='Add Entry';['inp-order','inp-commission','inp-product','inp-notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('inp-status').value='Pending';document.getElementById('inp-order-date').value=new Date().toISOString().split('T')[0];document.getElementById('inp-paid-date').value='';document.getElementById('btn-save').textContent='Save to Notion';}
+  else{document.getElementById('modal-title').textContent='Add Entry';document.getElementById('inp-order').value='';document.getElementById('inp-commission').value='';document.getElementById('inp-product').value='';document.getElementById('inp-status').value='Pending';document.getElementById('inp-order-date').value=new Date().toISOString().split('T')[0];document.getElementById('inp-paid-date').value='';document.getElementById('inp-notes').value='';document.getElementById('btn-save').textContent='Save to Notion';}
   document.getElementById('modal-overlay').classList.add('open');
 }
 function editEntry(id){openModal(id);}
@@ -281,21 +214,17 @@ async function saveEntry(){
   if(!product||isNaN(commission)){showMsg('Please fill in product and commission.','error');return;}
   const btn=document.getElementById('btn-save');btn.disabled=true;btn.textContent='Saving...';
   const properties={'Order / Video':{title:[{text:{content:order||'—'}}]},'Brand / Product':{rich_text:[{text:{content:product}}]},'Commission':{number:commission},'Status':{status:{name:status}},'Notes':{rich_text:[{text:{content:notes}}]},...(orderDate?{'Order date':{date:{start:orderDate}}}:{}),...(paidDate?{'Paid date':{date:{start:paidDate}}}:{})};
-  try{let res;if(editingId){res=await fetch(`${API}?endpoint=pages/${editingId}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({properties})});}else{res=await fetch(`${API}?endpoint=pages`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({parent:{database_id:DB_ID},properties})});}
-  if(res.ok){showMsg(editingId?'Updated! ✓':'Saved! ✓','success');btn.textContent='Saved ✓';setTimeout(()=>{closeModal();loadFromNotion();},1200);}else{showMsg('Error saving.','error');btn.disabled=false;btn.textContent='Save to Notion';}}catch(e){showMsg('Network error.','error');btn.disabled=false;btn.textContent='Save to Notion';}
+  try{
+    let res;
+    if(editingId){res=await fetch(`${API}?endpoint=pages/${editingId}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({properties})});}
+    else{res=await fetch(`${API}?endpoint=pages`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({parent:{database_id:DB_ID},properties})});}
+    if(res.ok){showMsg(editingId?'Updated! ✓':'Saved! ✓','success');btn.textContent='Saved ✓';setTimeout(()=>{closeModal();loadFromNotion();},1200);}
+    else{showMsg('Error saving.','error');btn.disabled=false;btn.textContent='Save to Notion';}
+  }catch(e){showMsg('Network error.','error');btn.disabled=false;btn.textContent='Save to Notion';}
 }
 function showMsg(msg,type){const el=document.getElementById('form-msg');el.textContent=msg;el.className='form-msg '+type;}
 document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
 loadFromNotion();
 </script>
-<footer>
-  <div class="footer-brand">hello<span>itskortny</span></div>
-  <div class="footer-note">TikTok Shop Creator Hub · Built with ✦</div>
-</footer>
-<div class="toast" id="toast"></div>
-<script>
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
-</script>
-<script>lucide.createIcons();</script>
 </body>
 </html>
