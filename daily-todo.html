@@ -180,7 +180,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(18,13,9,0.9);backdrop-filt
   .pcard-name{font-size:15px;}
 }
 
-.empty-btn{background:var(--caramel);color:white;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:16px;transition:background 0.12s;}
+.empty-btn{background:var(--tan);color:var(--espresso);border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:16px;transition:background 0.12s;}
 .empty-btn:hover{background:var(--rust);}
 .empty-emoji{font-size:40px;margin-bottom:12px;opacity:0.5;}
 .progress-section{background:var(--parchment);border-radius:10px;border:1px solid var(--border);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
@@ -727,10 +727,10 @@ function render() {
   document.getElementById('progress-bar').style.width=totalTakes?(doneTakes/totalTakes*100)+'%':'0%';
 
   if(!TODO.length){
-    main.innerHTML=`<div class="empty-state">
-      <div class="empty-emoji">🎬</div>
-      <div class="empty-title">What are you filming today?</div>
-      <div class="empty-sub">Add products to build your queue</div>
+    const dateLabel = getDateKey(currentDate) === todayKey ? "today" : "this day";
+    main.innerHTML=`<div class="empty-state-wrap">
+      <div class="empty-title">Nothing scheduled ${dateLabel}</div>
+      <div class="empty-sub">Pick products to build your filming queue</div>
       <button class="empty-btn" onclick="openPicker()">+ Add Products</button>
     </div>`;
     return;
