@@ -944,7 +944,7 @@ async function loadAll() {
     // ── Top products
     const topProds=[...prods].sort((a,b)=>(b.properties.GMV?.number||0)-(a.properties.GMV?.number||0)).slice(0,3);
     const maxGmv=topProds[0]?.properties.GMV?.number||1;
-    const EMOJIS=['🧴','🌿','💄','🐾','🏠','✨'];
+  
     document.getElementById('top-products').innerHTML=topProds.map((p,i)=>{
       const name=p.properties.Product?.title?.[0]?.plain_text||'';
       const g=p.properties.GMV?.number||0;
