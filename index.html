@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f5efe6">
+<title>helloitskortny — Creator Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<script>if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js"));</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --cream:      #f5efe6;
+  --cream-mid:  #ede4d6;
+  --cream-dark: #e0d4c0;
+  --parchment:  #f9f5ef;
+  --sand:       #d4c4a8;
+  --caramel:    #c8864a;
+  --caramel-lt: #dba870;
+  --rust:       #b86040;
+  --sage:       #7a9068;
+  --sage-lt:    #a8b898;
+  --sage-dark:  #4a6040;
+  --brown:      #3a2a18;
+  --brown-mid:  #6a4a2a;
+  --taupe:      #9a8870;
+  --ink:        #2a1e10;
+  --white:      #fdfaf6;
+  --border:     rgba(58,42,24,0.1);
+  --border-mid: rgba(58,42,24,0.18);
+  --shadow-sm:  0 2px 8px rgba(58,42,24,0.08);
+  --shadow-md:  0 4px 20px rgba(58,42,24,0.10);
+  --shadow-lg:  0 8px 40px rgba(58,42,24,0.12);
+  --r:          14px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px;
+}
+a { text-decoration: none; color: inherit; }
+
+/* ─── NAV ──────────────────────────────────────────────── */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(245,239,230,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 60px;
+  height: 68px;
+  display: flex; align-items: center; gap: 0;
+}
+.nav-brand {
+  display: flex; flex-direction: column; align-items: center;
+  margin-right: 56px; flex-shrink: 0;
+}
+.nav-k {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 42px; font-weight: 700; line-height: 0.85;
+  color: var(--ink); letter-spacing: -0.02em;
+}
+.nav-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--brown-mid); margin-top: 1px;
+}
+.nav-links {
+  display: flex; gap: 36px; flex: 1; align-items: center;
+}
+.nav-link {
+  font-size: 13px; font-weight: 500;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--taupe);
+  transition: color 0.15s;
+  position: relative; padding-bottom: 3px;
+}
+.nav-link:hover { color: var(--ink); }
+.nav-link.active { color: var(--caramel); }
+.nav-link.active::after {
+  content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
+  height: 2px; background: var(--caramel); border-radius: 1px;
+}
+.nav-cta {
+  background: var(--caramel);
+  color: white;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 13px; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  transition: background 0.15s, transform 0.1s;
+  display: flex; align-items: center; gap: 8px;
+  margin-left: auto;
+}
+.nav-cta:hover { background: var(--rust); transform: translateY(-1px); }
+
+/* ─── LAYOUT WRAPPER ──────────────────────────────────── */
+.page { max-width: 1100px; margin: 0 auto; padding: 0 40px 80px; }
+
+/* ─── HERO ─────────────────────────────────────────────── */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 48px;
+  padding: 56px 0 48px;
+  align-items: start;
+}
+.hero-left { position: relative; }
+.hero-headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(72px, 10vw, 110px);
+  font-weight: 700;
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.hero-script {
+  font-family: 'Dancing Script', cursive;
+  font-size: 28px; font-weight: 600;
+  color: var(--caramel);
+  margin-bottom: 24px;
+  display: block;
+}
+.hero-desc {
+  font-size: 14px; line-height: 1.75;
+  color: var(--taupe); max-width: 380px;
+  margin-bottom: 6px;
+}
+.hero-desc strong { color: var(--ink); font-weight: 600; }
+.hero-leaf {
+  position: absolute;
+  left: -30px; top: 10px;
+  font-size: 120px; line-height: 1;
+  opacity: 0.12; pointer-events: none;
+  transform: rotate(-15deg);
+  filter: sepia(1) saturate(0.3);
+}
+
+/* ─── LEVEL CARD (hero right) ─────────────────────────── */
+.level-card {
+  background: var(--parchment);
+  border-radius: 20px;
+  border: 1px solid var(--border-mid);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.level-card-top {
+  padding: 28px 28px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.level-eyebrow {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--caramel); margin-bottom: 16px;
+}
+.level-current-row {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 20px;
+}
+.level-badge-big { font-size: 44px; line-height: 1; }
+.level-name-big {
+  font-family: 'Syne', sans-serif;
+  font-size: 44px; font-weight: 800; line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--sage-dark);
+}
+.level-stats-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; background: var(--border);
+}
+.level-stat-box {
+  background: var(--parchment);
+  padding: 16px 20px;
+}
+.level-stat-box:first-child { border-radius: 0 0 0 0; }
+.level-stat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 30px; font-weight: 800; line-height: 1;
+  color: var(--ink); margin-bottom: 4px;
+}
+.level-stat-num.accent { color: var(--caramel); }
+.level-stat-label {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--taupe);
+}
+.level-ladder-list {
+  padding: 16px 24px;
+}
+.level-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.level-row:last-child { border-bottom: none; }
+.level-row-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--cream-dark); flex-shrink: 0;
+}
+.level-row.reached .level-row-dot { background: var(--sage); }
+.level-row.current .level-row-dot { background: var(--caramel); width: 12px; height: 12px; }
+.level-row-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+.level-row-name {
+  font-size: 13px; font-weight: 600;
+  color: var(--taupe); flex: 1;
+}
+.level-row.reached .level-row-name,
+.level-row.current .level-row-name { color: var(--ink); }
+.level-row-status {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 5px;
+}
+.level-row.reached .level-row-status { color: var(--sage); }
+.level-row.current .level-row-status { color: var(--caramel); }
+.level-row.locked .level-row-status { color: var(--sand); }
+.level-cta-bar {
+  background: var(--sage-dark);
+  padding: 14px 24px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 500; color: white;
+}
+.level-cta-bar span { opacity: 0.7; }
+.level-cta-bar strong { opacity: 1; }
+
+/* ─── SECTION HEADERS ─────────────────────────────────── */
+.section-head {
+  display: flex; align-items: baseline; gap: 12px;
+  margin-bottom: 18px; padding-top: 36px;
+}
+.section-head-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px; font-weight: 800;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink);
+}
+.section-head-sub {
+  font-family: 'Dancing Script', cursive;
+  font-size: 19px; color: var(--caramel-lt);
+}
+.section-head-line {
+  flex: 1; height: 1px; background: var(--border-mid);
+}
+.section-head-link {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--caramel);
+  display: flex; align-items: center; gap: 4px;
+}
+.section-head-link:hover { color: var(--rust); }
+
+/* ─── SNAPSHOT STATS ──────────────────────────────────── */
+.stats-row {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 14px;
+}
+.stat-card {
+  background: var(--parchment);
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.stat-card-top {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 12px;
+}
+.stat-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+}
+.stat-icon.sage { background: rgba(122,144,104,0.15); }
+.stat-icon.caramel { background: rgba(200,134,74,0.15); }
+.stat-icon.rust { background: rgba(184,96,64,0.15); }
+.stat-icon.sand { background: rgba(212,196,168,0.3); }
+.stat-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--taupe); line-height: 1.3;
+}
+.stat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 34px; font-weight: 800; line-height: 1;
+  color: var(--ink); margin-bottom: 6px;
+}
+.stat-change {
+  font-size: 11px; font-weight: 500;
+  color: var(--sage); display: flex; align-items: center; gap: 3px;
+}
+.stat-change.neg { color: var(--rust); }
+
+/* ─── PRIMARY ACTIONS ─────────────────────────────────── */
+.actions-row {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 14px;
+}
+.action-card {
+  background: var(--parchment);
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  padding: 22px 22px 18px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: flex; flex-direction: column;
+}
+.action-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.action-card-top {
+  display: flex; align-items: flex-start; gap: 14px;
+  margin-bottom: 12px;
+}
+.action-icon {
+  width: 46px; height: 46px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.action-icon.sage-bg { background: rgba(122,144,104,0.18); }
+.action-icon.caramel-bg { background: rgba(200,134,74,0.18); }
+.action-icon.rust-bg { background: rgba(184,96,64,0.15); }
+.action-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px; font-weight: 800;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink); line-height: 1.2;
+}
+.action-desc {
+  font-size: 12px; line-height: 1.65;
+  color: var(--taupe); margin-bottom: 16px; flex: 1;
+}
+.action-link {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--caramel);
+  display: flex; align-items: center; gap: 6px;
+  transition: gap 0.15s, color 0.15s;
+}
+.action-card:hover .action-link { gap: 10px; color: var(--rust); }
+
+/* ─── CREATOR SNAPSHOT ────────────────────────────────── */
+.snapshot-row {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 14px;
+}
+.snap-card {
+  background: var(--parchment);
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex; align-items: flex-start; gap: 14px;
+  transition: transform 0.15s;
+}
+.snap-card:hover { transform: translateY(-2px); }
+.snap-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+  background: rgba(122,144,104,0.15);
+}
+.snap-icon.c { background: rgba(200,134,74,0.15); }
+.snap-icon.r { background: rgba(184,96,64,0.12); }
+.snap-icon.s { background: rgba(212,196,168,0.35); }
+.snap-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px; font-weight: 800; line-height: 1;
+  color: var(--ink); margin-bottom: 3px;
+}
+.snap-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--taupe);
+}
+.snap-sub { font-size: 11px; color: var(--sand); margin-top: 2px; }
+
+/* ─── TOOLS ROW ───────────────────────────────────────── */
+.tools-row {
+  display: grid; grid-template-columns: repeat(5,1fr); gap: 12px;
+}
+.tool-card {
+  background: var(--parchment);
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  padding: 18px 16px 16px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: flex; flex-direction: column;
+}
+.tool-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.tool-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; margin-bottom: 10px;
+}
+.tool-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px; font-weight: 800;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink); margin-bottom: 5px; line-height: 1.3;
+}
+.tool-desc { font-size: 11px; line-height: 1.55; color: var(--taupe); flex: 1; margin-bottom: 12px; }
+.tool-link {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--caramel); display: flex; align-items: center; gap: 4px;
+  transition: gap 0.15s;
+}
+.tool-card:hover .tool-link { gap: 7px; }
+
+/* ─── PERFORMANCE ─────────────────────────────────────── */
+.perf-grid {
+  display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px;
+}
+.perf-card {
+  background: var(--parchment);
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.perf-card-head {
+  padding: 18px 20px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.perf-card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px; font-weight: 800;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink);
+}
+.perf-card-body { padding: 18px 20px; }
+.chart-wrap { height: 160px; }
+.prod-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.prod-row:last-child { border-bottom: none; }
+.prod-img {
+  width: 32px; height: 32px; border-radius: 7px;
+  background: var(--cream-dark); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.prod-name { font-size: 12px; font-weight: 500; color: var(--ink); flex: 1; }
+.prod-bar-wrap { width: 80px; }
+.prod-bar-bg { height: 4px; background: var(--cream-dark); border-radius: 2px; }
+.prod-bar-fill { height: 4px; background: var(--sage); border-radius: 2px; }
+.prod-gmv { font-size: 12px; font-weight: 700; color: var(--ink); min-width: 48px; text-align: right; }
+
+/* ─── FOOTER ──────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border-mid);
+  padding: 24px 0;
+  max-width: 1100px; margin: 0 auto; padding-left: 40px; padding-right: 40px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.footer-brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; font-weight: 700; color: var(--taupe);
+}
+.footer-brand span { font-style: italic; color: var(--caramel); }
+.footer-note { font-size: 11px; color: var(--sand); }
+
+/* ─── ANIMATIONS ──────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.hero-left  { animation: fadeUp 0.65s ease both; }
+.level-card { animation: fadeUp 0.65s 0.1s ease both; }
+.stat-card  { animation: fadeUp 0.5s ease both; }
+.stat-card:nth-child(1){animation-delay:0.05s}
+.stat-card:nth-child(2){animation-delay:0.10s}
+.stat-card:nth-child(3){animation-delay:0.15s}
+.stat-card:nth-child(4){animation-delay:0.20s}
+.action-card{animation: fadeUp 0.5s ease both;}
+.action-card:nth-child(1){animation-delay:0.08s}
+.action-card:nth-child(2){animation-delay:0.14s}
+.action-card:nth-child(3){animation-delay:0.20s}
+
+/* ─── RESPONSIVE ──────────────────────────────────────── */
+@media(max-width:960px){
+  nav{padding:0 24px;}
+  .nav-links{gap:20px;}
+  .page{padding:0 24px 60px;}
+  .hero{grid-template-columns:1fr;gap:32px;}
+  .stats-row,.snapshot-row{grid-template-columns:1fr 1fr;}
+  .actions-row{grid-template-columns:1fr 1fr;}
+  .tools-row{grid-template-columns:repeat(3,1fr);}
+  .perf-grid{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .nav-links{display:none;}
+  .stats-row,.snapshot-row{grid-template-columns:1fr 1fr;}
+  .actions-row{grid-template-columns:1fr;}
+  .tools-row{grid-template-columns:1fr 1fr;}
+  .hero-headline{font-size:64px;}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.383.0/umd/lucide.min.js"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-k">K</div>
+    <div class="nav-name">Kortny</div>
+  </div>
+  <div class="nav-links">
+    <a href="#" class="nav-link active">Home</a>
+    <a href="#content" class="nav-link">Content</a>
+    <a href="products.html" class="nav-link">Products</a>
+    <a href="#revenue" class="nav-link">Revenue</a>
+    <a href="#tools" class="nav-link">Tools</a>
+  </div>
+  <a href="dashboard.html" class="nav-cta">Dashboard →</a>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-leaf">🌿</div>
+      <h1 class="hero-headline">HELLO<br>ITS<br>KORTNY</h1>
+      <span class="hero-script">Creator Hub</span>
+      <p class="hero-desc">
+        TikTok Shop affiliate creator sharing products I genuinely love while building a content-driven business.<br><br>
+        Partnering with brands like <strong>QVC, Pet Lab Co, Grüns, She's Birdie, and MyQ.</strong>
+      </p>
+    </div>
+
+    <!-- LEVEL CARD -->
+    <div class="level-card">
+      <div class="level-card-top">
+        <div class="level-eyebrow">Current Level</div>
+        <div class="level-current-row">
+          <div class="level-badge-big" id="lc-emoji"></div>
+          <div class="level-name-big" id="lc-name">SILVER</div>
+        </div>
+        <div class="level-stats-row">
+          <div class="level-stat-box">
+            <div class="level-stat-num" id="lc-gmv">—</div>
+            <div class="level-stat-label">GMV This Month</div>
+          </div>
+          <div class="level-stat-box">
+            <div class="level-stat-num accent" id="lc-togo">—</div>
+            <div class="level-stat-label" id="lc-togo-label">To Next Level</div>
+          </div>
+        </div>
+      </div>
+      <div class="level-ladder-list" id="level-list"></div>
+      <div class="level-cta-bar" id="level-cta-bar">
+        <i data-lucide="award" style="width:16px;height:16px;stroke:white;stroke-width:1.8;fill:none;display:block"></i> <strong id="level-cta-text">Loading...</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- MONTHLY SNAPSHOT -->
+  <div class="section-head" id="revenue">
+    <div class="section-head-title">Monthly Snapshot</div>
+    <div class="section-head-sub">This Month</div>
+    <div class="section-head-line"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon caramel"><i data-lucide="shopping-bag" style="width:20px;height:20px;stroke:#c8864a;stroke-width:1.8;fill:none;display:block"></i></div>
+        <div class="stat-label">GMV<br>This Month</div>
+      </div>
+      <div class="stat-num" id="s-gmv">—</div>
+      <div class="stat-change" id="s-gmv-sub">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon sage"><i data-lucide="dollar-sign" style="width:20px;height:20px;stroke:#7a9068;stroke-width:1.8;fill:none;display:block"></i></div>
+        <div class="stat-label">Commission<br>This Month</div>
+      </div>
+      <div class="stat-num" id="s-comm">—</div>
+      <div class="stat-change" id="s-comm-sub">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon rust"><i data-lucide="video" style="width:20px;height:20px;stroke:#b86040;stroke-width:1.8;fill:none;display:block"></i></div>
+        <div class="stat-label">Videos Posted<br>This Month</div>
+      </div>
+      <div class="stat-num" id="s-vids">—</div>
+      <div class="stat-change" id="s-vids-sub">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon sand"><i data-lucide="package" style="width:20px;height:20px;stroke:#9a8870;stroke-width:1.8;fill:none;display:block"></i></div>
+        <div class="stat-label">Products Sold<br>This Month</div>
+      </div>
+      <div class="stat-num" id="s-sold">—</div>
+      <div class="stat-change" id="s-sold-sub">—</div>
+    </div>
+  </div>
+
+  <!-- PRIMARY ACTIONS -->
+  <div class="section-head" id="content">
+    <div class="section-head-title">Primary Actions</div>
+    <div class="section-head-line"></div>
+  </div>
+  <div class="actions-row">
+    <a href="daily-todo.html" class="action-card">
+      <div class="action-card-top">
+        <div class="action-icon sage-bg"><i data-lucide="check-square" style="width:22px;height:22px;stroke:#4a6040;stroke-width:1.8;fill:none;display:block"></i></div>
+        <div>
+          <div class="action-title">Today's To Do</div>
+        </div>
+      </div>
+      <p class="action-desc">Your daily game plan. Stay focused and check off what moves the needle.</p>
+      <div class="action-link">View Tasks →</div>
+    </a>
+    <a href="products.html" class="action-card">
+      <div class="action-card-top">
+        <div class="action-icon caramel-bg"><i data-lucide="layers" style="width:22px;height:22px;stroke:#c8864a;stroke-width:1.8;fill:none;display:block"></i></div>
+        <div>
+          <div class="action-title">Product Database</div>
+        </div>
+      </div>
+      <p class="action-desc">Explore and manage products from all your brand partners.</p>
+      <div class="action-link">View Products →</div>
+    </a>
+    <a href="video-tracker.html" class="action-card">
+      <div class="action-card-top">
+        <div class="action-icon rust-bg"><i data-lucide="film" style="width:22px;height:22px;stroke:#b86040;stroke-width:1.8;fill:none;display:block"></i></div>
+        <div>
+          <div class="action-title">Video Tracker</div>
+        </div>
+      </div>
+      <p class="action-desc">Track performance, sales, and insights for all your content.</p>
+      <div class="action-link">View Videos →</div>
+    </a>
+  </div>
+
+  <!-- CREATOR SNAPSHOT -->
+  <div class="section-head">
+    <div class="section-head-title">Creator Snapshot</div>
+    <div class="section-head-sub">All Time</div>
+    <div class="section-head-line"></div>
+  </div>
+  <div class="snapshot-row">
+    <a href="commissions.html" class="snap-card">
+      <div class="snap-icon"><i data-lucide="trending-up" style="width:18px;height:18px;stroke:#4a6040;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div>
+        <div class="snap-num" id="snap-settled">—</div>
+        <div class="snap-label">Settled Commissions</div>
+        <div class="snap-sub">All time</div>
+      </div>
+    </a>
+    <a href="commissions.html" class="snap-card">
+      <div class="snap-icon c"><i data-lucide="clock" style="width:18px;height:18px;stroke:#c8864a;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div>
+        <div class="snap-num" id="snap-pending">—</div>
+        <div class="snap-label">Pending Commissions</div>
+        <div class="snap-sub">Awaiting settlement</div>
+      </div>
+    </a>
+    <a href="video-tracker.html" class="snap-card">
+      <div class="snap-icon r"><i data-lucide="play-circle" style="width:18px;height:18px;stroke:#b86040;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div>
+        <div class="snap-num" id="snap-vids">—</div>
+        <div class="snap-label">Total Videos</div>
+        <div class="snap-sub">Across all products</div>
+      </div>
+    </a>
+    <a href="products.html" class="snap-card">
+      <div class="snap-icon s"><i data-lucide="tag" style="width:18px;height:18px;stroke:#9a8870;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div>
+        <div class="snap-num" id="snap-prods">—</div>
+        <div class="snap-label">Products in Database</div>
+        <div class="snap-sub">Across all brands</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- TOOLS & RESOURCES -->
+  <div class="section-head" id="tools">
+    <div class="section-head-title">Tools &amp; Resources</div>
+    <div class="section-head-line"></div>
+  </div>
+  <div class="tools-row">
+    <a href="hooks.html" class="tool-card">
+      <div class="tool-icon" style="background:rgba(122,144,104,0.15)"><i data-lucide="anchor" style="width:18px;height:18px;stroke:#4a6040;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div class="tool-name">Hook Bank</div>
+      <p class="tool-desc">Save and organize your best hooks.</p>
+      <div class="tool-link">Open →</div>
+    </a>
+    <a href="script-generator.html" class="tool-card">
+      <div class="tool-icon" style="background:rgba(200,134,74,0.15)"><i data-lucide="pen-line" style="width:18px;height:18px;stroke:#c8864a;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div class="tool-name">Script Generator</div>
+      <p class="tool-desc">Create scroll-stopping scripts in seconds.</p>
+      <div class="tool-link">Open →</div>
+    </a>
+    <a href="daily-sales-calendar.html" class="tool-card">
+      <div class="tool-icon" style="background:rgba(184,96,64,0.12)"><i data-lucide="calendar" style="width:18px;height:18px;stroke:#b86040;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div class="tool-name">Daily Sales</div>
+      <p class="tool-desc">View your daily GMV calendar and trends.</p>
+      <div class="tool-link">Open →</div>
+    </a>
+    <a href="commissions.html" class="tool-card">
+      <div class="tool-icon" style="background:rgba(212,196,168,0.4)"><i data-lucide="credit-card" style="width:18px;height:18px;stroke:#9a8870;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div class="tool-name">Commissions</div>
+      <p class="tool-desc">Track earnings, payouts, and payment history.</p>
+      <div class="tool-link">Open →</div>
+    </a>
+    <a href="level-ladder.html" class="tool-card">
+      <div class="tool-icon" style="background:rgba(122,144,104,0.15)"><i data-lucide="award" style="width:18px;height:18px;stroke:#4a6040;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div class="tool-name">Level Ladder</div>
+      <p class="tool-desc">See levels, progress, and requirements.</p>
+      <div class="tool-link">Open →</div>
+    </a>
+  </div>
+
+  <!-- PERFORMANCE PREVIEW -->
+  <div class="section-head">
+    <div class="section-head-title">Performance Preview</div>
+    <div class="section-head-sub">This Month</div>
+    <div class="section-head-line"></div>
+    <a href="dashboard.html" class="section-head-link">View Full Dashboard →</a>
+  </div>
+  <div class="perf-grid">
+    <div class="perf-card">
+      <div class="perf-card-head">
+        <div class="perf-card-title">GMV Trend</div>
+        <div style="font-size:11px;color:var(--taupe)">This Month</div>
+      </div>
+      <div class="perf-card-body">
+        <div class="chart-wrap"><canvas id="gmvChart"></canvas></div>
+      </div>
+    </div>
+    <div class="perf-card">
+      <div class="perf-card-head">
+        <div class="perf-card-title">Top Products by GMV</div>
+      </div>
+      <div class="perf-card-body" id="top-products">
+        <div style="text-align:center;padding:24px;color:var(--sand);font-size:12px">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<footer>
+  <div class="footer-brand">hello<span>itskortny</span></div>
+  <div class="footer-note">TikTok Shop Creator Hub · Built with ✦</div>
+</footer>
+
+<script>
+const API = 'https://kortny-api.vercel.app/api/notion';
+const DB = {
+  daily:    'a35bab03eb3544729b8019ddfc019e4e',
+  orders:   '47a77144c4644149b499cef40bf72bf5',
+  videos:   '148a99ff772d437f91316d20a5526ffa',
+  products: 'd99b6dec79ba46f1a564af4d00f7220d',
+};
+const LEVELS = [
+  {name:'Bronze',  icon:'bronze', min:0,     max:999,    color:'#c9a87a'},
+  {name:'Silver',  icon:'silver', min:1000,  max:4999,   color:'#9a9890'},
+  {name:'Gold',    icon:'gold', min:5000,  max:24999,  color:'#ba7517'},
+  {name:'Platinum',icon:'platinum', min:25000, max:59999,  color:'#7a9e7e'},
+  {name:'Ruby',    icon:'ruby', min:60000, max:149999, color:'#a32d2d'},
+  {name:'Emerald', icon:'emerald', min:150000,max:399999, color:'#3b6d11'},
+  {name:'Sapphire',icon:'sapphire', min:400000,max:1499999, color:'#185fa5'},
+  {name:'Diamond', icon:'diamond',  min:1500000,max:999999999, color:'#2a2a2a'},
+];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function fmt(n){return'$'+Math.round(n).toLocaleString('en-US');}
+function fmtD(n){return'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+async function query(dbId, body={}) {
+  let results=[], cursor=null;
+  do {
+    const b={page_size:100,...body};
+    if(cursor)b.start_cursor=cursor;
+    const res=await fetch(`${API}?endpoint=databases/${dbId}/query`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
+    const data=await res.json();
+    results=[...results,...(data.results||[])];
+    cursor=data.next_cursor;
+  } while(cursor);
+  return results;
+}
+
+async function loadAll() {
+  try {
+    const today=new Date(), y=today.getFullYear(), m=today.getMonth();
+    const monthStart=`${y}-${String(m+1).padStart(2,'0')}-01`;
+    const nextM=new Date(y,m+1,1);
+    const monthEnd=`${nextM.getFullYear()}-${String(nextM.getMonth()+1).padStart(2,'0')}-01`;
+    const monthPrefix=`${y}-${String(m+1).padStart(2,'0')}`;
+
+    // Previous month for comparison
+    const prevM=new Date(y,m-1,1);
+    const prevStart=`${prevM.getFullYear()}-${String(prevM.getMonth()+1).padStart(2,'0')}-01`;
+
+    const [salesAll, ordersAll, videosAll, prodsAll] = await Promise.all([
+      query(DB.daily, {sorts:[{property:'Date',direction:'ascending'}]}),
+      query(DB.orders),
+      query(DB.videos),
+      query(DB.products),
+    ]);
+
+    // This month's daily sales
+    const salesMonth = salesAll.filter(p=>p.properties.Date?.date?.start?.startsWith(monthPrefix));
+    const salesPrev  = salesAll.filter(p=>p.properties.Date?.date?.start?.startsWith(`${prevM.getFullYear()}-${String(prevM.getMonth()+1).padStart(2,'0')}`));
+
+    const gmv      = salesMonth.reduce((s,p)=>s+(p.properties.GMV?.number||0),0);
+    const comm     = salesMonth.reduce((s,p)=>s+(p.properties.Commission?.number||0),0);
+    const prevGmv  = salesPrev.reduce((s,p)=>s+(p.properties.GMV?.number||0),0);
+    const prevComm = salesPrev.reduce((s,p)=>s+(p.properties.Commission?.number||0),0);
+
+    const videosMonth = videosAll.filter(p=>p.properties['Date Posted']?.date?.start?.startsWith(monthPrefix));
+    const prevVids    = videosAll.filter(p=>p.properties['Date Posted']?.date?.start?.startsWith(`${prevM.getFullYear()}-${String(prevM.getMonth()+1).padStart(2,'0')}`));
+
+    const prods = prodsAll.filter(p=>!p.archived&&p.properties.Product?.title?.[0]?.plain_text);
+    const soldMonth = prods.reduce((s,p)=>s+(p.properties.Sold?.number||0),0);
+
+    // ── Snapshot stats
+    document.getElementById('s-gmv').textContent  = fmt(gmv);
+    document.getElementById('s-comm').textContent = fmtD(comm);
+    document.getElementById('s-vids').textContent = videosMonth.length;
+    document.getElementById('s-sold').textContent = soldMonth.toLocaleString();
+
+    function pctChange(cur,prev){if(!prev)return null;const p=Math.round((cur-prev)/prev*100);return p>=0?`+${p}% vs last month`:`${p}% vs last month`;}
+    function setChange(id,cur,prev){const el=document.getElementById(id);const txt=pctChange(cur,prev);if(txt){el.textContent=txt;el.className='stat-change'+(cur<prev?' neg':'');}else el.textContent='';}
+    setChange('s-gmv-sub',gmv,prevGmv);
+    setChange('s-comm-sub',comm,prevComm);
+    setChange('s-vids-sub',videosMonth.length,prevVids.length);
+
+    // ── Creator snapshot
+    const settled = ordersAll.filter(p=>p.properties.Status?.status?.name==='Settled').reduce((s,p)=>s+(p.properties.Commission?.number||0),0);
+    const pending = ordersAll.filter(p=>p.properties.Status?.status?.name==='Pending').reduce((s,p)=>s+(p.properties.Commission?.number||0),0);
+    document.getElementById('snap-settled').textContent = fmtD(settled);
+    document.getElementById('snap-pending').textContent = fmtD(pending);
+    document.getElementById('snap-vids').textContent    = videosAll.length;
+    document.getElementById('snap-prods').textContent   = prods.length;
+
+    // ── Level ladder
+    let lvlIdx=0;
+    for(let i=LEVELS.length-1;i>=0;i--){if(gmv>=LEVELS[i].min){lvlIdx=i;break;}}
+    const lvl=LEVELS[lvlIdx], nextLvl=LEVELS[lvlIdx+1];
+    document.getElementById('lc-emoji').innerHTML = `<img src="icons/levels/${lvl.icon}.png" style="width:44px;height:44px;object-fit:contain" alt="${lvl.name}">`;
+    document.getElementById('lc-name').textContent  = lvl.name.toUpperCase();
+    document.getElementById('lc-name').style.color  = lvl.color;
+    document.getElementById('lc-gmv').textContent   = fmt(gmv);
+    if(nextLvl){
+      document.getElementById('lc-togo').textContent     = fmt(nextLvl.min-gmv);
+      document.getElementById('lc-togo-label').textContent = `To ${nextLvl.name}`;
+      document.getElementById('level-cta-text').textContent= `Keep going! ${fmt(nextLvl.min-gmv)} more to reach ${nextLvl.name}.`;
+    } else {
+      document.getElementById('lc-togo').textContent = 'MAX';
+      document.getElementById('lc-togo-label').textContent = 'Level';
+      document.getElementById('level-cta-text').textContent = "You've reached Sapphire! 👸 Top tier.";
+    }
+    const listEl=document.getElementById('level-list');
+    listEl.innerHTML=LEVELS.map((l,i)=>{
+      const state=i<lvlIdx?'reached':i===lvlIdx?'current':'locked';
+      const statusText=state==='reached'?'REACHED ✓':state==='current'?'CURRENT ★':'LOCKED 🔒';
+      return`<div class="level-row ${state}"><div class="level-row-dot"></div><div class="level-row-icon"><img src="icons/levels/${l.icon}.png" style="width:20px;height:20px;object-fit:contain" alt="${l.name}"></div><div class="level-row-name">${l.name}</div><div class="level-row-status">${statusText}</div></div>`;
+    }).join('');
+
+    // ── GMV Trend Chart
+    const days=[];
+    for(let i=0;i<today.getDate();i++){
+      const d=new Date(y,m,i+1);
+      const key=`${y}-${String(m+1).padStart(2,'0')}-${String(i+1).padStart(2,'0')}`;
+      const entry=salesAll.find(p=>p.properties.Date?.date?.start===key);
+      days.push({label:d.toLocaleDateString('en-US',{month:'short',day:'numeric'}),gmv:entry?entry.properties.GMV?.number||0:0});
+    }
+    const ctx=document.getElementById('gmvChart').getContext('2d');
+    new Chart(ctx,{
+      type:'line',
+      data:{
+        labels:days.map(d=>d.label),
+        datasets:[{
+          data:days.map(d=>d.gmv),
+          borderColor:'#7a9068',
+          backgroundColor:'rgba(122,144,104,0.08)',
+          fill:true, tension:0.4,
+          pointRadius:days.length>15?0:3,
+          borderWidth:2,
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{ticks:{maxTicksLimit:6,font:{size:10},color:'#9a8870'},grid:{display:false}},
+          y:{ticks:{font:{size:10},color:'#9a8870',callback:v=>'$'+v},grid:{color:'rgba(58,42,24,0.06)'}}
+        }
+      }
+    });
+
+    // ── Top products
+    const topProds=[...prods].sort((a,b)=>(b.properties.GMV?.number||0)-(a.properties.GMV?.number||0)).slice(0,3);
+    const maxGmv=topProds[0]?.properties.GMV?.number||1;
+    const EMOJIS=['🧴','🌿','💄','🐾','🏠','✨'];
+    document.getElementById('top-products').innerHTML=topProds.map((p,i)=>{
+      const name=p.properties.Product?.title?.[0]?.plain_text||'';
+      const g=p.properties.GMV?.number||0;
+      return`<div class="prod-row"><div class="prod-img">${EMOJIS[i]||'📦'}</div><div class="prod-name">${name}</div><div class="prod-bar-wrap"><div class="prod-bar-bg"><div class="prod-bar-fill" style="width:${Math.round(g/maxGmv*100)}%"></div></div></div><div class="prod-gmv">${fmt(g)}</div></div>`;
+    }).join('');
+
+  } catch(e) { console.error(e); }
+}
+
+loadAll();
+</script>
+<script>lucide.createIcons();</script>
+</body>
+</html>
