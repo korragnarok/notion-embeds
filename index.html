@@ -907,12 +907,7 @@ async function loadAll() {
       document.getElementById('lc-togo-label').textContent = 'Level';
       document.getElementById('level-cta-text').textContent = "You've reached Sapphire! 👸 Top tier.";
     }
-    const listEl=document.getElementById('level-list');
-    listEl.innerHTML=LEVELS.map((l,i)=>{
-      const state=i<lvlIdx?'reached':i===lvlIdx?'current':'locked';
-      const statusText=state==='reached'?'REACHED ✓':state==='current'?'CURRENT ★':'LOCKED 🔒';
-      return`<div class="level-row ${state}"><div class="level-row-dot"></div><div class="level-row-icon"><img src="icons/levels/${l.icon}.png" class="level-gem-icon" alt=""></div><div class="level-row-name">${l.name}</div><div class="level-row-status">${statusText}</div></div>`;
-    }).join('');
+    const statusText = state==='reached' ? 'REACHED ✓' : state==='current' ? 'CURRENT ★' : 'LOCKED <img src="icons/locked.png" style="width:14px;height:14px;object-fit:contain;opacity:0.5" alt="locked">';
 
     // ── GMV Trend Chart
     const days=[];
