@@ -5,131 +5,296 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#120d09">
-<title>Level Ladder</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:wght@0,300;0,400;0,500&display=swap" rel="stylesheet">
+<title>Level Ladder — helloitskortny</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<script>if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js"));</script>
+
 <style>
-:root{--espresso:#120d09;--brown-deep:#1c1410;--brown-mid:#2a1e16;--brown-lift:#3d2a1e;--brown-surface:#4a3428;--sage:#7a9e7e;--sage-light:#a8c5a4;--sage-dim:#4a6b4e;--tan:#c9a87a;--tan-dim:#7a5e3a;--text-bright:#f0e8de;--text-mid:#a89880;--text-muted:#6a5848;--border:rgba(200,168,120,0.1);--border-lift:rgba(200,168,120,0.2);}
+
+:root{
+  --espresso:#120d09;--brown-deep:#1c1410;--brown-mid:#2a1e16;--brown-lift:#3d2a1e;--brown-surface:#4a3428;
+  --sage:#7a9e7e;--sage-light:#a8c5a4;--sage-dim:#4a6b4e;
+  --tan:#c9a87a;--tan-dim:#7a5e3a;
+  --text-bright:#f0e8de;--text-mid:#a89880;--text-muted:#6a5848;
+  --border:rgba(200,168,120,0.1);--border-lift:rgba(200,168,120,0.2);
+  /* map warm-theme vars so existing CSS still works */
+  --cream:#120d09;--cream-mid:#1c1410;--cream-dark:#2a1e16;
+  --parchment:#2a1e16;--sand:#6a5848;
+  --caramel:#c9a87a;--caramel-lt:#a89060;--rust:#9b6e3a;
+  --sage-lt:#a8c5a4;--sage-dark:#4a6b4e;
+  --ink:#f0e8de;--white:#fdfaf6;
+  --brown:#3a2a18;--brown-mid2:#2a1e16;--taupe:#a89880;
+  --border-mid:rgba(200,168,120,0.18);
+  --shadow-sm:0 2px 8px rgba(0,0,0,0.3);--shadow-md:0 4px 20px rgba(0,0,0,0.35);
+  --r:14px;
+  /* legacy aliases */
+  --tan-dark:var(--tan-dim);--ink-mid:var(--text-mid);--ink-muted:var(--text-muted);
+  --sage-light:var(--sage-light);
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--espresso);color:var(--text-bright);font-family:'DM Sans',sans-serif;min-height:100vh;}
-nav{background:rgba(18,13,9,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
-.nav-logo{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--text-bright);text-decoration:none;}
-.nav-logo span{color:var(--sage-light);font-style:italic;}
-.nav-right{display:flex;gap:8px;}
-.nav-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s;text-decoration:none;display:inline-flex;align-items:center;}
-.nav-btn:hover{border-color:var(--border-lift);color:var(--text-bright);}
-.page-header{padding:24px 28px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;}
-.page-eyebrow{font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--tan);margin-bottom:6px;font-weight:500;display:flex;align-items:center;gap:10px;}
-.page-eyebrow::before{content:'';display:inline-block;width:20px;height:1px;background:var(--tan-dim);}
-.page-title{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;line-height:1;color:var(--text-bright);}
+html{scroll-behavior:smooth;}
+body{background:var(--espresso);color:var(--text-bright);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:0.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px;}
+a{text-decoration:none;color:inherit;}
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:rgba(18,13,9,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 60px;height:68px;display:flex;align-items:center;gap:0;}
+.nav-brand{display:flex;flex-direction:column;align-items:center;margin-right:56px;flex-shrink:0;}
+.nav-k{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:700;line-height:0.85;color:var(--text-bright);letter-spacing:-0.02em;}
+.nav-name{font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:var(--text-muted);margin-top:1px;}
+.nav-links{display:flex;gap:36px;flex:1;align-items:center;}
+.nav-link{font-size:13px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;color:var(--taupe);transition:color 0.15s;position:relative;padding-bottom:3px;}
+.nav-link:hover{color:var(--text-bright);}
+.nav-link.active{color:var(--caramel);}
+.nav-link.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:var(--caramel);border-radius:1px;}
+.nav-cta{background:var(--tan);color:var(--espresso);padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;transition:background 0.15s,transform 0.1s;display:flex;align-items:center;gap:8px;margin-left:auto;}
+.nav-cta:hover{background:var(--tan-dim);transform:translateY(-1px);}
+/* PAGE */
+.page{max-width:1100px;margin:0 auto;padding:0 40px 80px;}
+/* PAGE HEADER */
+.page-header{padding:40px 0 32px;border-bottom:1px solid var(--border-mid);margin-bottom:32px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.page-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--tan);margin-bottom:8px;}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:700;line-height:0.9;letter-spacing:-0.02em;color:var(--text-bright);}
 .page-title em{font-style:italic;color:var(--sage-light);}
-.header-right{text-align:right;}
-.header-month{font-size:12px;color:var(--text-muted);margin-bottom:4px;}
-.header-gmv{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:var(--sage-light);line-height:1;}
-.header-gmv-label{font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-top:2px;}
-.main{max-width:680px;margin:0 auto;padding:24px 24px 60px;}
-.progress-section{background:var(--brown-mid);border-radius:14px;border:1px solid var(--border);padding:22px 24px;margin-bottom:16px;}
-.progress-label{font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);font-weight:600;margin-bottom:14px;}
-.progress-tier-name{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;letter-spacing:-0.01em;margin-bottom:12px;}
-.progress-bar-bg{background:var(--brown-lift);border-radius:100px;height:8px;overflow:hidden;margin-bottom:8px;}
-.progress-bar-fill{height:8px;border-radius:100px;transition:width 0.8s cubic-bezier(.4,0,.2,1);}
-.progress-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);}
-.to-next{background:var(--brown-lift);border-radius:10px;border:1px solid var(--border);padding:12px 16px;font-size:13px;color:var(--text-mid);margin-top:14px;line-height:1.6;}
-.to-next strong{color:var(--text-bright);font-weight:600;}
-.section-label{font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);font-weight:600;margin-bottom:10px;padding-left:2px;}
-.levels-list{display:flex;flex-direction:column;gap:8px;}
-.level-row{background:var(--brown-mid);border-radius:12px;border:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:14px;transition:border-color 0.2s;}
-.level-row.achieved{opacity:0.6;}
-.level-row.locked{opacity:0.35;}
-.level-emoji{font-size:24px;width:32px;text-align:center;flex-shrink:0;}
-.level-info{flex:1;min-width:0;}
-.level-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;line-height:1;}
-.level-range{font-size:12px;color:var(--text-muted);margin-top:3px;}
-.level-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;}
-.level-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:100px;letter-spacing:0.06em;text-transform:uppercase;}
-.badge-achieved{background:rgba(122,158,126,0.15);color:var(--sage-light);}
-.badge-current{background:rgba(122,158,126,0.25);color:var(--sage-light);}
-.badge-locked{background:rgba(106,88,72,0.3);color:var(--text-muted);}
-.mini-bar-bg{width:80px;height:4px;background:var(--brown-lift);border-radius:100px;overflow:hidden;}
-.mini-bar-fill{height:4px;border-radius:100px;}
-.loading-spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--sage);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+.page-sub{font-size:13px;color:var(--taupe);margin-top:8px;}
+.header-actions{display:flex;gap:8px;align-items:center;}
+/* SECTION HEAD */
+.section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;padding-top:32px;}
+.section-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-bright);}
+.section-script{font-family:'Dancing Script',cursive;font-size:18px;color:var(--sage-light);}
+.section-line{flex:1;height:1px;background:var(--border-mid);}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:600;letter-spacing:0.05em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;border:none;}
+.btn-primary{background:var(--tan);color:var(--espresso);}
+.btn-primary:hover{background:var(--tan-dim);}
+.btn-ghost{background:transparent;color:var(--taupe);border:1px solid var(--border-mid);}
+.btn-ghost:hover{background:var(--parchment);color:var(--text-bright);}
+/* FILTER PILLS */
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+.pill{background:var(--parchment);border:1px solid var(--border-mid);border-radius:100px;padding:5px 14px;font-size:12px;font-weight:500;cursor:pointer;color:var(--taupe);transition:all 0.12s;font-family:'DM Sans',sans-serif;}
+.pill.active{background:var(--ink);color:var(--cream);border-color:var(--text-bright);}
+.pill:hover:not(.active){background:var(--cream-dark);}
+.search-box{flex:1;min-width:160px;padding:8px 16px;border:1px solid var(--border-mid);border-radius:100px;background:var(--parchment);color:var(--ink);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;}
+.search-box::placeholder{color:var(--sand);}
+.search-box:focus{border-color:var(--sage);}
+/* TABLE */
+.table-card{background:var(--brown-mid);border-radius:var(--r);border:1px solid var(--border-lift);overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead th{font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:var(--taupe);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border-mid);background:var(--cream-mid);font-weight:700;cursor:pointer;white-space:nowrap;}
+thead th:hover{color:var(--text-bright);}
+thead th.num{text-align:right;}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(200,134,74,0.04);}
+tbody td{padding:12px 16px;font-size:13px;color:var(--text-bright);}
+tbody td.num{text-align:right;}
+tbody td.muted{color:var(--taupe);font-size:12px;}
+.tbl-action{background:none;border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+.tbl-action:hover{background:var(--caramel);color:white;border-color:var(--caramel);}
+/* STATUS PILLS */
+.status{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;letter-spacing:0.04em;}
+.status-settled,.status-posted,.status-in-stock{background:rgba(74,96,64,0.12);color:var(--sage-dark);}
+.status-pending,.status-to-do,.status-low-stock{background:rgba(200,134,74,0.15);color:var(--caramel);}
+.status-ineligible,.status-none,.status-out-of-stock{background:rgba(58,42,24,0.08);color:var(--taupe);}
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--taupe);background:var(--cream-mid);}
+.page-btns{display:flex;gap:4px;}
+.page-btn{background:none;border:1px solid var(--border-mid);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+.page-btn:hover,.page-btn.active{background:var(--caramel);color:white;border-color:var(--caramel);}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(4,2,1,0.75);z-index:300;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--brown-mid);border-radius:24px 24px 0 0;border:1px solid var(--border-lift);border-bottom:none;padding:24px 24px 36px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 -20px 60px rgba(42,30,16,0.15);}
+.modal-handle{width:36px;height:4px;background:var(--cream-dark);border-radius:2px;margin:0 auto 20px;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;margin-bottom:20px;color:var(--text-bright);}
+.form-group{margin-bottom:14px;}
+.form-label{display:block;font-size:10px;font-weight:700;color:var(--taupe);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;}
+.form-input,.form-select,.form-textarea{width:100%;padding:11px 14px;border:1px solid var(--border-mid);border-radius:10px;background:var(--espresso);color:var(--text-bright);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;transition:border-color 0.12s;}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--sand);}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--sage);}
+.form-select option{background:var(--cream);}
+.form-textarea{resize:vertical;min-height:80px;line-height:1.5;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-actions{display:flex;gap:8px;margin-top:20px;}
+.btn-cancel{flex:1;background:var(--cream-dark);border:none;border-radius:10px;padding:13px;font-size:13px;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:background 0.12s;}
+.btn-cancel:hover{background:var(--sand);}
+.btn-save{flex:2;background:var(--caramel);border:none;border-radius:10px;padding:13px;font-size:13px;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;font-weight:600;transition:background 0.12s;}
+.btn-save:hover{background:var(--rust);}
+.btn-save:disabled{opacity:0.6;cursor:not-allowed;}
+.form-msg{font-size:12px;margin-top:10px;text-align:center;min-height:18px;}
+.form-msg.success{color:var(--sage-dark);}
+.form-msg.error{color:var(--rust);}
+/* STAT CARDS */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-row.three{grid-template-columns:repeat(3,1fr);}
+.scard{background:var(--parchment);border-radius:var(--r);border:1px solid var(--border);padding:18px 20px;box-shadow:var(--shadow-sm);}
+.scard-label{font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--taupe);margin-bottom:8px;}
+.scard-val{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;line-height:1;color:var(--text-bright);}
+.scard-val.accent{color:var(--caramel);}
+.scard-val.sage{color:var(--sage-dark);}
+.scard-sub{font-size:11px;color:var(--taupe);margin-top:4px;}
+/* INLINE EDIT */
+.editable{cursor:pointer;border-radius:4px;padding:1px 4px;transition:background 0.1s;}
+.editable:hover{background:rgba(200,134,74,0.1);}
+.inline-input{padding:4px 8px;border:1px solid var(--sage);border-radius:6px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--espresso);color:var(--text-bright);outline:none;width:90px;}
+.inline-select{padding:4px 8px;border:1px solid var(--sage);border-radius:6px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--espresso);color:var(--text-bright);outline:none;cursor:pointer;}
+/* LOADING */
+.loading-wrap{text-align:center;padding:48px;color:var(--taupe);}
+.spinner{width:28px;height:28px;border:2px solid var(--border-mid);border-top-color:var(--caramel);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
 @keyframes spin{to{transform:rotate(360deg);}}
+.empty-state{text-align:center;padding:48px;color:var(--sand);font-size:13px;}
+/* FOOTER */
+footer{border-top:1px solid var(--border-lift);padding:24px 40px;max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+.footer-brand{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--taupe);}
+.footer-brand span{font-style:italic;color:var(--caramel);}
+.footer-note{font-size:11px;color:var(--sand);}
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--ink);color:var(--cream);border-radius:10px;padding:11px 18px;font-size:13px;font-weight:500;opacity:0;transform:translateY(12px);transition:all 0.18s;pointer-events:none;z-index:999;}
+.toast.show{opacity:1;transform:translateY(0);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fadeUp 0.5s ease both;}
+@media(max-width:900px){nav{padding:0 24px;}.nav-links{gap:20px;}.page{padding:0 20px 60px;}.stat-row,.stat-row.three{grid-template-columns:1fr 1fr;}.form-row{grid-template-columns:1fr;}footer{padding:20px 24px;}}
+@media(max-width:600px){.nav-links{display:none;}}
+
+{}
+
+.level-gem-icon {
+  width: 26px; height: 26px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: var(--ink);
+  padding: 3px;
+}
+.level-gem-icon-lg {
+  width: 52px; height: 52px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: var(--ink);
+  padding: 5px;
+}
+
+
+
+
+/* ── MOBILE BOTTOM TAB BAR ── */
+.tab-bar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;background:rgba(28,20,16,0.97);backdrop-filter:blur(20px);border-top:1px solid rgba(200,168,120,0.12);padding:10px 0 max(10px,env(safe-area-inset-bottom));justify-content:space-around;}
+.tab-item{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;cursor:pointer;padding:4px 16px;border-radius:10px;transition:all 0.12s;min-width:56px;}
+.tab-icon-img{width:22px;height:22px;object-fit:contain;opacity:0.45;transition:opacity 0.12s;}
+.tab-item.active .tab-icon-img{opacity:1;}
+.tab-item:hover .tab-icon-img{opacity:0.75;}
+.tab-label{font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(200,168,120,0.45);transition:color 0.12s;}
+.tab-item.active .tab-label{color:#c9a87a;}
+.tab-item:hover .tab-label{color:rgba(200,168,120,0.75);}
+@media(max-width:700px){.tab-bar{display:flex;}body{padding-bottom:72px;}nav{display:none;}}
+
 </style>
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/service-worker.js")
-          .then(reg => console.log("[SW] Registered", reg.scope))
-          .catch(err => console.warn("[SW] Failed", err));
-      });
-    }
-  </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.383.0/umd/lucide.min.js"></script>
 </head>
 <body>
 <nav>
-  <a href="index.html" class="nav-logo">hello<span>itskortny</span></a>
-  <div class="nav-right">
-    <a href="index.html" class="nav-btn">← Home</a>
-    <button class="nav-btn" onclick="loadFromNotion()">↻ Refresh</button>
+  <div class="nav-brand">
+    <div class="nav-k">K</div>
+    <div class="nav-name">Kortny</div>
   </div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="products.html" class="nav-link">Products</a>
+    <a href="dashboard.html" class="nav-link">Revenue</a>
+    <a href="#" class="nav-link active">Tools</a>
+  </div>
+  <a href="dashboard.html" class="nav-cta">Dashboard →</a>
 </nav>
+
+<div class="page">
 <div class="page-header">
   <div>
-    <div class="page-eyebrow">@helloitskortny</div>
-    <div class="page-title">GMV <em>Level Ladder</em></div>
+    <div class="page-eyebrow">GMV Goals</div>
+    <div class="page-title">Level <em>Ladder</em></div>
+    <div class="page-sub">Track your tier progress month by month.</div>
   </div>
-  <div class="header-right">
-    <div class="header-month" id="header-month">—</div>
-    <div class="header-gmv" id="header-gmv">—</div>
-    <div class="header-gmv-label">this month</div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="loadFromNotion()">↻ Refresh</button>
   </div>
 </div>
-<div class="main" id="main-content">
-  <div style="text-align:center;padding:48px"><div class="loading-spinner"></div><div style="color:var(--text-muted)">Loading from Notion...</div></div>
+<div style="max-width:600px;margin:0 auto" id="main-content">
+  <div class="loading-wrap"><div class="spinner"></div>Loading from Notion...</div>
+</div>
 </div>
 <script>
-const API='https://kortny-api.vercel.app/api/notion';
-const DB_ID='a35bab03eb3544729b8019ddfc019e4e';
-const MONTHS_FULL=['January','February','March','April','May','June','July','August','September','October','November','December'];
-const LEVELS=[{name:'Bronze',emoji:'🥉',min:0,max:999,color:'#c9a87a'},{name:'Silver',emoji:'🥈',min:1000,max:4999,color:'#9a9890'},{name:'Gold',emoji:'🥇',min:5000,max:24999,color:'#ba7517'},{name:'Platinum',emoji:'💎',min:25000,max:59999,color:'#7a9e7e'},{name:'Ruby',emoji:'🩸',min:60000,max:149999,color:'#a32d2d'},{name:'Emerald',emoji:'🌿',min:150000,max:399999,color:'#3b6d11'},{name:'Sapphire',emoji:'👸',min:400000,max:999999999,color:'#185fa5'}];
+const API='https://kortny-api.vercel.app/api/notion',DB_ID='a35bab03eb3544729b8019ddfc019e4e';
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const LEVELS=[{name:'Bronze',icon:'bronze',min:0,max:999,color:'#c9a87a'},{name:'Silver',icon:'silver',min:1000,max:4999,color:'#9a9890'},{name:'Gold',icon:'gold',min:5000,max:24999,color:'#ba7517'},{name:'Platinum',icon:'platinum',min:25000,max:59999,color:'#7a9068'},{name:'Ruby',icon:'ruby',min:60000,max:149999,color:'#b86040'},{name:'Emerald',icon:'emerald',min:150000,max:399999,color:'#4a6040'},{name:'Sapphire',icon:'sapphire',min:400000,max:1499999,color:'#185fa5'},{name:'Diamond',icon:'diamond',min:1500000,max:999999999,color:'#2a2a2a'}];
 function fmt(n){return'$'+Math.round(n).toLocaleString('en-US');}
 function fmtD(n){return'$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 async function loadFromNotion(){
-  document.getElementById('main-content').innerHTML='<div style="text-align:center;padding:48px"><div class="loading-spinner"></div><div style="color:var(--text-muted)">Loading...</div></div>';
+  document.getElementById('main-content').innerHTML='<div class="loading-wrap"><div class="spinner"></div>Loading...</div>';
   try{
-    const today=new Date(),thisYear=today.getFullYear(),thisMonth=today.getMonth();
-    const monthStart=thisYear+'-'+String(thisMonth+1).padStart(2,'0')+'-01';
-    const nextMonth=new Date(thisYear,thisMonth+1,1);
-    const monthEnd=nextMonth.getFullYear()+'-'+String(nextMonth.getMonth()+1).padStart(2,'0')+'-01';
-    const res=await fetch(`${API}?endpoint=databases/${DB_ID}/query`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({page_size:100,filter:{and:[{property:'Date',date:{on_or_after:monthStart}},{property:'Date',date:{before:monthEnd}}]}})});
+    const today=new Date(),y=today.getFullYear(),m=today.getMonth();
+    const ms=`${y}-${String(m+1).padStart(2,'0')}-01`;
+    const nm=new Date(y,m+1,1),me=`${nm.getFullYear()}-${String(nm.getMonth()+1).padStart(2,'0')}-01`;
+    const res=await fetch(`${API}?endpoint=databases/${DB_ID}/query`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({page_size:100,filter:{and:[{property:'Date',date:{on_or_after:ms}},{property:'Date',date:{before:me}}]}})});
     const data=await res.json();
-    const monthGMV=(data.results||[]).reduce((s,p)=>s+(p.properties.GMV?.number||0),0);
-    document.getElementById('header-month').textContent=MONTHS_FULL[thisMonth]+' '+thisYear;
-    document.getElementById('header-gmv').textContent=fmtD(monthGMV);
-    renderLadder(monthGMV);
-  }catch(e){document.getElementById('main-content').innerHTML='<div style="text-align:center;padding:48px;color:var(--text-muted)">Error loading. Try refreshing.</div>';}
+    const gmv=(data.results||[]).reduce((s,p)=>s+(p.properties.GMV?.number||0),0);
+    renderLadder(gmv,MONTHS[m]+' '+y);
+  }catch(e){document.getElementById('main-content').innerHTML='<div class="loading-wrap" style="color:var(--rust)">Error loading. Try refreshing.</div>';}
 }
-function renderLadder(monthGMV){
-  function getCurrentLevelIdx(){for(let i=LEVELS.length-1;i>=0;i--){if(monthGMV>=LEVELS[i].min)return i;}return 0;}
-  const currentIdx=getCurrentLevelIdx(),currentLevel=LEVELS[currentIdx],nextLevel=LEVELS[currentIdx+1];
-  const pct=nextLevel?Math.min(100,Math.round((monthGMV-currentLevel.min)/(currentLevel.max-currentLevel.min)*100)):100;
-  let html=`<div class="progress-section"><div class="progress-label">Current level progress</div><div class="progress-tier-name" style="color:${currentLevel.color}">${currentLevel.emoji} ${currentLevel.name}</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;background:${currentLevel.color}"></div></div><div class="progress-meta"><span>${pct}% through this tier</span><span>${fmt(currentLevel.min)} – ${nextLevel?fmt(currentLevel.max):'+'}</span></div><div class="to-next">`;
-  if(nextLevel){const needed=nextLevel.min-monthGMV;html+=`You need <strong>${fmtD(needed)} more</strong> in GMV to reach ${nextLevel.emoji} ${nextLevel.name} — keep going!`;}
-  else html+=`<strong>You've reached the top! Sapphire status achieved. 👸</strong>`;
-  html+=`</div></div><div class="section-label">All levels</div><div class="levels-list">`;
-  LEVELS.forEach((lvl,i)=>{
-    const achieved=i<currentIdx,isCurrent=i===currentIdx,locked=i>currentIdx;
-    const miniPct=isCurrent?pct:achieved?100:0;
-    const rangeStr=lvl.max>999999?fmt(lvl.min)+' +':fmt(lvl.min)+' – '+fmt(lvl.max);
-    let badgeClass,badgeText;
-    if(achieved){badgeClass='badge-achieved';badgeText='Achieved';}else if(isCurrent){badgeClass='badge-current';badgeText='Current';}else{badgeClass='badge-locked';badgeText='Locked';}
-    html+=`<div class="level-row${achieved?' achieved':''}${locked?' locked':''}" ${isCurrent?`style="border-color:${lvl.color};border-width:2px;"`:''}><div class="level-emoji">${lvl.emoji}</div><div class="level-info"><div class="level-name" style="color:${isCurrent?lvl.color:'inherit'}">${lvl.name}</div><div class="level-range">${rangeStr}</div></div><div class="level-right"><span class="level-badge ${badgeClass}">${badgeText}</span><div class="mini-bar-bg"><div class="mini-bar-fill" style="width:${miniPct}%;background:${lvl.color}"></div></div></div></div>`;
+function renderLadder(gmv,monthLabel){
+  let lvlIdx=0;for(let i=LEVELS.length-1;i>=0;i--){if(gmv>=LEVELS[i].min){lvlIdx=i;break;}}
+  const lvl=LEVELS[lvlIdx],next=LEVELS[lvlIdx+1];
+  const pct=next?Math.min(100,Math.round((gmv-lvl.min)/(lvl.max-lvl.min)*100)):100;
+  let html=`
+  <div class="scard" style="margin-bottom:16px;background:var(--parchment);border:1px solid var(--border-mid)">
+    <div style="font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--caramel);margin-bottom:12px">Current Level</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <img src="icons/levels/${lvl.icon}.png" class="level-gem-icon-lg" alt="">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:40px;font-weight:800;color:${lvl.color};line-height:1">${lvl.name.toUpperCase()}</div>
+        <div style="font-size:11px;color:var(--taupe);margin-top:2px">${monthLabel}</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+      <div><div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--taupe);margin-bottom:4px">GMV This Month</div><div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--ink)">${fmtD(gmv)}</div></div>
+      <div><div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--taupe);margin-bottom:4px">${next?'To '+next.name:'Status'}</div><div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--caramel)">${next?fmt(next.min-gmv):'MAX'}</div></div>
+    </div>
+    <div style="background:var(--cream-dark);border-radius:100px;height:8px;overflow:hidden;margin-bottom:6px"><div style="height:8px;border-radius:100px;background:${lvl.color};width:${pct}%;transition:width 0.8s ease"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--taupe)"><span>${pct}% through this tier</span><span>${fmt(lvl.min)} – ${next?fmt(lvl.max):'+'}</span></div>
+    ${next?`<div style="margin-top:14px;background:rgba(74,96,64,0.08);border:1px solid rgba(74,96,64,0.15);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--taupe)">You need <strong style="color:var(--ink)">${fmtD(next.min-gmv)} more</strong> in GMV to reach ${next.name}.</div>`:'<div style="margin-top:14px;background:rgba(200,134,74,0.1);border-radius:10px;padding:12px 14px;font-size:13px;font-weight:600;color:var(--caramel)">Top tier achieved! 👸</div>'}
+  </div>
+  <div style="font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--taupe);margin-bottom:10px">All Levels</div>
+  <div class="table-card">`;
+  LEVELS.forEach((l,i)=>{
+    const reached=i<lvlIdx,isCurrent=i===lvlIdx,locked=i>lvlIdx;
+    const statusLabel=reached?'REACHED ✓':isCurrent?'CURRENT ★':'LOCKED 🔒';
+    const statusColor=reached?'var(--sage-dark)':isCurrent?'var(--caramel)':'var(--sand)';
+    const miniPct=isCurrent?pct:reached?100:0;
+    html+=`<div style="display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--border);${isCurrent?'background:rgba(200,134,74,0.04)':''}">
+      <img src="icons/levels/${l.icon}.png" class="level-gem-icon" alt="">
+      <div style="flex:1">
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:${isCurrent?l.color:'var(--ink)'};${locked?'opacity:0.4':''}">${l.name}</div>
+        <div style="font-size:11px;color:var(--taupe);${locked?'opacity:0.4':''}">${l.max>999999?fmt(l.min)+'+':fmt(l.min)+' – '+fmt(l.max)}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${statusColor};margin-bottom:4px">${statusLabel}</div>
+        <div style="width:80px;height:4px;background:var(--cream-dark);border-radius:2px;overflow:hidden"><div style="height:4px;background:${l.color};width:${miniPct}%;border-radius:2px"></div></div>
+      </div>
+    </div>`;
   });
   html+='</div>';
   document.getElementById('main-content').innerHTML=html;
 }
 loadFromNotion();
 </script>
+<footer>
+  <div class="footer-brand">hello<span>itskortny</span></div>
+  <div class="footer-note">TikTok Shop Creator Hub · Built with ✦</div>
+</footer>
+<div class="toast" id="toast"></div>
+<script>
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+</script>
+<script>lucide.createIcons();</script>
+
+<div class="tab-bar"><a href="index.html" class="tab-item"><img src="icons/tabs/home.png" class="tab-icon-img" alt="Home"><div class="tab-label">Home</div></a><a href="daily-todo.html" class="tab-item"><img src="icons/tabs/todo.png" class="tab-icon-img" alt="To Do"><div class="tab-label">To Do</div></a><a href="script-generator.html" class="tab-item"><img src="icons/tabs/scripts.png" class="tab-icon-img" alt="Scripts"><div class="tab-label">Scripts</div></a><a href="products.html" class="tab-item"><img src="icons/tabs/products.png" class="tab-icon-img" alt="Products"><div class="tab-label">Products</div></a><a href="dashboard.html" class="tab-item active"><img src="icons/tabs/dashboard.png" class="tab-icon-img" alt="Dashboard"><div class="tab-label">Dashboard</div></a></div>
 </body>
 </html>
