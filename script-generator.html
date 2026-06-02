@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#120d09">
 <title>Script Generator</title>
-<link href="https://fonts.googleapis.com/css2?https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
 <style>
 :root{
   --espresso:#120d09;--brown-deep:#1c1410;--brown-mid:#2a1e16;--brown-lift:#3d2a1e;--brown-surface:#4a3428;
@@ -391,6 +391,16 @@ function clearHistory() {
   showToast('History cleared');
 }
 
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  if(!t)return;
+  t.textContent=msg;
+  t.style.opacity='1';
+  t.style.transform='translateY(0)';
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(8px)';},2200);
+}
+
 loadProducts();
 try{loadHooks();}catch(e){console.error("loadHooks failed",e);}
 try{renderHistory();}catch(e){console.error("renderHistory failed",e);}
@@ -400,4 +410,3 @@ try{renderHistory();}catch(e){console.error("renderHistory failed",e);}
 <div class="toast" id="toast" style="position:fixed;bottom:28px;right:28px;background:var(--brown-lift);color:var(--text-bright);border-radius:10px;padding:10px 16px;font-size:13px;font-weight:500;opacity:0;transform:translateY(8px);transition:all 0.18s;pointer-events:none;z-index:9999;"></div>
 </body>
 </html>
-
