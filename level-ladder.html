@@ -160,18 +160,12 @@ footer{border-top:1px solid var(--border-lift);padding:24px 40px;max-width:1100p
 {}
 
 .level-gem-icon {
-  width: 26px; height: 26px;
+  width: 32px; height: 32px;
   object-fit: contain;
-  border-radius: 50%;
-  background: var(--ink);
-  padding: 3px;
 }
 .level-gem-icon-lg {
-  width: 52px; height: 52px;
+  width: 60px; height: 60px;
   object-fit: contain;
-  border-radius: 50%;
-  background: var(--ink);
-  padding: 5px;
 }
 
 
@@ -193,9 +187,9 @@ footer{border-top:1px solid var(--border-lift);padding:24px 40px;max-width:1100p
 </head>
 <body>
 <nav>
- <div class="nav-brand">
-    <img src="logo.png" style="height:38px;width:auto;object-fit:contain">
-</div>
+   <div class="nav-k">K</div>
+    <div class="nav-name">Kortny</div>
+  </div>
   <div class="nav-links">
     <a href="index.html" class="nav-link">Home</a>
     <a href="products.html" class="nav-link">Products</a>
@@ -264,7 +258,7 @@ function renderLadder(gmv,monthLabel){
   <div class="table-card">`;
   LEVELS.forEach((l,i)=>{
     const reached=i<lvlIdx,isCurrent=i===lvlIdx,locked=i>lvlIdx;
-    const statusLabel=reached?'REACHED ✓':isCurrent?'CURRENT ★':'LOCKED 🔒';
+    const statusLabel=reached?'REACHED ✓':isCurrent?'CURRENT ★':'<img src="icons/locked.png" style="width:14px;height:14px;object-fit:contain;opacity:0.5" alt="locked">';
     const statusColor=reached?'var(--sage-dark)':isCurrent?'var(--caramel)':'var(--sand)';
     const miniPct=isCurrent?pct:reached?100:0;
     html+=`<div style="display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--border);${isCurrent?'background:rgba(200,134,74,0.04)':''}">
