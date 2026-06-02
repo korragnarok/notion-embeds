@@ -12,29 +12,23 @@
 <script>if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js"));</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-:root {
-  --cream:      #f5efe6;
-  --cream-mid:  #ede4d6;
-  --cream-dark: #e0d4c0;
-  --parchment:  #f9f5ef;
-  --sand:       #d4c4a8;
-  --caramel:    #c8864a;
-  --caramel-lt: #dba870;
-  --rust:       #b86040;
-  --sage:       #7a9068;
-  --sage-lt:    #a8b898;
-  --sage-dark:  #4a6040;
-  --brown:      #3a2a18;
-  --brown-mid:  #6a4a2a;
-  --taupe:      #9a8870;
-  --ink:        #2a1e10;
-  --white:      #fdfaf6;
-  --border:     rgba(58,42,24,0.1);
-  --border-mid: rgba(58,42,24,0.18);
-  --shadow-sm:  0 2px 8px rgba(58,42,24,0.08);
-  --shadow-md:  0 4px 20px rgba(58,42,24,0.10);
-  --shadow-lg:  0 8px 40px rgba(58,42,24,0.12);
-  --r:          14px;
+
+  :root{
+  --espresso:#120d09;--brown-deep:#1c1410;--brown-mid:#2a1e16;--brown-lift:#3d2a1e;--brown-surface:#4a3428;
+  --sage:#7a9e7e;--sage-light:#a8c5a4;--sage-dim:#4a6b4e;
+  --tan:#c9a87a;--tan-dim:#7a5e3a;
+  --text-bright:#f0e8de;--text-mid:#a89880;--text-muted:#6a5848;
+  --border:rgba(200,168,120,0.1);--border-lift:rgba(200,168,120,0.2);
+  --cream:#120d09;--cream-mid:#1c1410;--cream-dark:#2a1e16;
+  --parchment:#2a1e16;--sand:#6a5848;
+  --caramel:#c9a87a;--caramel-lt:#a89060;--rust:#9b6e3a;
+  --sage-lt:#a8c5a4;--sage-dark:#4a6b4e;
+  --ink:#f0e8de;--white:#fdfaf6;
+  --brown:#3a2a18;--brown-mid2:#2a1e16;--taupe:#a89880;
+  --border-mid:rgba(200,168,120,0.18);
+  --shadow-sm:0 2px 8px rgba(0,0,0,0.3);--shadow-md:0 4px 20px rgba(0,0,0,0.35);
+  --r:14px;
+  --tan-dark:var(--tan-dim);--ink-mid:var(--text-mid);--ink-muted:var(--text-muted);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
