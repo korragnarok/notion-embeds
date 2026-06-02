@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f5efe6">
+<title>Hook Bank — helloitskortny</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<script>if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js"));</script>
+
+<style>
+
+:root {
+  --cream:#f5efe6;--cream-mid:#ede4d6;--cream-dark:#e0d4c0;
+  --parchment:#f9f5ef;--sand:#d4c4a8;
+  --caramel:#c8864a;--caramel-lt:#dba870;--rust:#b86040;
+  --sage:#7a9068;--sage-lt:#a8b898;--sage-dark:#4a6040;
+  --brown:#3a2a18;--brown-mid:#6a4a2a;--taupe:#9a8870;
+  --ink:#2a1e10;--white:#fdfaf6;
+  --border:rgba(58,42,24,0.1);--border-mid:rgba(58,42,24,0.18);
+  --shadow-sm:0 2px 8px rgba(58,42,24,0.08);
+  --shadow-md:0 4px 20px rgba(58,42,24,0.10);
+  --r:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:0.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px;}
+a{text-decoration:none;color:inherit;}
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:rgba(245,239,230,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 60px;height:68px;display:flex;align-items:center;gap:0;}
+.nav-brand{display:flex;flex-direction:column;align-items:center;margin-right:56px;flex-shrink:0;}
+.nav-k{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:700;line-height:0.85;color:var(--ink);letter-spacing:-0.02em;}
+.nav-name{font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:var(--brown-mid);margin-top:1px;}
+.nav-links{display:flex;gap:36px;flex:1;align-items:center;}
+.nav-link{font-size:13px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;color:var(--taupe);transition:color 0.15s;position:relative;padding-bottom:3px;}
+.nav-link:hover{color:var(--ink);}
+.nav-link.active{color:var(--caramel);}
+.nav-link.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:var(--caramel);border-radius:1px;}
+.nav-cta{background:var(--caramel);color:white;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;transition:background 0.15s,transform 0.1s;display:flex;align-items:center;gap:8px;margin-left:auto;}
+.nav-cta:hover{background:var(--rust);transform:translateY(-1px);}
+/* PAGE */
+.page{max-width:1100px;margin:0 auto;padding:0 40px 80px;}
+/* PAGE HEADER */
+.page-header{padding:40px 0 32px;border-bottom:1px solid var(--border-mid);margin-bottom:32px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.page-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--caramel);margin-bottom:8px;}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:700;line-height:0.9;letter-spacing:-0.02em;color:var(--ink);}
+.page-title em{font-style:italic;color:var(--caramel-lt);}
+.page-sub{font-size:13px;color:var(--taupe);margin-top:8px;}
+.header-actions{display:flex;gap:8px;align-items:center;}
+/* SECTION HEAD */
+.section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;padding-top:32px;}
+.section-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink);}
+.section-script{font-family:'Dancing Script',cursive;font-size:18px;color:var(--caramel-lt);}
+.section-line{flex:1;height:1px;background:var(--border-mid);}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:600;letter-spacing:0.05em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;border:none;}
+.btn-primary{background:var(--caramel);color:white;}
+.btn-primary:hover{background:var(--rust);}
+.btn-ghost{background:transparent;color:var(--taupe);border:1px solid var(--border-mid);}
+.btn-ghost:hover{background:var(--parchment);color:var(--ink);}
+/* FILTER PILLS */
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+.pill{background:var(--parchment);border:1px solid var(--border-mid);border-radius:100px;padding:5px 14px;font-size:12px;font-weight:500;cursor:pointer;color:var(--taupe);transition:all 0.12s;font-family:'DM Sans',sans-serif;}
+.pill.active{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+.pill:hover:not(.active){background:var(--cream-dark);}
+.search-box{flex:1;min-width:160px;padding:8px 16px;border:1px solid var(--border-mid);border-radius:100px;background:var(--parchment);color:var(--ink);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;}
+.search-box::placeholder{color:var(--sand);}
+.search-box:focus{border-color:var(--sage);}
+/* TABLE */
+.table-card{background:var(--parchment);border-radius:var(--r);border:1px solid var(--border-mid);overflow:hidden;box-shadow:var(--shadow-sm);}
+table{width:100%;border-collapse:collapse;}
+thead th{font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:var(--taupe);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border-mid);background:var(--cream-mid);font-weight:700;cursor:pointer;white-space:nowrap;}
+thead th:hover{color:var(--ink);}
+thead th.num{text-align:right;}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:rgba(200,134,74,0.04);}
+tbody td{padding:12px 16px;font-size:13px;color:var(--ink);}
+tbody td.num{text-align:right;}
+tbody td.muted{color:var(--taupe);font-size:12px;}
+.tbl-action{background:none;border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+.tbl-action:hover{background:var(--caramel);color:white;border-color:var(--caramel);}
+/* STATUS PILLS */
+.status{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;letter-spacing:0.04em;}
+.status-settled,.status-posted,.status-in-stock{background:rgba(74,96,64,0.12);color:var(--sage-dark);}
+.status-pending,.status-to-do,.status-low-stock{background:rgba(200,134,74,0.15);color:var(--caramel);}
+.status-ineligible,.status-none,.status-out-of-stock{background:rgba(58,42,24,0.08);color:var(--taupe);}
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--taupe);background:var(--cream-mid);}
+.page-btns{display:flex;gap:4px;}
+.page-btn{background:none;border:1px solid var(--border-mid);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+.page-btn:hover,.page-btn.active{background:var(--caramel);color:white;border-color:var(--caramel);}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(42,30,16,0.5);z-index:300;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--parchment);border-radius:24px 24px 0 0;border:1px solid var(--border-mid);border-bottom:none;padding:24px 24px 36px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 -20px 60px rgba(42,30,16,0.15);}
+.modal-handle{width:36px;height:4px;background:var(--cream-dark);border-radius:2px;margin:0 auto 20px;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;margin-bottom:20px;color:var(--ink);}
+.form-group{margin-bottom:14px;}
+.form-label{display:block;font-size:10px;font-weight:700;color:var(--taupe);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;}
+.form-input,.form-select,.form-textarea{width:100%;padding:11px 14px;border:1px solid var(--border-mid);border-radius:10px;background:var(--cream);color:var(--ink);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;transition:border-color 0.12s;}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--sand);}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--sage);}
+.form-select option{background:var(--cream);}
+.form-textarea{resize:vertical;min-height:80px;line-height:1.5;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-actions{display:flex;gap:8px;margin-top:20px;}
+.btn-cancel{flex:1;background:var(--cream-dark);border:none;border-radius:10px;padding:13px;font-size:13px;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:background 0.12s;}
+.btn-cancel:hover{background:var(--sand);}
+.btn-save{flex:2;background:var(--caramel);border:none;border-radius:10px;padding:13px;font-size:13px;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;font-weight:600;transition:background 0.12s;}
+.btn-save:hover{background:var(--rust);}
+.btn-save:disabled{opacity:0.6;cursor:not-allowed;}
+.form-msg{font-size:12px;margin-top:10px;text-align:center;min-height:18px;}
+.form-msg.success{color:var(--sage-dark);}
+.form-msg.error{color:var(--rust);}
+/* STAT CARDS */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-row.three{grid-template-columns:repeat(3,1fr);}
+.scard{background:var(--parchment);border-radius:var(--r);border:1px solid var(--border);padding:18px 20px;box-shadow:var(--shadow-sm);}
+.scard-label{font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--taupe);margin-bottom:8px;}
+.scard-val{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;line-height:1;color:var(--ink);}
+.scard-val.accent{color:var(--caramel);}
+.scard-val.sage{color:var(--sage-dark);}
+.scard-sub{font-size:11px;color:var(--taupe);margin-top:4px;}
+/* INLINE EDIT */
+.editable{cursor:pointer;border-radius:4px;padding:1px 4px;transition:background 0.1s;}
+.editable:hover{background:rgba(200,134,74,0.1);}
+.inline-input{padding:4px 8px;border:1px solid var(--sage);border-radius:6px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);outline:none;width:90px;}
+.inline-select{padding:4px 8px;border:1px solid var(--sage);border-radius:6px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);outline:none;cursor:pointer;}
+/* LOADING */
+.loading-wrap{text-align:center;padding:48px;color:var(--taupe);}
+.spinner{width:28px;height:28px;border:2px solid var(--border-mid);border-top-color:var(--caramel);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.empty-state{text-align:center;padding:48px;color:var(--sand);font-size:13px;}
+/* FOOTER */
+footer{border-top:1px solid var(--border-mid);padding:24px 40px;max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+.footer-brand{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--taupe);}
+.footer-brand span{font-style:italic;color:var(--caramel);}
+.footer-note{font-size:11px;color:var(--sand);}
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--ink);color:var(--cream);border-radius:10px;padding:11px 18px;font-size:13px;font-weight:500;opacity:0;transform:translateY(12px);transition:all 0.18s;pointer-events:none;z-index:999;}
+.toast.show{opacity:1;transform:translateY(0);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fadeUp 0.5s ease both;}
+@media(max-width:900px){nav{padding:0 24px;}.nav-links{gap:20px;}.page{padding:0 20px 60px;}.stat-row,.stat-row.three{grid-template-columns:1fr 1fr;}.form-row{grid-template-columns:1fr;}footer{padding:20px 24px;}}
+@media(max-width:600px){.nav-links{display:none;}}
+
+{}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">
+    <div class="nav-k">K</div>
+    <div class="nav-name">Kortny</div>
+  </div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="products.html" class="nav-link">Products</a>
+    <a href="dashboard.html" class="nav-link">Revenue</a>
+    <a href="#" class="nav-link active">Tools</a>
+  </div>
+  <a href="dashboard.html" class="nav-cta">Dashboard →</a>
+</nav>
+
+<div class="page">
+<div class="page-header">
+  <div>
+    <div class="page-eyebrow">Content Strategy</div>
+    <div class="page-title">Hook <em>Bank</em></div>
+    <div class="page-sub">Your reusable hook library — 125+ formulas, synced to Notion.</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="loadFromNotion()">↻ Refresh</button>
+    <button class="btn btn-primary" onclick="openCategoryModal()">+ Category</button>
+  </div>
+</div>
+<div style="display:flex;gap:10px;margin-bottom:20px;align-items:center">
+  <input type="text" class="search-box" id="search" placeholder="Search hooks..." oninput="renderAll()" style="max-width:400px">
+  <span style="font-size:12px;color:var(--taupe)" id="search-count"></span>
+</div>
+<!-- TOC -->
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:28px" id="toc"></div>
+<!-- CONTENT -->
+<div id="main-content">
+  <div class="loading-wrap"><div class="spinner"></div>Loading from Notion...</div>
+</div>
+</div>
+<!-- HOOK MODAL -->
+<div class="modal-overlay" id="hook-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="hook-modal-title">Add Hook</div>
+    <div class="form-group"><label class="form-label">Hook Text</label><textarea class="form-textarea" id="hook-text" placeholder="Write your hook here..."></textarea></div>
+    <div class="form-group"><label class="form-label">Category</label><select class="form-select" id="hook-category"></select></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeHookModal()">Cancel</button>
+      <button class="btn-save" id="hook-save-btn" onclick="saveHook()">Save Hook</button>
+    </div>
+    <div class="form-msg" id="hook-form-msg"></div>
+  </div>
+</div>
+<!-- CAT MODAL -->
+<div class="modal-overlay" id="cat-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="cat-modal-title">Add Category</div>
+    <div class="form-group"><label class="form-label">Category Name</label><input type="text" class="form-input" id="cat-name" placeholder="e.g. Impulse Buy Hooks"></div>
+    <div class="form-group"><label class="form-label">Emoji</label><input type="text" class="form-input" id="cat-emoji" placeholder="e.g. 🛒" maxlength="4"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCatModal()">Cancel</button>
+      <button class="btn-save" id="cat-save-btn" onclick="saveCategory()">Save</button>
+    </div>
+    <div class="form-msg" id="cat-form-msg"></div>
+  </div>
+</div>
+<style>
+.hook-section{margin-bottom:40px;scroll-margin-top:24px;}
+.hook-section-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border-mid);}
+.hook-section-emoji{font-size:22px;}
+.hook-section-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;letter-spacing:0.04em;flex:1;}
+.hook-section-count{font-size:11px;color:var(--taupe);}
+.hook-section-btns{display:flex;gap:6px;}
+.hook-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.hook-card{background:var(--parchment);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start;transition:all 0.12s;position:relative;}
+.hook-card:hover{border-color:var(--border-mid);transform:translateY(-1px);box-shadow:var(--shadow-sm);}
+.hook-num{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--sand);min-width:20px;}
+.hook-text{font-size:13px;line-height:1.65;color:var(--brown-mid);flex:1;}
+.hook-btns{display:flex;gap:4px;opacity:0;transition:opacity 0.12s;flex-shrink:0;}
+.hook-card:hover .hook-btns{opacity:1;}
+.hook-action{background:none;border:1px solid var(--border-mid);border-radius:5px;padding:3px 8px;font-size:10px;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;font-weight:600;transition:all 0.12s;}
+.hook-action:hover{background:var(--caramel);color:white;border-color:var(--caramel);}
+.hook-action.del:hover{background:var(--rust);border-color:var(--rust);}
+.hook-add-btn{width:100%;margin-top:8px;background:none;border:1px dashed var(--border-mid);border-radius:10px;padding:10px;font-size:12px;color:var(--taupe);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+.hook-add-btn:hover{border-color:var(--caramel);color:var(--caramel);}
+.toc-link{background:var(--parchment);border:1px solid var(--border-mid);border-radius:100px;padding:5px 14px;font-size:11px;font-weight:500;color:var(--taupe);text-decoration:none;transition:all 0.12s;}
+.toc-link:hover{background:var(--caramel);color:white;border-color:var(--caramel);}
+@media(max-width:600px){.hook-grid{grid-template-columns:1fr;}}
+</style>
+<script>
+const API='https://kortny-api.vercel.app/api/notion',HOOKS_DB='18bbb9e6ad7241be9c4b5dfac1bb8fcc';
+let HOOKS=[],CATEGORIES=[],editingHookId=null;
+async function loadFromNotion(){
+  document.getElementById('main-content').innerHTML='<div class="loading-wrap"><div class="spinner"></div>Loading from Notion...</div>';
+  try{
+    let results=[],cursor=null;
+    do{const b={page_size:100};if(cursor)b.start_cursor=cursor;const res=await fetch(`${API}?endpoint=databases/${HOOKS_DB}/query`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});const data=await res.json();results=[...results,...(data.results||[])];cursor=data.next_cursor;}while(cursor);
+    HOOKS=results.map(p=>({notionId:p.id,text:p.properties['Hook Text']?.title?.[0]?.plain_text||'',catId:p.properties['Category ID']?.rich_text?.[0]?.plain_text||'',catName:p.properties.Category?.rich_text?.[0]?.plain_text||'',catEmoji:p.properties['Category Emoji']?.rich_text?.[0]?.plain_text||'🎣'})).filter(h=>h.text);
+    const catMap={};HOOKS.forEach(h=>{if(h.catName){const nid=h.catName.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');if(!catMap[nid])catMap[nid]={id:nid,name:h.catName,emoji:h.catEmoji};h.catId=nid;}});
+    CATEGORIES=Object.values(catMap);syncLS();renderAll();
+  }catch(e){document.getElementById('main-content').innerHTML='<div class="loading-wrap" style="color:var(--rust)">Error loading. Try refreshing.</div>';}
+}
+function syncLS(){localStorage.setItem('kortny-hooks-v2',JSON.stringify({categories:CATEGORIES.map(c=>({id:c.id,name:c.name,emoji:c.emoji})),hooks:HOOKS.map(h=>({id:h.notionId,catId:h.catId,text:h.text}))}));}
+function buildTOC(){
+  const q=document.getElementById('search').value.toLowerCase();const toc=document.getElementById('toc');toc.innerHTML='';
+  CATEGORIES.forEach(cat=>{const hooks=HOOKS.filter(h=>h.catId===cat.id);if(q&&!hooks.some(h=>h.text.toLowerCase().includes(q)))return;const a=document.createElement('a');a.href='#cat-'+cat.id;a.className='toc-link';a.textContent=cat.emoji+' '+cat.name;toc.appendChild(a);});
+}
+function renderAll(){
+  const q=document.getElementById('search').value.toLowerCase();buildTOC();const main=document.getElementById('main-content');let html='',total=0;
+  CATEGORIES.forEach(cat=>{
+    let hooks=HOOKS.filter(h=>h.catId===cat.id);if(q)hooks=hooks.filter(h=>h.text.toLowerCase().includes(q));if(q&&!hooks.length)return;total+=hooks.length;
+    html+=`<div class="hook-section" id="cat-${cat.id}"><div class="hook-section-head"><span class="hook-section-emoji">${cat.emoji}</span><span class="hook-section-title">${cat.name}</span><span class="hook-section-count">${hooks.length} hooks</span><div class="hook-section-btns"><button class="tbl-action" onclick="openHookModal(null,'${cat.id}')">+ Add</button><button class="tbl-action" onclick="editCat('${cat.id}')">Edit</button><button class="tbl-action" style="color:var(--rust)" onclick="deleteCat('${cat.id}')">Delete</button></div></div><div class="hook-grid">`;
+    hooks.forEach((h,i)=>{html+=`<div class="hook-card"><span class="hook-num">${i+1}</span><p class="hook-text">${h.text}</p><div class="hook-btns"><button class="hook-action" onclick="copyHook(this,'${h.notionId}')">Copy</button><button class="hook-action" onclick="openHookModal('${h.notionId}','${cat.id}')">Edit</button><button class="hook-action del" onclick="deleteHook('${h.notionId}')">✕</button></div></div>`;});
+    html+=`</div><button class="hook-add-btn" onclick="openHookModal(null,'${cat.id}')">+ Add hook to ${cat.name}</button></div>`;
+  });
+  if(!html)html='<p style="text-align:center;padding:60px;color:var(--sand)">No hooks match your search</p>';
+  main.innerHTML=html;document.getElementById('search-count').textContent=q?total+' hooks found':HOOKS.length+' total hooks';
+}
+function openHookModal(hookId,catId){editingHookId=hookId;const sel=document.getElementById('hook-category');sel.innerHTML=CATEGORIES.map(c=>`<option value="${c.id}">${c.emoji} ${c.name}</option>`).join('');if(hookId){const h=HOOKS.find(x=>x.notionId===hookId);document.getElementById('hook-modal-title').textContent='Edit Hook';document.getElementById('hook-text').value=h.text;sel.value=h.catId;}else{document.getElementById('hook-modal-title').textContent='Add Hook';document.getElementById('hook-text').value='';sel.value=catId||CATEGORIES[0]?.id;}document.getElementById('hook-form-msg').textContent='';document.getElementById('hook-save-btn').disabled=false;document.getElementById('hook-save-btn').textContent=hookId?'Save Changes':'Save Hook';document.getElementById('hook-modal').classList.add('open');}
+function closeHookModal(){document.getElementById('hook-modal').classList.remove('open');}
+async function saveHook(){
+  const text=document.getElementById('hook-text').value.trim(),catId=document.getElementById('hook-category').value,cat=CATEGORIES.find(c=>c.id===catId);if(!text){showFormMsg('hook','Please enter a hook.','error');return;}
+  const btn=document.getElementById('hook-save-btn');btn.disabled=true;btn.textContent='Saving...';
+  const properties={'Hook Text':{title:[{text:{content:text}}]},'Category':{rich_text:[{text:{content:cat?.name||''}}]},'Category Emoji':{rich_text:[{text:{content:cat?.emoji||'🎣'}}]},'Category ID':{rich_text:[{text:{content:catId}}]}};
+  try{
+    let res;if(editingHookId){res=await fetch(`${API}?endpoint=pages/${editingHookId}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({properties})});if(res.ok){const h=HOOKS.find(x=>x.notionId===editingHookId);if(h){h.text=text;h.catId=catId;h.catName=cat?.name||'';h.catEmoji=cat?.emoji||'🎣';}}}
+    else{res=await fetch(`${API}?endpoint=pages`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({parent:{database_id:HOOKS_DB},properties})});if(res.ok){const data=await res.json();HOOKS.push({notionId:data.id,text,catId,catName:cat?.name||'',catEmoji:cat?.emoji||'🎣'});}}
+    if(res.ok){syncLS();renderAll();closeHookModal();showToast(editingHookId?'Hook updated!':'Hook added!');}
+    else{showFormMsg('hook','Error saving.','error');btn.disabled=false;btn.textContent='Save Hook';}
+  }catch(e){showFormMsg('hook','Network error.','error');btn.disabled=false;btn.textContent='Save Hook';}
+}
+async function deleteHook(notionId){if(!confirm('Delete this hook?'))return;try{await fetch(`${API}?endpoint=pages/${notionId}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({archived:true})});HOOKS=HOOKS.filter(h=>h.notionId!==notionId);syncLS();renderAll();showToast('Hook deleted');}catch(e){showToast('Error deleting');}}
+function openCategoryModal(){document.getElementById('cat-modal-title').textContent='Add Category';document.getElementById('cat-name').value='';document.getElementById('cat-emoji').value='';document.getElementById('cat-form-msg').textContent='';delete document.getElementById('cat-modal').dataset.editingCat;document.getElementById('cat-modal').classList.add('open');}
+function editCat(id){const cat=CATEGORIES.find(c=>c.id===id);document.getElementById('cat-modal-title').textContent='Edit Category';document.getElementById('cat-name').value=cat.name;document.getElementById('cat-emoji').value=cat.emoji;document.getElementById('cat-form-msg').textContent='';document.getElementById('cat-modal').dataset.editingCat=id;document.getElementById('cat-modal').classList.add('open');}
+function closeCatModal(){document.getElementById('cat-modal').classList.remove('open');delete document.getElementById('cat-modal').dataset.editingCat;}
+async function saveCategory(){
+  const name=document.getElementById('cat-name').value.trim(),emoji=document.getElementById('cat-emoji').value.trim()||'📌',editingCatId=document.getElementById('cat-modal').dataset.editingCat;
+  if(!name){showFormMsg('cat','Please enter a name.','error');return;}
+  const btn=document.getElementById('cat-save-btn');btn.disabled=true;
+  if(editingCatId){const catHooks=HOOKS.filter(h=>h.catId===editingCatId);for(const h of catHooks){await fetch(`${API}?endpoint=pages/${h.notionId}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({properties:{'Category':{rich_text:[{text:{content:name}}]},'Category Emoji':{rich_text:[{text:{content:emoji}}]}}})});h.catName=name;h.catEmoji=emoji;}const cat=CATEGORIES.find(c=>c.id===editingCatId);if(cat){cat.name=name;cat.emoji=emoji;}}
+  else{const newId=name.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');CATEGORIES.push({id:newId,name,emoji});}
+  syncLS();renderAll();closeCatModal();showToast(editingCatId?'Category updated!':'Category added!');btn.disabled=false;
+}
+async function deleteCat(id){const cat=CATEGORIES.find(c=>c.id===id),hc=HOOKS.filter(h=>h.catId===id).length;if(!confirm(`Delete "${cat.name}" and its ${hc} hooks?`))return;for(const h of HOOKS.filter(h=>h.catId===id)){await fetch(`${API}?endpoint=pages/${h.notionId}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({archived:true})});}HOOKS=HOOKS.filter(h=>h.catId!==id);CATEGORIES=CATEGORIES.filter(c=>c.id!==id);syncLS();renderAll();showToast('Category deleted');}
+function copyHook(btn,notionId){const h=HOOKS.find(x=>x.notionId===notionId);navigator.clipboard.writeText(h.text).then(()=>{btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='Copy',2000);showToast('Copied!');});}
+function showFormMsg(type,msg,cls){const el=document.getElementById(type+'-form-msg');el.textContent=msg;el.className='form-msg '+cls;}
+document.getElementById('hook-modal').addEventListener('click',function(e){if(e.target===this)closeHookModal();});
+document.getElementById('cat-modal').addEventListener('click',function(e){if(e.target===this)closeCatModal();});
+loadFromNotion();
+</script>
+<footer>
+  <div class="footer-brand">hello<span>itskortny</span></div>
+  <div class="footer-note">TikTok Shop Creator Hub · Built with ✦</div>
+</footer>
+<div class="toast" id="toast"></div>
+<script>
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+</script>
+</body>
+</html>
