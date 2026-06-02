@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f5efe6">
+<title>Today's To Do — helloitskortny</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.383.0/umd/lucide.min.js"></script>
+<link rel="manifest" href="manifest.json">
+<script>if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/service-worker.js"));</script>
+<style>
+:root {
+  --cream:#f5efe6;--cream-mid:#ede4d6;--cream-dark:#e0d4c0;
+  --parchment:#f9f5ef;--sand:#d4c4a8;
+  --caramel:#c8864a;--caramel-lt:#dba870;--rust:#b86040;
+  --sage:#7a9068;--sage-lt:#a8b898;--sage-dark:#4a6040;
+  --brown:#3a2a18;--brown-mid:#6a4a2a;--taupe:#9a8870;
+  --ink:#2a1e10;--white:#fdfaf6;
+  --border:rgba(58,42,24,0.1);--border-mid:rgba(58,42,24,0.18);
+  --shadow-sm:0 2px 8px rgba(58,42,24,0.08);
+  --shadow-md:0 4px 20px rgba(58,42,24,0.10);
+  --r:14px;
+  /* legacy aliases so existing JS-rendered HTML still looks right */
+  --tan:var(--caramel);--tan-dark:var(--rust);
+  --ink-mid:var(--taupe);--ink-muted:var(--sand);
+  --sage-light:var(--sage-lt);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:0.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px;}
+a{text-decoration:none;color:inherit;}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:200;background:rgba(245,239,230,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 60px;height:68px;display:flex;align-items:center;gap:0;}
+.nav-brand{display:flex;flex-direction:column;align-items:center;margin-right:56px;flex-shrink:0;}
+.nav-k{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:700;line-height:0.85;color:var(--ink);letter-spacing:-0.02em;}
+.nav-name{font-size:9px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:var(--brown-mid);margin-top:1px;}
+.nav-links{display:flex;gap:36px;flex:1;align-items:center;}
+.nav-link{font-size:13px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;color:var(--taupe);transition:color 0.15s;position:relative;padding-bottom:3px;}
+.nav-link:hover{color:var(--ink);}
+.nav-link.active{color:var(--caramel);}
+.nav-link.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:var(--caramel);border-radius:1px;}
+.nav-cta{background:var(--caramel);color:white;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;transition:background 0.15s,transform 0.1s;display:flex;align-items:center;gap:8px;margin-left:auto;text-decoration:none;}
+.nav-cta:hover{background:var(--rust);transform:translateY(-1px);}
+
+/* ── PAGE ── */
+.page{max-width:900px;margin:0 auto;padding:0 40px 80px;}
+.page-header{padding:40px 0 28px;border-bottom:1px solid var(--border-mid);margin-bottom:28px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.page-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--caramel);margin-bottom:8px;}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:700;line-height:0.9;letter-spacing:-0.02em;color:var(--ink);}
+.page-title em{font-style:italic;color:var(--caramel-lt);}
+.page-date{font-size:13px;color:var(--taupe);margin-top:6px;}
+.header-actions{display:flex;gap:8px;align-items:center;}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:600;letter-spacing:0.05em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;border:none;}
+.btn-primary{background:var(--caramel);color:white;}
+.btn-primary:hover{background:var(--rust);}
+.btn-ghost{background:transparent;color:var(--taupe);border:1px solid var(--border-mid);}
+.btn-ghost:hover{background:var(--parchment);color:var(--ink);}
+
+/* ── EMPTY STATE ── */
+.empty-state-wrap{text-align:center;padding:64px 24px;}
+.empty-icon{font-size:48px;margin-bottom:16px;opacity:0.4;}
+.empty-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--taupe);margin-bottom:8px;}
+.empty-sub{font-size:13px;color:var(--sand);margin-bottom:24px;}
+
+/* ── PRODUCT CARDS ── */
+.cards-list{display:flex;flex-direction:column;gap:16px;}
+.pcard{background:var(--parchment);border-radius:var(--r);border:1px solid var(--border-mid);box-shadow:var(--shadow-sm);overflow:hidden;}
+.pcard-header{background:var(--ink);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.pcard-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:white;letter-spacing:0.02em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pcard-brand{font-size:11px;font-weight:500;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.1em;margin-top:2px;}
+.pcard-header-right{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+.ppill{font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+.ppill-done{background:rgba(122,144,104,0.25);color:var(--sage-lt);}
+.ppill-done.checked{background:var(--sage-dark);color:white;}
+.ppill-remove{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);}
+.ppill-remove:hover{background:rgba(184,96,64,0.4);color:white;}
+
+/* ── TAKES ── */
+.takes-list{padding:16px 20px;display:flex;flex-direction:column;gap:12px;}
+.take-row{background:var(--cream-mid);border-radius:10px;border:1px solid var(--border);padding:14px 16px;}
+.take-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.take-num{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--caramel);width:22px;flex-shrink:0;}
+.take-status-row{display:flex;gap:6px;flex-wrap:wrap;flex:1;}
+.tbadge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;letter-spacing:0.06em;text-transform:uppercase;}
+.tbadge-done{background:rgba(74,96,64,0.15);color:var(--sage-dark);}
+.tbadge-logged{background:rgba(200,134,74,0.15);color:var(--caramel);}
+.take-actions{display:flex;gap:5px;margin-left:auto;flex-shrink:0;}
+.tact{background:none;border:1px solid var(--border-mid);border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+.tact:hover{background:var(--caramel);color:white;border-color:var(--caramel);}
+.tact.danger:hover{background:var(--rust);border-color:var(--rust);}
+
+/* ── HOOK ── */
+.hook-display{background:var(--cream);border-radius:8px;padding:10px 14px;font-size:13px;font-style:italic;color:var(--taupe);border-left:3px solid var(--caramel-lt);margin-bottom:10px;cursor:pointer;transition:background 0.12s;}
+.hook-display:hover{background:rgba(200,134,74,0.06);}
+.hook-placeholder{color:var(--sand);font-style:italic;}
+
+/* ── SCRIPT ── */
+.script-box{background:var(--cream);border-radius:8px;padding:14px 16px;font-size:13px;line-height:1.75;color:var(--ink);border-left:3px solid var(--sage);position:relative;}
+.script-empty{font-size:13px;color:var(--sand);font-style:italic;padding:10px 0;}
+.script-edit-wrap{position:relative;}
+.script-textarea{width:100%;padding:12px 14px;border:none;border-radius:8px;background:var(--cream);color:var(--ink);font-size:13px;line-height:1.75;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;min-height:120px;border-left:3px solid var(--caramel);}
+.script-btn-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+
+/* ── LOG VIDEO ROW ── */
+.log-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.log-input{padding:8px 12px;border:1px solid var(--border-mid);border-radius:8px;background:var(--cream);color:var(--ink);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;}
+.log-input::placeholder{color:var(--sand);}
+.log-input:focus{border-color:var(--sage);}
+.log-select{padding:8px 12px;border:1px solid var(--border-mid);border-radius:8px;background:var(--cream);color:var(--ink);font-size:12px;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;cursor:pointer;}
+.log-msg{font-size:11px;color:var(--sage-dark);margin-top:4px;}
+
+/* ── ADD TAKE BTN ── */
+.add-take-btn{width:100%;background:none;border:1px dashed var(--border-mid);border-radius:10px;padding:10px;font-size:12px;color:var(--taupe);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s;margin:0 0 4px;}
+.add-take-btn:hover{border-color:var(--caramel);color:var(--caramel);}
+
+/* ── MODALS ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(42,30,16,0.5);z-index:300;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--parchment);border-radius:24px 24px 0 0;border:1px solid var(--border-mid);border-bottom:none;padding:24px 24px 36px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 -20px 60px rgba(42,30,16,0.15);}
+.modal-handle{width:36px;height:4px;background:var(--cream-dark);border-radius:2px;margin:0 auto 20px;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;margin-bottom:4px;color:var(--ink);}
+.modal-sub{font-size:12px;color:var(--taupe);margin-bottom:16px;}
+.modal-search{width:100%;padding:10px 14px;border:1px solid var(--border-mid);border-radius:10px;background:var(--cream);color:var(--ink);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:12px;}
+.modal-search:focus{border-color:var(--sage);}
+.modal-list{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;}
+.modal-actions{display:flex;gap:8px;margin-top:16px;}
+.btn-cancel{flex:1;background:var(--cream-dark);border:none;border-radius:10px;padding:13px;font-size:13px;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;}
+.btn-save{flex:2;background:var(--caramel);border:none;border-radius:10px;padding:13px;font-size:13px;cursor:pointer;color:white;font-family:'DM Sans',sans-serif;font-weight:600;}
+.btn-save:hover{background:var(--rust);}
+.btn-save:disabled{opacity:0.6;cursor:not-allowed;}
+
+/* picker items */
+.picker-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);cursor:pointer;transition:all 0.12s;background:var(--cream);}
+.picker-item:hover{border-color:var(--caramel);background:rgba(200,134,74,0.05);}
+.picker-item.selected{border-color:var(--sage-dark);background:rgba(74,96,64,0.08);}
+.picker-brand{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--taupe);}
+.picker-name{font-size:13px;font-weight:600;color:var(--ink);}
+.picker-check{margin-left:auto;color:var(--sage-dark);font-size:16px;opacity:0;}
+.picker-item.selected .picker-check{opacity:1;}
+
+/* hook items */
+.hook-item{padding:10px 14px;border-radius:10px;border:1px solid var(--border);cursor:pointer;font-size:13px;color:var(--taupe);line-height:1.5;transition:all 0.12s;background:var(--cream);}
+.hook-item:hover{border-color:var(--caramel);color:var(--ink);background:rgba(200,134,74,0.05);}
+.hook-item-cat{font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--sand);margin-bottom:3px;}
+
+/* script modal */
+.angle-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.abtn{background:var(--cream);border:1px solid var(--border-mid);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;font-weight:500;transition:all 0.12s;}
+.abtn.active{background:var(--ink);color:white;border-color:var(--ink);}
+.custom-angle-input{width:100%;padding:9px 12px;border:1px solid var(--border-mid);border-radius:8px;background:var(--cream);color:var(--ink);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.12s;margin-top:6px;}
+.custom-angle-input:focus{border-color:var(--sage);}
+.form-label{display:block;font-size:10px;font-weight:700;color:var(--taupe);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;}
+.form-textarea{width:100%;padding:10px 12px;border:1px solid var(--border-mid);border-radius:8px;background:var(--cream);color:var(--ink);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;min-height:70px;line-height:1.5;}
+.form-textarea:focus{border-color:var(--sage);}
+.script-output{background:var(--cream-mid);border-radius:8px;padding:14px;font-size:13px;line-height:1.7;color:var(--ink);white-space:pre-wrap;margin-top:12px;border-left:3px solid var(--sage);min-height:60px;}
+.gen-msg{font-size:12px;color:var(--taupe);text-align:center;margin-top:8px;min-height:18px;}
+
+/* toast */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--ink);color:var(--cream);border-radius:10px;padding:11px 18px;font-size:13px;font-weight:500;opacity:0;transform:translateY(12px);transition:all 0.18s;pointer-events:none;z-index:9999;}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* loading */
+.loading-wrap{text-align:center;padding:60px;color:var(--taupe);}
+.spinner{width:28px;height:28px;border:2px solid var(--border-mid);border-top-color:var(--caramel);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:600px){
+  nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .page{padding:0 16px 60px;}
+  .log-row{grid-template-columns:1fr;}
+  .pcard-name{font-size:15px;}
+}
+
+.empty-btn{background:var(--caramel);color:white;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:16px;transition:background 0.12s;}
+.empty-btn:hover{background:var(--rust);}
+.empty-emoji{font-size:40px;margin-bottom:12px;opacity:0.5;}
+.progress-section{background:var(--parchment);border-radius:10px;border:1px solid var(--border);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.progress-label{font-size:13px;color:var(--taupe);}
+.progress-label strong{color:var(--ink);font-weight:600;}
+.progress-pills{display:flex;gap:6px;}
+.ppill-done{background:rgba(74,96,64,0.12);color:var(--sage-dark);}
+.ppill-left{background:rgba(200,134,74,0.12);color:var(--caramel);}
+.product-cards{display:flex;flex-direction:column;gap:16px;}
+.product-card{background:var(--parchment);border-radius:var(--r);border:1px solid var(--border-mid);box-shadow:var(--shadow-sm);overflow:hidden;}
+.card-header{background:var(--ink);padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.card-product-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:white;letter-spacing:0.02em;}
+.card-product-meta{font-size:11px;color:rgba(255,255,255,0.45);margin-top:4px;display:flex;gap:8px;flex-wrap:wrap;}
+.card-header-btns{display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;}
+.hbtn{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s;white-space:nowrap;}
+.hbtn:hover{background:rgba(255,255,255,0.2);}
+.hbtn.remove{background:rgba(184,96,64,0.3);color:rgba(255,255,255,0.7);}
+.hbtn.remove:hover{background:rgba(184,96,64,0.6);}
+.card-script{padding:14px 20px;border-bottom:1px solid var(--border);}
+.script-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--taupe);}
+.gen-script-btn{background:var(--caramel);color:white;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.12s;}
+.gen-script-btn:hover{background:var(--rust);}
+.script-text{background:var(--cream);border-radius:8px;padding:14px 16px;font-size:13px;line-height:1.75;color:var(--ink);border-left:3px solid var(--sage);position:relative;}
+.no-script{font-size:12px;color:var(--sand);font-style:italic;padding:8px 0;}
+.script-action-btns{display:flex;gap:5px;margin-bottom:8px;}
+.edit-btn-small{background:none;border:1px solid var(--border-mid);border-radius:5px;padding:2px 8px;font-size:10px;font-weight:600;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+.edit-btn-small:hover{background:var(--caramel);color:white;border-color:var(--caramel);}
+.save-btn-small{background:var(--sage-dark);color:white;border:none;border-radius:5px;padding:2px 8px;font-size:10px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.copy-btn-small{background:none;border:1px solid var(--border-mid);border-radius:5px;padding:2px 8px;font-size:10px;font-weight:600;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+.copy-btn-small:hover{background:var(--sage-dark);color:white;border-color:var(--sage-dark);}
+.takes-section{padding:14px 20px;}
+.takes-label{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--taupe);margin-bottom:10px;}
+.take-row{background:var(--cream-mid);border-radius:10px;border:1px solid var(--border);padding:12px 14px;margin-bottom:8px;}
+.take-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.take-num{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--caramel);width:20px;flex-shrink:0;}
+.hook-display{background:var(--cream);border-radius:7px;padding:8px 12px;font-size:12px;font-style:italic;color:var(--taupe);border-left:2px solid var(--caramel-lt);margin-bottom:8px;cursor:pointer;transition:background 0.12s;}
+.hook-display:hover{background:rgba(200,134,74,0.06);}
+.hook-placeholder{color:var(--sand);font-style:italic;}
+.take-btns{display:flex;gap:5px;flex-wrap:wrap;margin-left:auto;flex-shrink:0;}
+.tbadge-done{background:rgba(74,96,64,0.15);color:var(--sage-dark);}
+.tbadge-logged{background:rgba(200,134,74,0.15);color:var(--caramel);}
+.add-take-btn{width:100%;background:none;border:1px dashed var(--border-mid);border-radius:8px;padding:9px;font-size:12px;color:var(--taupe);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s;margin-top:4px;}
+.add-take-btn:hover{border-color:var(--caramel);color:var(--caramel);}
+.log-section{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.log-section-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--taupe);margin-bottom:8px;}
+.log-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.log-msg{font-size:11px;color:var(--sage-dark);margin-top:4px;}
+
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">
+    <div class="nav-k">K</div>
+    <div class="nav-name">Kortny</div>
+  </div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="products.html" class="nav-link">Products</a>
+    <a href="dashboard.html" class="nav-link">Revenue</a>
+    <a href="#" class="nav-link active">Tools</a>
+  </div>
+  <a href="dashboard.html" class="nav-cta">Dashboard →</a>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <div>
+      <div class="page-eyebrow">Daily Workflow</div>
+      <div class="page-title">Today's <em>To Do</em></div>
+      <div class="page-date" id="page-date"></div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-ghost" onclick="restartDay()" title="Clear all cards">↺ Restart</button>
+      <button class="btn btn-ghost" onclick="loadTodoFromNotion()">↻ Refresh</button>
+      <button class="btn btn-primary" onclick="openPicker()">+ Add Product</button>
+    </div>
+  </div>
+
+  <div style="height:4px;background:var(--cream-dark);border-radius:2px;margin-bottom:20px;overflow:hidden">
+    <div id="progress-bar" style="height:4px;background:var(--caramel);border-radius:2px;width:0%;transition:width 0.4s ease"></div>
+  </div>
+  <div id="main-content">
+    <div class="loading-wrap"><div class="spinner"></div>Loading from Notion...</div>
+  </div>
+</div>
+
+<!-- PRODUCT PICKER -->
+<div class="modal-overlay" id="picker-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add Products</div>
+    <div class="modal-sub">Select products to add to today's list</div>
+    <input type="text" class="modal-search" id="picker-search" placeholder="Search products..." oninput="filterPicker()">
+    <div class="modal-list" id="picker-list"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closePicker()">Cancel</button>
+      <button class="btn-save" onclick="addSelectedProducts()">Add Selected</button>
+    </div>
+  </div>
+</div>
+
+<!-- HOOK PICKER -->
+<div class="modal-overlay" id="hook-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Choose a Hook</div>
+    <div class="modal-sub" id="hook-modal-sub"></div>
+    <input type="text" class="modal-search" id="hook-search" placeholder="Search hooks..." oninput="filterHooks()">
+    <div class="modal-list" id="hook-list"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeHookModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPT MODAL -->
+<div class="modal-overlay" id="script-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="script-modal-title">Generate Script</div>
+    <div class="modal-sub" id="script-modal-sub"></div>
+    <div id="angle-row" class="angle-row">
+      <button class="abtn active" onclick="setAngle('story',this)">Story</button>
+      <button class="abtn" onclick="setAngle('curiosity',this)">Curiosity</button>
+      <button class="abtn" onclick="setAngle('rage bait',this)">Rage Bait</button>
+      <button class="abtn" onclick="setAngle('skit',this)">Skit</button>
+      <button class="abtn" onclick="setAngle('emotional',this)">Emotional</button>
+      <button class="abtn" onclick="setAngle('fear',this)">Fear</button>
+      <button class="abtn" onclick="setAngle('asmr',this)">ASMR</button>
+      <button class="abtn" onclick="setAngle('identity',this)">Identity</button>
+    </div>
+    <input type="text" class="custom-angle-input" id="custom-angle" placeholder="Or type a custom angle…" oninput="onCustomAngle(this)">
+    <div class="form-group" style="margin-top:12px">
+      <label class="form-label">Extra details (optional)</label>
+      <textarea class="form-textarea" id="script-details" placeholder="Anything extra to include..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeScriptModal()">Cancel</button>
+      <button class="btn-save" id="gen-btn" onclick="generateScript()">✦ Generate</button>
+    </div>
+    <div class="gen-msg" id="script-msg"></div>
+    <div class="script-output" id="script-output" style="display:none"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const _d = new Date();
+document.getElementById('page-date').textContent = _d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+</script>
+
+
+<script>
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+</script>
+
+<script>
+const API = 'https://kortny-api.vercel.app/api/notion';
+const PRODUCTS_DB = 'd99b6dec79ba46f1a564af4d00f7220d';
+const VIDEO_DB = '148a99ff772d437f91316d20a5526ffa';
+const TODO_DB = '7b6af2e38d1f49ac904506332061b77f';
+const HOOKS_KEY = 'kortny-hooks-v2';
+
+const today = new Date();
+const todayKey = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+document.getElementById('header-date').textContent = today.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+
+let ALL_PRODUCTS = [];
+let HOOKS = [];
+let TODO = [];
+let pickerSelected = new Set();
+let hookTargetId = null;
+let scriptTargetCardId = null;
+let scriptAngle = 'story';
+
+async function init() {
+  loadHooks();
+  await Promise.all([loadProducts(), loadTodoFromNotion()]);
+  render();
+}
+
+function loadHooks() {
+  try {
+    const saved = localStorage.getItem(HOOKS_KEY);
+    if(saved){
+      const data = JSON.parse(saved);
+      const cats={};
+      (data.categories||[]).forEach(c=>{cats[c.id]=c;});
+      HOOKS=(data.hooks||[]).filter(h=>!h.isNote&&!h.isVisual).map(h=>({...h,catName:cats[h.catId]?.name||'',catEmoji:cats[h.catId]?.emoji||''}));
+    }
+  } catch(e){}
+  if(!HOOKS.length) HOOKS=[
+    {id:'dh1',catName:"Husband's GF",catEmoji:'💍',text:"My husband's girlfriend recommended this brand to me and honestly she has great taste so here we are."},
+    {id:'dh2',catName:'Chaos Energy',catEmoji:'🌀',text:"My therapist told me to stop buying things online but then I found this."},
+    {id:'dh3',catName:'Chaos Energy',catEmoji:'🌀',text:"I saw these, blacked out, and woke up with a tracking number."},
+    {id:'dh4',catName:'Partner Reaction',catEmoji:'😂',text:"My husband asked what these are for and I said 'happiness' and walked away."},
+    {id:'dh5',catName:'Impulse Buy',catEmoji:'🛒',text:"My name is Kortny and I cannot be trusted on TikTok Shop after 9pm."},
+    {id:'dh6',catName:'Impulse Buy',catEmoji:'🛒',text:"POV you told yourself you were just browsing."},
+    {id:'dh7',catName:'Home Rage Bait',catEmoji:'🏠',text:"Ugly homes are a personality flaw and I said what I said."},
+    {id:'dh8',catName:'Home Rage Bait',catEmoji:'🏠',text:"If nobody in your life has told you your home looks sad I'm telling you now."},
+  ];
+}
+
+async function loadProducts() {
+  try {
+    let results=[],cursor=null;
+    do {
+      const body={page_size:100,sorts:[{property:'Product',direction:'ascending'}]};
+      if(cursor)body.start_cursor=cursor;
+      const res=await fetch(`${API}?endpoint=databases/${PRODUCTS_DB}/query`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const data=await res.json();
+      results=[...results,...(data.results||[])];
+      cursor=data.next_cursor;
+    } while(cursor);
+    ALL_PRODUCTS=results.filter(p=>!p.archived&&!p.in_trash&&p.properties.Product?.title?.[0]?.plain_text).map(p=>({
+      id:p.id,
+      name:p.properties.Product?.title?.[0]?.plain_text||'',
+      brand:p.properties.Brand?.select?.name||'',
+      stock:p.properties.Stock?.select?.name||'',
+      features:p.properties.Features?.rich_text?.[0]?.plain_text||'',
+      link:p.properties['TikTok Shop Link']?.url||'',
+    })).filter(p=>p.name);
+  } catch(e){console.error(e);}
+}
+
+async function loadTodoFromNotion() {
+  try {
+    const res = await fetch(`${API}?endpoint=databases/${TODO_DB}/query`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        page_size:100,
+        filter:{property:'Date',date:{equals:todayKey}},
+        sorts:[{property:'Take Number',direction:'ascending'}]
+      })
+    });
+    const data = await res.json();
+    const pages = data.results || [];
+
+    const cardMap = {};
+    pages.forEach(p => {
+      const productId = p.properties['Product ID']?.rich_text?.[0]?.plain_text || '';
+      const productName = p.properties['Product Name']?.title?.[0]?.plain_text || '';
+      const brand = p.properties.Brand?.rich_text?.[0]?.plain_text || '';
+      const link = p.properties['Shop Link']?.url || '';
+      const script = p.properties.Script?.rich_text?.[0]?.plain_text || '';
+      const hook = p.properties.Hook?.rich_text?.[0]?.plain_text || '';
+      const done = p.properties.Done?.checkbox || false;
+      const logged = p.properties['Logged to Tracker']?.checkbox || false;
+      const takeNum = p.properties['Take Number']?.number || 1;
+
+      const cardKey = productId || productName;
+      if(!cardMap[cardKey]) {
+        cardMap[cardKey] = {
+          id: 'card-'+cardKey,
+          notionCardId: null,
+          productId, productName, brand, link,
+          script,
+          takes: []
+        };
+      }
+      if(script && !cardMap[cardKey].script) cardMap[cardKey].script = script;
+
+      cardMap[cardKey].takes.push({
+        id: 'take-'+p.id,
+        notionId: p.id,
+        hookText: hook,
+        hookId: null,
+        done, logged,
+        showLog: false,
+        takeNum
+      });
+    });
+
+    TODO = Object.values(cardMap);
+  } catch(e) { console.error(e); TODO = []; }
+}
+
+function uid(){return 'id-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);}
+
+// ── RENDER ────────────────────────────────────────────────
+function render() {
+  const main=document.getElementById('main-content');
+  const allTakes=TODO.flatMap(c=>c.takes||[]);
+  const doneTakes=allTakes.filter(t=>t.done).length;
+  const totalTakes=allTakes.length;
+  document.getElementById('progress-bar').style.width=totalTakes?(doneTakes/totalTakes*100)+'%':'0%';
+
+  if(!TODO.length){
+    main.innerHTML=`<div class="empty-state">
+      <div class="empty-emoji">🎬</div>
+      <div class="empty-title">What are you filming today?</div>
+      <div class="empty-sub">Add products to build your queue</div>
+      <button class="empty-btn" onclick="openPicker()">+ Add Products</button>
+    </div>`;
+    return;
+  }
+
+  let html=`<div class="progress-section">
+    <div class="progress-label"><strong>${doneTakes}/${totalTakes}</strong> takes done today</div>
+    <div class="progress-pills">
+      <span class="ppill ppill-done">${doneTakes} filmed</span>
+      <span class="ppill ppill-left">${totalTakes-doneTakes} remaining</span>
+    </div>
+  </div><div class="product-cards">`;
+
+  TODO.forEach(card=>{
+    const takes=card.takes||[];
+    html+=`<div class="product-card" id="card-${card.id}">
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="card-product-name">${card.productName}</div>
+          <div class="card-product-meta">
+            ${card.brand?`<span>${card.brand}</span>`:''}
+            <span>${takes.length} take${takes.length!==1?'s':''} · ${takes.filter(t=>t.done).length} done</span>
+          </div>
+        </div>
+        <div class="card-header-btns">
+          ${card.link?`<a href="${card.link}" target="_blank" class="hbtn">Shop ↗</a>`:''}
+          <button class="hbtn" onclick="openScriptModal('${card.id}')">✦ Script</button>
+          <button class="hbtn remove" onclick="removeCard('${card.id}')">✕ Remove</button>
+        </div>
+      </div>`;
+
+    html+=`<div class="card-script">
+      <div class="script-label">
+        <span>📝 Script</span>
+        <button class="gen-script-btn" onclick="openScriptModal('${card.id}')">✦ ${card.script?'Regenerate':'Generate'}</button>
+      </div>`;
+    if(card.script){
+      if(card.editing){
+        html+=`<div class="script-text" style="padding:0;background:none;border:none;">
+          <textarea class="script-textarea" id="script-edit-${card.id}">${card.script}</textarea>
+          <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;">
+            <button class="edit-btn-small js-cancel-edit" data-card-id="${card.id}">Cancel</button>
+            <button class="save-btn-small js-save-edit" data-card-id="${card.id}">Save</button>
+          </div>
+        </div>`;
+      } else {
+        html+=`<div class="script-text">
+          <div class="script-action-btns">
+            <button class="edit-btn-small js-start-edit" data-card-id="${card.id}">Edit</button>
+            <button class="copy-btn-small js-copy-script" data-card-id="${card.id}">Copy</button>
+          </div>
+          ${card.script.replace(/\n/g,'<br>')}
+        </div>`;
+      }
+    } else {
+      html+=`<div class="no-script">No script yet — click ✦ Generate above</div>`;
+    }
+    html+=`</div>`;
+
+    html+=`<div class="takes-section">
+      <div class="takes-label">🎬 Takes</div>
+      <div class="takes-list">`;
+
+    takes.forEach((take,i)=>{
+      const hookText = take.hookText || (take.hookId ? HOOKS.find(h=>h.id===take.hookId)?.text : null);
+      html+=`<div class="take-row${take.done?' take-done':''}${take.logged?' take-logged':''}" id="${take.id}">
+        <div class="take-top">
+          <div class="take-num">${i+1}</div>
+          <div class="take-hook-display${hookText?'':' no-hook'}">
+            ${hookText||'No hook selected yet'}
+          </div>
+          <div class="take-btns">
+            <button class="tbtn" onclick="openHookModal('${card.id}','${take.id}')">${hookText?'↺ Hook':'+ Hook'}</button>
+            ${take.logged
+              ? `<button class="tbtn logged" disabled>✓ Logged</button>`
+              : take.done
+                ? `<button class="tbtn log-btn" onclick="toggleLog('${card.id}','${take.id}')">Log Video</button>
+                   <button class="tbtn done-btn" onclick="toggleDone('${card.id}','${take.id}')">✓ Done</button>`
+                : `<button class="tbtn" onclick="toggleDone('${card.id}','${take.id}')">Mark Done</button>`
+            }
+            ${!take.logged?`<button class="tbtn del" onclick="removeTake('${card.id}','${take.id}')">✕</button>`:''}
+          </div>
+        </div>`;
+
+      if(take.showLog && !take.logged){
+        html+=`<div class="take-log-form">
+          <input type="text" class="take-log-input" id="lv-id-${take.id}" placeholder="Video ID (optional)">
+          <input type="text" class="take-log-input" id="lv-time-${take.id}" placeholder="Time posted">
+          <select class="take-log-select" id="lv-type-${take.id}">
+            <option value="">Video Type...</option>
+            <option>Talking-Head Review</option><option>Problem/Solution</option>
+            <option>Storytime</option><option>Things I Wish I Bought Sooner</option>
+            <option>First Impression</option><option>POV Style</option>
+            <option>Relatable Mom/Lifestyle Skit</option><option>Tutorial/How-To-Use</option>
+            <option>Before & After</option><option>Unboxing</option><option>Aesthetic B-Roll</option>
+          </select>
+          <select class="take-log-select" id="lv-sales-${take.id}">
+            <option value="">Got Sales?</option>
+            <option value="✅ Yes">✅ Yes</option>
+            <option value="❌ No">❌ No</option>
+          </select>
+          <button class="take-log-submit" id="log-btn-${take.id}" onclick="logVideo('${card.id}','${take.id}')">Save to Video Tracker</button>
+          <div class="take-log-msg" id="lv-msg-${take.id}"></div>
+        </div>`;
+      }
+      html+=`</div>`;
+    });
+
+    html+=`</div>
+      <button class="add-take-btn" onclick="addTake('${card.id}')">+ Add Take</button>
+    </div></div>`;
+  });
+
+  html+='</div>';
+  main.innerHTML=html;
+}
+
+// ── NOTION HELPERS ────────────────────────────────────────
+async function createNotionTake(card, takeNum, hookText='') {
+  const res = await fetch(`${API}?endpoint=pages`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      parent: {database_id: TODO_DB},
+      properties: {
+        'Product Name': {title:[{text:{content:card.productName}}]},
+        'Date': {date:{start:todayKey}},
+        'Brand': {rich_text:[{text:{content:card.brand||''}}]},
+        'Script': {rich_text:[{text:{content:card.script||''}}]},
+        'Take Number': {number: takeNum},
+        'Hook': {rich_text:[{text:{content:hookText}}]},
+        'Done': {checkbox: false},
+        'Logged to Tracker': {checkbox: false},
+        'Product ID': {rich_text:[{text:{content:card.productId||''}}]},
+        ...(card.link?{'Shop Link':{url:card.link}}:{})
+      }
+    })
+  });
+  const data = await res.json();
+  return data.id;
+}
+
+async function updateNotionTake(notionId, props) {
+  await fetch(`${API}?endpoint=pages/${notionId}`, {
+    method:'PATCH', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({properties: props})
+  });
+}
+
+async function deleteNotionPage(notionId) {
+  await fetch(`${API}?endpoint=pages/${notionId}`, {
+    method:'PATCH', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({archived: true})
+  });
+}
+
+// ── ACTIONS ───────────────────────────────────────────────
+async function removeCard(id) {
+  if(!confirm('Remove this product and all its takes?'))return;
+  const card = TODO.find(c=>c.id===id);
+  if(!card)return;
+  for(const take of card.takes) {
+    if(take.notionId) await deleteNotionPage(take.notionId);
+  }
+  TODO = TODO.filter(c=>c.id!==id);
+  render();
+}
+
+async function addTake(cardId) {
+  const card = TODO.find(c=>c.id===cardId);
+  if(!card)return;
+  const takeNum = (card.takes.length||0)+1;
+  const btn = document.querySelector(`#card-${cardId} .add-take-btn`);
+  if(btn){btn.disabled=true;btn.textContent='Adding...';}
+  const notionId = await createNotionTake(card, takeNum);
+  card.takes.push({id:'take-'+notionId, notionId, hookText:'', hookId:null, done:false, logged:false, showLog:false, takeNum});
+  render();
+}
+
+async function removeTake(cardId, takeId) {
+  const card = TODO.find(c=>c.id===cardId);
+  const take = card?.takes.find(t=>t.id===takeId);
+  if(!take)return;
+  if(take.notionId) await deleteNotionPage(take.notionId);
+  card.takes = card.takes.filter(t=>t.id!==takeId);
+  render();
+}
+
+async function toggleDone(cardId, takeId) {
+  const card = TODO.find(c=>c.id===cardId);
+  const take = card?.takes.find(t=>t.id===takeId);
+  if(!take)return;
+  take.done = !take.done;
+  render();
+  if(take.notionId) await updateNotionTake(take.notionId, {'Done':{checkbox:take.done}});
+
+  if(take.done) {
+    try {
+      const calPosts = JSON.parse(localStorage.getItem('kortny-posts')||'[]');
+      const label = take.hookText ? card.productName+' — '+take.hookText.substring(0,30)+'…' : card.productName;
+      calPosts.push({id:'todo-'+take.id, title:label, date:todayKey, type:'post'});
+      localStorage.setItem('kortny-posts', JSON.stringify(calPosts));
+    } catch(e){}
+  } else {
+    try {
+      const calPosts = JSON.parse(localStorage.getItem('kortny-posts')||'[]');
+      localStorage.setItem('kortny-posts', JSON.stringify(calPosts.filter(p=>p.id!=='todo-'+takeId)));
+    } catch(e){}
+  }
+}
+
+function toggleLog(cardId, takeId) {
+  const card = TODO.find(c=>c.id===cardId);
+  const take = card?.takes.find(t=>t.id===takeId);
+  if(!take)return;
+  take.showLog = !take.showLog;
+  render();
+}
+
+async function restartDay() {
+  if(!confirm('Archive all today\'s takes and start fresh?'))return;
+  for(const card of TODO) {
+    for(const take of card.takes) {
+      if(take.notionId) await deleteNotionPage(take.notionId);
+    }
+  }
+  TODO = [];
+  render();
+}
+
+function copyScript(cardId) {
+  const card = TODO.find(c=>c.id===cardId);
+  if(card?.script) navigator.clipboard.writeText(card.script);
+}
+
+function startEditScript(cardId) {
+  const card = TODO.find(c=>c.id===cardId);
+  if(!card)return;
+  card.editing = true;
+  render();
+  // Focus and move cursor to end
+  const ta = document.getElementById('script-edit-'+cardId);
+  if(ta){ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);}
+}
+
+function cancelEditScript(cardId) {
+  const card = TODO.find(c=>c.id===cardId);
+  if(!card)return;
+  card.editing = false;
+  render();
+}
+
+async function saveEditScript(cardId) {
+  const card = TODO.find(c=>c.id===cardId);
+  if(!card)return;
+  const ta = document.getElementById('script-edit-'+cardId);
+  if(!ta)return;
+  const newText = ta.value.trim();
+  if(!newText)return;
+  card.script = newText;
+  card.editing = false;
+  render();
+  // Sync updated script to all takes in Notion
+  for(const take of card.takes) {
+    if(take.notionId) await updateNotionTake(take.notionId, {'Script':{rich_text:[{text:{content:newText.substring(0,2000)}}]}});
+  }
+}
+
+// ── PRODUCT PICKER ────────────────────────────────────────
+function openPicker() {
+  pickerSelected = new Set(TODO.map(c=>c.productId).filter(Boolean));
+  document.getElementById('picker-search').value='';
+  filterPicker();
+  document.getElementById('picker-modal').classList.add('open');
+}
+function closePicker(){document.getElementById('picker-modal').classList.remove('open');}
+function filterPicker() {
+  const q = document.getElementById('picker-search').value.toLowerCase();
+  const filtered = ALL_PRODUCTS.filter(p=>!q||p.name.toLowerCase().includes(q)||p.brand.toLowerCase().includes(q));
+  document.getElementById('picker-list').innerHTML = filtered.map(p=>`
+    <div class="picker-item${pickerSelected.has(p.id)?' selected':''}" onclick="togglePick('${p.id}')">
+      <div class="picker-check">${pickerSelected.has(p.id)?'✓':''}</div>
+      <div>
+        <div class="picker-name">${p.name}</div>
+        ${p.brand?`<div class="picker-meta">${p.brand}${p.stock?' · '+p.stock:''}</div>`:''}
+      </div>
+    </div>`).join('') || '<div style="text-align:center;padding:20px;color:var(--ink-muted);font-style:italic">No products found</div>';
+}
+function togglePick(id) {
+  if(pickerSelected.has(id)) pickerSelected.delete(id);
+  else pickerSelected.add(id);
+  filterPicker();
+}
+async function addSelectedProducts() {
+  const existing = new Set(TODO.map(c=>c.productId).filter(Boolean));
+  const toAdd = [...pickerSelected].filter(id=>!existing.has(id));
+  if(!toAdd.length){closePicker();return;}
+
+  const btn = document.getElementById('picker-add-btn');
+  btn.disabled=true; btn.textContent='Adding...';
+
+  for(const id of toAdd) {
+    const p = ALL_PRODUCTS.find(x=>x.id===id);
+    if(!p)continue;
+    const card = {id:'card-'+uid(), productId:p.id, productName:p.name, brand:p.brand, link:p.link, productFeatures:p.features||'', script:null, takes:[]};
+    TODO.push(card);
+  }
+  closePicker();
+  render();
+  btn.disabled=false; btn.textContent='Add to Today';
+}
+
+// ── HOOK PICKER ───────────────────────────────────────────
+function openHookModal(cardId, takeId) {
+  hookTargetId = {cardId, takeId};
+  document.getElementById('hook-search').value='';
+  const card = TODO.find(c=>c.id===cardId);
+  document.getElementById('hook-modal-sub').textContent = card?'For: '+card.productName:'Choose a hook';
+  filterHooks();
+  document.getElementById('hook-modal').classList.add('open');
+}
+function closeHookModal(){document.getElementById('hook-modal').classList.remove('open');}
+function filterHooks() {
+  const q = document.getElementById('hook-search').value.toLowerCase();
+  const filtered = HOOKS.filter(h=>!q||h.text.toLowerCase().includes(q)||h.catName.toLowerCase().includes(q));
+  document.getElementById('hook-list').innerHTML = filtered.map(h=>`
+    <div class="hook-item" onclick="selectHook('${h.id}')">
+      <div class="hook-item-cat">${h.catEmoji} ${h.catName}</div>
+      ${h.text}
+    </div>`).join('') || '<div style="text-align:center;padding:20px;color:var(--ink-muted);font-style:italic">No hooks found</div>';
+}
+async function selectHook(hookId) {
+  if(!hookTargetId)return;
+  const card = TODO.find(c=>c.id===hookTargetId.cardId);
+  const take = card?.takes.find(t=>t.id===hookTargetId.takeId);
+  const hook = HOOKS.find(h=>h.id===hookId);
+  if(take && hook) {
+    take.hookId = hookId;
+    take.hookText = hook.text;
+    closeHookModal(); render();
+    if(take.notionId) await updateNotionTake(take.notionId, {'Hook':{rich_text:[{text:{content:hook.text}}]}});
+  }
+}
+
+// ── SCRIPT GENERATION ─────────────────────────────────────
+function openScriptModal(cardId) {
+  scriptTargetCardId = cardId;
+  scriptAngle = 'story';
+  document.getElementById('script-details').value='';
+  document.getElementById('custom-angle').value='';
+  document.getElementById('custom-angle').classList.remove('has-value');
+  document.getElementById('script-msg').textContent='';
+  document.getElementById('gen-btn').disabled=false;
+  document.getElementById('gen-btn').textContent='✦ Generate';
+  document.getElementById('angle-row').querySelectorAll('.abtn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  const card = TODO.find(c=>c.id===cardId);
+  document.getElementById('script-modal-title').textContent = card?'Script for '+card.productName:'Generate Script';
+  document.getElementById('script-modal').classList.add('open');
+}
+function closeScriptModal(){document.getElementById('script-modal').classList.remove('open');}
+
+function setAngle(angle, btn) {
+  scriptAngle = angle;
+  document.getElementById('angle-row').querySelectorAll('.abtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  // Clear the custom input when a button is selected
+  const customInput = document.getElementById('custom-angle');
+  customInput.value = '';
+  customInput.classList.remove('has-value');
+}
+
+function onCustomAngle(input) {
+  if(input.value.trim()) {
+    scriptAngle = input.value.trim();
+    input.classList.add('has-value');
+    // Deactivate all angle buttons
+    document.getElementById('angle-row').querySelectorAll('.abtn').forEach(b=>b.classList.remove('active'));
+  } else {
+    // Revert to story if cleared
+    scriptAngle = 'story';
+    input.classList.remove('has-value');
+    document.getElementById('angle-row').querySelector('.abtn').classList.add('active');
+  }
+}
+
+async function generateScript() {
+  const card = TODO.find(c=>c.id===scriptTargetCardId);
+  if(!card)return;
+  const details = document.getElementById('script-details').value.trim();
+  const btn = document.getElementById('gen-btn');
+  btn.disabled=true; btn.textContent='Generating...';
+  document.getElementById('script-msg').textContent='Writing your script...';
+  try {
+    const res = await fetch('https://kortny-api.vercel.app/api/notion?service=anthropic',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-5',max_tokens:400,
+        system:`You are a TikTok Shop affiliate script writer for @helloitskortny. Write 30-second scripts in a calm, direct first-person voice — like someone who genuinely uses the product and is just telling you about it. No hype, no forced energy. Hook-First. Never open with filler openers like "okay so", "I have to tell you", "not to be dramatic", "you guys", or "girl". Just start with a direct observation or hook. CTA ends with "Grabbed it through TikTok Shop". No prices. No guaranteed results. Short sentences. Output ONLY the spoken words — no labels, no formatting.`,
+        messages:[{role:'user',content:`Write a 30-second TikTok script for: ${card.productName}${card.brand?' by '+card.brand:''}.
+Script angle: ${scriptAngle}.
+${card.productFeatures?`Product features (use these facts — do not guess):\n${card.productFeatures}`:''}
+${details?'Additional notes: '+details:''}
+Output only the words to say on camera.`}]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text||'';
+    if(text) {
+      card.script = text;
+      closeScriptModal(); render();
+      for(const take of card.takes) {
+        if(take.notionId) await updateNotionTake(take.notionId, {'Script':{rich_text:[{text:{content:text.substring(0,2000)}}]}});
+      }
+    } else {
+      document.getElementById('script-msg').textContent='Error. Try again.';
+      btn.disabled=false; btn.textContent='✦ Generate';
+    }
+  } catch(e) {
+    document.getElementById('script-msg').textContent='Network error.';
+    btn.disabled=false; btn.textContent='✦ Generate';
+  }
+}
+
+// ── LOG TO VIDEO TRACKER ──────────────────────────────────
+async function logVideo(cardId, takeId) {
+  const card = TODO.find(c=>c.id===cardId);
+  const take = card?.takes.find(t=>t.id===takeId);
+  if(!take)return;
+  const videoId = document.getElementById(`lv-id-${takeId}`).value.trim();
+  const timePosted = document.getElementById(`lv-time-${takeId}`).value.trim();
+  const videoType = document.getElementById(`lv-type-${takeId}`).value;
+  const gotSales = document.getElementById(`lv-sales-${takeId}`).value;
+  const msgEl = document.getElementById(`lv-msg-${takeId}`);
+  const btn = document.getElementById(`log-btn-${takeId}`);
+  if(btn){btn.disabled=true;btn.textContent='Saving...';}
+
+  try {
+    const res = await fetch(`${API}?endpoint=pages`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({parent:{database_id:VIDEO_DB},properties:{
+        'Video ID':{title:[{text:{content:videoId||'—'}}]},
+        'Product':{rich_text:[{text:{content:card.productName}}]},
+        'Date Posted':{date:{start:todayKey}},
+        ...(timePosted?{'Time Posted':{rich_text:[{text:{content:timePosted}}]}}:{}),
+        ...(videoType?{'Video Type':{select:{name:videoType}}}:{}),
+        ...(gotSales?{'Got Sales?':{select:{name:gotSales}}}:{}),
+        ...(take.hookText?{'Video Title / Hook (copy)':{rich_text:[{text:{content:take.hookText.substring(0,100)}}]}}:{}),
+      }})
+    });
+    if(res.ok) {
+      take.logged=true; take.showLog=false;
+      if(take.notionId) await updateNotionTake(take.notionId, {'Logged to Tracker':{checkbox:true}});
+      render();
+    } else {
+      if(msgEl){msgEl.textContent='Error saving.';msgEl.className='take-log-msg error';}
+      if(btn){btn.disabled=false;btn.textContent='Save to Video Tracker';}
+    }
+  } catch(e) {
+    if(msgEl){msgEl.textContent='Network error.';msgEl.className='take-log-msg error';}
+    if(btn){btn.disabled=false;btn.textContent='Save to Video Tracker';}
+  }
+}
+
+document.getElementById('picker-modal').addEventListener('click',function(e){if(e.target===this)closePicker();});
+document.getElementById('hook-modal').addEventListener('click',function(e){if(e.target===this)closeHookModal();});
+document.getElementById('script-modal').addEventListener('click',function(e){if(e.target===this)closeScriptModal();});
+
+// Delegated listeners for dynamically rendered script buttons
+document.body.addEventListener('click', function(e) {
+  const startBtn = e.target.closest('.js-start-edit');
+  if(startBtn){
+    const id = startBtn.getAttribute('data-card-id');
+    console.log('Edit clicked, card id:', id, 'TODO ids:', TODO.map(c=>c.id));
+    startEditScript(id);
+    return;
+  }
+  const cancelBtn = e.target.closest('.js-cancel-edit');
+  if(cancelBtn){ cancelEditScript(cancelBtn.getAttribute('data-card-id')); return; }
+  const saveBtn = e.target.closest('.js-save-edit');
+  if(saveBtn){ saveEditScript(saveBtn.getAttribute('data-card-id')); return; }
+  const copyBtn = e.target.closest('.js-copy-script');
+  if(copyBtn){ copyScript(copyBtn.getAttribute('data-card-id')); return; }
+});
+
+init();
+</script>
+</body>
+</html>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>
