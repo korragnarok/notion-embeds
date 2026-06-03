@@ -1,8 +1,8 @@
 // @helloitskortny — TikTok Shop Creator Hub
-// Service Worker v1.10
+// Service Worker v1.12
 
-const CACHE_NAME = 'kortny-hub-v11';
-const RUNTIME_CACHE = 'kortny-runtime-v11';
+const CACHE_NAME = 'kortny-hub-v12';
+const RUNTIME_CACHE = 'kortny-runtime-v12';
 const BASE_PATH = '/notion-embeds';
 
 // App shell — everything needed to load offline
@@ -29,7 +29,7 @@ const CACHE_PATTERNS = [
 
 // ─── Install: pre-cache app shell ───────────────────────────────
 self.addEventListener('install', event => {
-  console.log('[SW] Installing kortny-hub-v11...');
+  console.log('[SW] Installing kortny-hub-v12...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -71,7 +71,7 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') return;
   if (url.protocol === 'chrome-extension:') return;
 
-  // Notion API + Anthropic API — always network, never cache
+  // Notion + AI API bridge — always network, never cache
   if (
     url.hostname === 'kortny-api.vercel.app' ||
     url.hostname === 'api.anthropic.com'

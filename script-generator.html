@@ -245,6 +245,13 @@ nav{background:rgba(18,13,9,0.9);backdrop-filter:blur(20px);border-bottom:1px so
         <button class="toggle-btn" onclick="setToggle('variations','3',this)">3</button>
       </div>
     </div>
+    <div class="form-group">
+      <label class="form-label">AI Model</label>
+      <div class="toggle-group" id="provider-toggle">
+        <button class="toggle-btn active" onclick="setAiProvider('anthropic',this)">Claude</button>
+        <button class="toggle-btn" onclick="setAiProvider('gemini',this)">Gemini</button>
+      </div>
+    </div>
     <button class="generate-btn" id="generate-btn" onclick="generateScript()">✦ Generate Script</button>
 
   <!-- SCRIPT HISTORY -->
@@ -273,7 +280,34 @@ const HOOKS_DB='18bbb9e6ad7241be9c4b5dfac1bb8fcc';
 const HOOKS_STORAGE_KEY='kortny-hooks-v2';
 const ANGLE_DESCS={'story':'Problem → failed attempts → discovery → result → CTA. Builds trust.','curiosity':'Withhold the product — open a loop the viewer has to stay to close.','rage bait':'Deadpan, slightly provocative statement. Zero smile. Pivot immediately.','skit':'Conversation or scenario format. Great for food & supplements.','emotional':'Lead with feeling — aspiration, comfort, identity. Sell the lifestyle.','fear':'What happens if they DON\'T have this? Loss aversion angle.','asmr':'Sensory-led. Sounds, textures, visuals do the selling. Minimal talking.','identity':'Call out a specific person — "if you\'re a [identity], this is for you."'};
 const DEFAULT_HOOKS=[{id:'dh1',catName:"Husband's GF",catEmoji:'💍',text:"My husband's girlfriend recommended this brand to me and honestly she has great taste so here we are."},{id:'dh2',catName:'Chaos Energy',catEmoji:'🌀',text:"My therapist told me to stop buying things online but then I found this."},{id:'dh3',catName:'Chaos Energy',catEmoji:'🌀',text:"I saw these, blacked out, and woke up with a tracking number."},{id:'dh4',catName:'Partner Reaction',catEmoji:'😂',text:"My husband asked what these are for and I said 'happiness' and walked away."},{id:'dh5',catName:'Impulse Buy',catEmoji:'🛒',text:"My name is Kortny and I cannot be trusted on TikTok Shop after 9pm."},{id:'dh6',catName:'Impulse Buy',catEmoji:'🛒',text:"POV you told yourself you were just browsing."},{id:'dh7',catName:'Home Rage Bait',catEmoji:'🏠',text:"Ugly homes are a personality flaw and I said what I said."},{id:'dh8',catName:'Home Rage Bait',catEmoji:'🏠',text:"If nobody in your life has told you your home looks sad I'm telling you now."}];
-let PRODUCTS=[],HOOKS=[],selectedHookId=null,toggleState={length:'30s',tone:'story',pattern:'hook-first',variations:'1'},scriptHistory=[];
+const SCRIPT_PROVIDER_KEY='kortny-script-ai-provider';
+let PRODUCTS=[],HOOKS=[],selectedHookId=null,toggleState={length:'30s',tone:'story',pattern:'hook-first',variations:'1'},scriptHistory=[],aiProvider=localStorage.getItem(SCRIPT_PROVIDER_KEY)||'anthropic';
+function setAiProvider(provider,btn){
+  aiProvider=provider;
+  localStorage.setItem(SCRIPT_PROVIDER_KEY,provider);
+  const group=btn?.closest('.toggle-group')||document.getElementById('provider-toggle');
+  if(group)group.querySelectorAll('.toggle-btn').forEach(b=>b.classList.toggle('active',b.textContent.trim().toLowerCase()===(provider==='gemini'?'gemini':'claude')));
+}
+function syncAiProviderButtons(){setAiProvider(aiProvider);}
+function buildAiRequest(provider,systemPrompt,userPrompt,maxTokens){
+  if(provider==='gemini'){
+    return {
+      url:'https://kortny-api.vercel.app/api/notion?service=gemini',
+      body:{model:'gemini-2.5-flash',contents:[{role:'user',parts:[{text:`${systemPrompt}\n\n${userPrompt}`}]}],generationConfig:{maxOutputTokens:maxTokens}}
+    };
+  }
+  return {
+    url:'https://kortny-api.vercel.app/api/notion?service=anthropic',
+    body:{model:'claude-sonnet-4-5',max_tokens:maxTokens,system:systemPrompt,messages:[{role:'user',content:userPrompt}]}
+  };
+}
+function extractAiText(data){
+  return data.content?.[0]?.text||data.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('')||data.text||data.output_text||'';
+}
+function getAiErrorMessage(provider,data){
+  if(provider==='gemini')return 'Gemini is not enabled on the API bridge yet.';
+  return data?.error?.message||data?.error||'Error generating. Please try again.';
+}
 async function loadProducts(){
   try{
     let results=[],cursor=null;
@@ -346,11 +380,13 @@ async function generateScript(){
   const systemPrompt=`You are a TikTok Shop affiliate script writer for @helloitskortny. You write high-converting, authentic-sounding scripts that feel like a real person talking to a friend — never like an ad.\n\nCORE RULES:\n- Hook-First pattern (default): Hook (0-3s) → Problem+Agitation (3-8s) → Product Intro (8-15s) → Demo/Proof (15-22s) → CTA (22-30s)\n- Product-First pattern: Product reveal (0-5s) → Why it matters (5-15s) → Demo/Proof (15-22s) → CTA (22-30s)\n- CTA always ends with "Grabbed it through TikTok Shop" or "picked this up through TikTok Shop" + soft reason to click\n- NEVER mention prices, guaranteed results, or medical claims\n- For supplements: use "If you're looking to support..." framing only\n- Short sentences. Conversational. First-person. Specific beats vague.\n- Always end with EXACTLY 5 hashtags: 1 broad niche, 1 category, 1 product-specific, 1 TikTok Shop (#tiktoken or #tiktokshop), 1 wildcard\n\nOUTPUT FORMAT for each script variation:\n🎬 HOOK:\n[Hook line]\n\n🗣️ SCRIPT:\n[Full script as spoken word, with timing markers like (0-3s), (3-8s) etc]\n\n⏱️ Est. time: [X seconds]\n\n✅ COMPLIANCE:\n[3-4 bullet points confirming compliance]\n\n💡 FILMING TIP:\n[One practical filming tip]\n\n#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5\n\n---\n\nIf generating multiple variations, separate each with "--- VARIATION 2 ---" etc.`;
   const userPrompt=`Write ${numVariations} TikTok script variation${numVariations>1?'s':''} for this product:\n\nPRODUCT: ${productName}\n${productData?`BRAND: ${productData.brand}\nUNITS SOLD: ${productData.sold||0}\nGMV: $${productData.gmv||0}`:''}\n${features?`\nPRODUCT FEATURES (use these facts — do not guess or fabricate):\n${features}`:''}\n${productDetails?`\nADDITIONAL NOTES: ${productDetails}`:''}\n${selectedHook?`\nHOOK FORMULA TO ADAPT: "${selectedHook.text}"\nUse this as the psychological blueprint — same energy, same angle, reworded to feel natural for this specific product. The viewer should never feel like a template was used.`:''}\n\nVIDEO LENGTH: ${toggleState.length}\nSCRIPT ANGLE: ${toggleState.tone} — ${ANGLE_DESCS[toggleState.tone]||''}\nOPENING PATTERN: ${toggleState.pattern}\n\n${productData?.sold>50?`NOTE: This product has strong sales proof (${productData.sold} units, $${productData.gmv} GMV) — you can reference this casually as social proof.`:''}\n\nWrite the script now. Be specific, authentic, and conversational. No filler words like "honestly" or "literally". Lean hard into the ${toggleState.tone} angle.`;
   try{
-    const res=await fetch('https://kortny-api.vercel.app/api/notion?service=anthropic',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1000,system:systemPrompt,messages:[{role:'user',content:userPrompt}]})});
-    const data=await res.json();const text=data.content?.[0]?.text||'';
+    const request=buildAiRequest(aiProvider,systemPrompt,userPrompt,1000);
+    const res=await fetch(request.url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(request.body)});
+    const data=await res.json();const text=extractAiText(data);
+    if(!res.ok||!text)throw new Error(getAiErrorMessage(aiProvider,data));
     renderScripts(text,productName,numVariations);
     saveToHistory(productName,toggleState.tone,toggleState.length,text);
-  }catch(e){document.getElementById('main-panel').innerHTML=`<div class="generating"><div class="gen-text">Error generating. Please try again.</div></div>`;}
+  }catch(e){document.getElementById('main-panel').innerHTML=`<div class="generating"><div class="gen-text">${e.message||'Error generating. Please try again.'}</div></div>`;}
   btn.disabled=false;btn.textContent='✦ Generate Script';
 }
 function renderScripts(text,productName,numVariations){
@@ -439,6 +475,7 @@ function showToast(msg){
 }
 
 (async()=>{
+  syncAiProviderButtons();
   loadProducts();
   try{await loadHooks();}catch(e){console.error("loadHooks failed",e);}
   try{renderHistory();}catch(e){console.error("renderHistory failed",e);}
