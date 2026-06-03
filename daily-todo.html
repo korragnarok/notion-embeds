@@ -155,6 +155,13 @@ nav{position:sticky;top:0;z-index:200;background:rgba(18,13,9,0.9);backdrop-filt
 .picker-item.selected .picker-check{opacity:1;}
 
 /* hook items */
+.custom-hook-box{background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px;}
+.custom-hook-box .form-label{margin-bottom:7px;}
+.custom-hook-row{display:flex;gap:8px;align-items:flex-start;}
+.custom-hook-input{flex:1;min-height:74px;padding:9px 12px;border:1px solid var(--border-mid);border-radius:8px;background:var(--espresso);color:var(--text-bright);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;line-height:1.45;}
+.custom-hook-input:focus{border-color:var(--sage);}
+.custom-hook-save{background:var(--caramel);border:none;border-radius:8px;padding:10px 13px;font-size:12px;font-weight:700;color:white;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.custom-hook-save:hover{background:var(--rust);}
 .hook-item{padding:10px 14px;border-radius:10px;border:1px solid var(--border);cursor:pointer;font-size:13px;color:var(--taupe);line-height:1.5;transition:all 0.12s;background:var(--cream);}
 .hook-item:hover{border-color:var(--caramel);color:var(--ink);background:rgba(200,134,74,0.05);}
 .hook-item-cat{font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--sand);margin-bottom:3px;}
@@ -409,6 +416,13 @@ nav{position:sticky;top:0;z-index:200;background:rgba(18,13,9,0.9);backdrop-filt
     <div class="modal-handle"></div>
     <div class="modal-title">Choose a Hook</div>
     <div class="modal-sub" id="hook-modal-sub"></div>
+    <div class="custom-hook-box">
+      <label class="form-label">Custom Hook</label>
+      <div class="custom-hook-row">
+        <textarea class="custom-hook-input" id="custom-hook-input" placeholder="Type or paste your own hook..."></textarea>
+        <button class="custom-hook-save" onclick="saveCustomHook()">Save</button>
+      </div>
+    </div>
     <input type="text" class="modal-search" id="hook-search" placeholder="Search hooks..." oninput="filterHooks()">
     <div class="modal-list" id="hook-list"></div>
     <div class="modal-actions">
@@ -1138,6 +1152,7 @@ async function addSelectedProducts() {
 function openHookModal(cardId, takeId) {
   hookTargetId = {cardId, takeId};
   document.getElementById('hook-search').value='';
+  document.getElementById('custom-hook-input').value='';
   const card = TODO.find(c=>c.id===cardId);
   document.getElementById('hook-modal-sub').textContent = card?'For: '+card.productName:'Choose a hook';
   filterHooks();
@@ -1164,6 +1179,21 @@ async function selectHook(hookId) {
     closeHookModal(); render();
     if(take.notionId) await updateNotionTake(take.notionId, {'Hook':{rich_text:[{text:{content:hook.text}}]}});
   }
+}
+async function saveCustomHook() {
+  if(!hookTargetId)return;
+  const input = document.getElementById('custom-hook-input');
+  const hookText = input.value.trim();
+  if(!hookText){showToast('Type a hook first');return;}
+  const card = TODO.find(c=>c.id===hookTargetId.cardId);
+  const take = card?.takes.find(t=>t.id===hookTargetId.takeId);
+  if(!take)return;
+  take.hookId = null;
+  take.hookText = hookText;
+  closeHookModal();
+  render();
+  if(take.notionId) await updateNotionTake(take.notionId, {'Hook':{rich_text:[{text:{content:hookText.substring(0,2000)}}]}});
+  showToast('Custom hook saved');
 }
 
 // ── SCRIPT GENERATION ─────────────────────────────────────
