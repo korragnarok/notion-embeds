@@ -304,44 +304,11 @@ nav{position:sticky;top:0;z-index:200;background:rgba(18,13,9,0.9);backdrop-filt
 .week-day-dot.has-items { opacity: 1; }
 .week-day.active .week-day-dot { background: rgba(255,255,255,0.5); }
 
-/* ── BOTTOM TAB BAR ── */
-.tab-bar {
-  display: none;
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 150;
-  background: rgba(249,245,239,0.95);
-  backdrop-filter: blur(20px);
-  border-top: 1px solid var(--border-mid);
-  padding: 8px 0 max(8px, env(safe-area-inset-bottom));
-  justify-content: space-around;
-}
-.tab-item {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  text-decoration: none; cursor: pointer;
-  padding: 4px 16px;
-  border-radius: 10px;
-  transition: all 0.12s;
-  min-width: 56px;
-}
-.tab-item:hover, .tab-item.active { background: rgba(200,134,74,0.1); }
-.tab-icon {
-  font-size: 20px; line-height: 1;
-}
-.tab-label {
-  font-size: 9px; font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--taupe);
-}
-.tab-item.active .tab-label { color: var(--caramel); }
 
-@media(max-width: 700px) {
-  .tab-bar { display: flex; }
-  .page { padding-bottom: 90px !important; }
-  nav { display: none; }
-}
 
 
 /* ── MOBILE BOTTOM TAB BAR ── */
-.tab-bar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:150;background:rgba(28,20,16,0.97);backdrop-filter:blur(20px);border-top:1px solid rgba(200,168,120,0.12);padding:10px 0 max(10px,env(safe-area-inset-bottom));justify-content:space-around;}
+.tab-bar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:rgba(28,20,16,0.97);backdrop-filter:blur(20px);border-top:1px solid rgba(200,168,120,0.12);padding:10px 0 max(10px,env(safe-area-inset-bottom));justify-content:space-around;}
 .tab-item{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;cursor:pointer;padding:4px 16px;border-radius:10px;transition:all 0.12s;min-width:56px;}
 .tab-icon-img{width:22px;height:22px;object-fit:contain;opacity:0.45;transition:opacity 0.12s;}
 .tab-item.active .tab-icon-img{opacity:1;}
