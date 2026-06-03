@@ -161,6 +161,7 @@ footer{border-top:1px solid var(--border-lift);padding:24px 40px;max-width:1100p
   gap:14px;
 }
 .d-card{background:var(--brown-mid);border-radius:var(--r);border:1px solid var(--border);padding:18px 20px;box-shadow:var(--shadow-sm);}
+.stats-card{min-height:auto;padding-bottom:16px;}
 .d-span-4{grid-column:span 4;}
 .d-span-6{grid-column:span 6;}
 .d-span-8{grid-column:span 8;}
@@ -229,6 +230,24 @@ footer{border-top:1px solid var(--border-lift);padding:24px 40px;max-width:1100p
   line-height:1.1;
 }
 .hcard-val.accent{color:var(--caramel);}
+@media(max-width:1200px){
+
+  .d-span-4,
+  .d-span-6{
+    grid-column:span 6;
+  }
+
+  .d-span-8,
+  .d-span-12{
+    grid-column:span 12;
+  }
+
+  .hcard-val{
+    font-size:16px;
+  }
+
+}
+
 /* ── DATE RANGE PICKER ── */
 .range-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:16px 0 20px;border-bottom:1px solid var(--border-lift);margin-bottom:20px;background:var(--espresso);}
 .range-presets{display:flex;gap:6px;flex-wrap:wrap;flex:1;}
@@ -318,7 +337,7 @@ footer{border-top:1px solid var(--border-lift);padding:24px 40px;max-width:1100p
     <div class="chart-h"><canvas id="gmv30Chart"></canvas></div>
   </div>
   <!-- Donut -->
-  <div class="d-card d-span-4">
+  <div class="d-card d-span-4 stats-card">
     <div class="d-card-label">Commissions — Status</div>
     <div class="donut-wrap">
       <div class="donut-chart"><canvas id="commDonut"></canvas></div>
@@ -328,8 +347,13 @@ footer{border-top:1px solid var(--border-lift);padding:24px 40px;max-width:1100p
       </div>
     </div>
   </div>
+  <!-- Rate chart -->
+  <div class="d-card d-span-12">
+    <div class="d-card-label">Commission Rate — This Period</div>
+    <div class="chart-h"><canvas id="commRateChart"></canvas></div>
+  </div>
   <!-- Highlights -->
-  <div class="d-card d-span-4">
+  <div class="d-card d-span-4 stats-card">
     <div class="d-card-label">Highlights</div>
     <div class="hgroup">
       <div class="hcard"><div class="hcard-label">All-time Earned</div><div class="hcard-val sage" id="hl-alltime">—</div></div>
@@ -337,11 +361,6 @@ footer{border-top:1px solid var(--border-lift);padding:24px 40px;max-width:1100p
       <div class="hcard"><div class="hcard-label">Best Day</div><div class="hcard-val" id="hl-bestday">—</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px" id="hl-bestday-date"></div></div>
       <div class="hcard"><div class="hcard-label">Active Days</div><div class="hcard-val" id="hl-days">—</div></div>
     </div>
-  </div>
-  <!-- Rate chart -->
-  <div class="d-card d-span-8">
-    <div class="d-card-label">Commission Rate — This Period</div>
-    <div class="chart-h"><canvas id="commRateChart"></canvas></div>
   </div>
   <!-- All-time GMV -->
   <div class="d-card d-span-12">
