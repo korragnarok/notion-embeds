@@ -268,6 +268,7 @@ nav{background:rgba(18,13,9,0.9);backdrop-filter:blur(20px);border-bottom:1px so
 <script>
 const API='https://kortny-api.vercel.app/api/notion';
 const PRODUCTS_DB='d99b6dec79ba46f1a564af4d00f7220d';
+const HOOKS_DB='18bbb9e6ad7241be9c4b5dfac1bb8fcc';
 const HOOKS_STORAGE_KEY='kortny-hooks-v2';
 const ANGLE_DESCS={'story':'Problem → failed attempts → discovery → result → CTA. Builds trust.','curiosity':'Withhold the product — open a loop the viewer has to stay to close.','rage bait':'Deadpan, slightly provocative statement. Zero smile. Pivot immediately.','skit':'Conversation or scenario format. Great for food & supplements.','emotional':'Lead with feeling — aspiration, comfort, identity. Sell the lifestyle.','fear':'What happens if they DON\'T have this? Loss aversion angle.','asmr':'Sensory-led. Sounds, textures, visuals do the selling. Minimal talking.','identity':'Call out a specific person — "if you\'re a [identity], this is for you."'};
 const DEFAULT_HOOKS=[{id:'dh1',catName:"Husband's GF",catEmoji:'💍',text:"My husband's girlfriend recommended this brand to me and honestly she has great taste so here we are."},{id:'dh2',catName:'Chaos Energy',catEmoji:'🌀',text:"My therapist told me to stop buying things online but then I found this."},{id:'dh3',catName:'Chaos Energy',catEmoji:'🌀',text:"I saw these, blacked out, and woke up with a tracking number."},{id:'dh4',catName:'Partner Reaction',catEmoji:'😂',text:"My husband asked what these are for and I said 'happiness' and walked away."},{id:'dh5',catName:'Impulse Buy',catEmoji:'🛒',text:"My name is Kortny and I cannot be trusted on TikTok Shop after 9pm."},{id:'dh6',catName:'Impulse Buy',catEmoji:'🛒',text:"POV you told yourself you were just browsing."},{id:'dh7',catName:'Home Rage Bait',catEmoji:'🏠',text:"Ugly homes are a personality flaw and I said what I said."},{id:'dh8',catName:'Home Rage Bait',catEmoji:'🏠',text:"If nobody in your life has told you your home looks sad I'm telling you now."}];
@@ -280,10 +281,31 @@ async function loadProducts(){
     const sel=document.getElementById('product-select');sel.innerHTML='<option value="">— Pick from your database —</option>'+PRODUCTS.map(p=>`<option value="${p.name}">${p.brand?p.brand+' — ':''}${p.name}${p.sold?` (${p.sold} sold)`:''}</option>`).join('');
   }catch(e){console.error('loadProducts error:', e);document.getElementById('product-select').innerHTML='<option value="">Could not load products — '+e.message+'</option>';}
 }
-function loadHooks(){
-  let loaded=false;
-  try{const saved=localStorage.getItem(HOOKS_STORAGE_KEY);if(saved){const data=JSON.parse(saved);const cats={};(data.categories||[]).forEach(c=>{cats[c.id]=c;});const filtered=(data.hooks||[]).filter(h=>!h.isNote&&!h.isVisual);if(filtered.length>0){HOOKS=filtered.map(h=>({...h,catName:cats[h.catId]?.name||'',catEmoji:cats[h.catId]?.emoji||''}));loaded=true;}}}catch(e){}
-  if(!loaded)HOOKS=DEFAULT_HOOKS;renderHookPicker('');
+async function loadHooks(){
+  try{
+    let results=[],cursor=null;
+    do{
+      const body={page_size:100};if(cursor)body.start_cursor=cursor;
+      const res=await fetch(`${API}?endpoint=databases/${HOOKS_DB}/query`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const data=await res.json();
+      results=[...results,...(data.results||[])];
+      cursor=data.next_cursor;
+    }while(cursor);
+    if(results.length>0){
+      HOOKS=results.filter(p=>p.properties['Hook Text']?.title?.[0]?.plain_text).map(p=>({
+        id:p.id,
+        text:p.properties['Hook Text']?.title?.[0]?.plain_text||'',
+        catName:p.properties['Category']?.rich_text?.[0]?.plain_text||'',
+        catEmoji:p.properties['Category Emoji']?.rich_text?.[0]?.plain_text||'🎣',
+      }));
+    } else {
+      HOOKS=DEFAULT_HOOKS;
+    }
+  }catch(e){
+    console.error('loadHooks error:',e);
+    HOOKS=DEFAULT_HOOKS;
+  }
+  renderHookPicker('');
 }
 function filterHooks(){renderHookPicker(document.getElementById('hook-search').value.toLowerCase());}
 function renderHookPicker(query){
