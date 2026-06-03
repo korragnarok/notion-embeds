@@ -205,6 +205,7 @@ nav{background:rgba(18,13,9,0.9);backdrop-filter:blur(20px);border-bottom:1px so
       <input type="text" class="form-input" id="hook-search" placeholder="Search your hook bank..." oninput="filterHooks()">
       <div class="hook-picker" id="hook-picker"><div style="padding:12px;font-size:12px;color:var(--text-muted);text-align:center">Loading hooks...</div></div>
       <div id="selected-hook-display" style="display:none;margin-top:5px;font-size:12px;color:var(--sage-light);padding:8px 10px;background:rgba(122,158,126,0.08);border-radius:8px;line-height:1.4;border:1px solid rgba(122,158,126,0.15);"></div>
+      <input type="text" class="form-input" id="custom-hook" placeholder="Or type a custom hook..." oninput="onCustomHook(this)" style="margin-top:6px;">
     </div>
     <div class="divider"></div>
     <div class="form-group">
@@ -356,8 +357,17 @@ function renderHookPicker(query){
   picker.innerHTML=filtered.slice(0,40).map(h=>`<div class="hook-option${selectedHookId===h.id?' selected':''}" onclick="selectHook('${h.id}')"><div class="hook-option-cat">${h.catEmoji} ${h.catName}</div>${h.text}</div>`).join('');
 }
 function selectHook(id){
+  const customHook=document.getElementById('custom-hook');
+  if(customHook)customHook.value='';
   if(selectedHookId===id){selectedHookId=null;document.getElementById('selected-hook-display').style.display='none';}
   else{selectedHookId=id;const h=HOOKS.find(x=>x.id===id);const disp=document.getElementById('selected-hook-display');disp.textContent='✓ Using: "'+h.text+'"';disp.style.display='block';}
+  renderHookPicker(document.getElementById('hook-search').value.toLowerCase());
+}
+function onCustomHook(input){
+  if(!input.value.trim())return;
+  selectedHookId=null;
+  const disp=document.getElementById('selected-hook-display');
+  if(disp)disp.style.display='none';
   renderHookPicker(document.getElementById('hook-search').value.toLowerCase());
 }
 function setToggle(group,val,btn){
@@ -372,13 +382,13 @@ function onCustomAngle(input){
 async function generateScript(){
   const productVal=document.getElementById('product-select').value,customProduct=document.getElementById('custom-product').value.trim(),productName=customProduct||productVal;
   if(!productName){alert('Please select a product or type one in!');return;}
-  const productDetails=document.getElementById('product-details').value.trim(),selectedHook=selectedHookId?HOOKS.find(h=>h.id===selectedHookId):null,productData=PRODUCTS.find(p=>p.name===productName);
+  const productDetails=document.getElementById('product-details').value.trim(),selectedHook=selectedHookId?HOOKS.find(h=>h.id===selectedHookId):null,customHook=document.getElementById('custom-hook').value.trim(),hookText=customHook||selectedHook?.text||'',productData=PRODUCTS.find(p=>p.name===productName);
   const features=productData?.features||'';
   const btn=document.getElementById('generate-btn');btn.disabled=true;btn.textContent='Generating...';
   const numVariations=parseInt(toggleState.variations)||1;
   document.getElementById('main-panel').innerHTML=`<div class="generating"><div class="gen-spinner"></div><div class="gen-text">Writing your script${numVariations>1?' variations':''}...</div></div>`;
   const systemPrompt=`You are a TikTok Shop affiliate script writer for @helloitskortny. You write high-converting, authentic-sounding scripts that feel like a real person talking to a friend — never like an ad.\n\nCORE RULES:\n- Hook-First pattern (default): Hook (0-3s) → Problem+Agitation (3-8s) → Product Intro (8-15s) → Demo/Proof (15-22s) → CTA (22-30s)\n- Product-First pattern: Product reveal (0-5s) → Why it matters (5-15s) → Demo/Proof (15-22s) → CTA (22-30s)\n- CTA always ends with "Grabbed it through TikTok Shop" or "picked this up through TikTok Shop" + soft reason to click\n- NEVER mention prices, guaranteed results, or medical claims\n- For supplements: use "If you're looking to support..." framing only\n- Short sentences. Conversational. First-person. Specific beats vague.\n- Always end with EXACTLY 5 hashtags: 1 broad niche, 1 category, 1 product-specific, 1 TikTok Shop (#tiktoken or #tiktokshop), 1 wildcard\n\nOUTPUT FORMAT for each script variation:\n🎬 HOOK:\n[Hook line]\n\n🗣️ SCRIPT:\n[Full script as spoken word, with timing markers like (0-3s), (3-8s) etc]\n\n⏱️ Est. time: [X seconds]\n\n✅ COMPLIANCE:\n[3-4 bullet points confirming compliance]\n\n💡 FILMING TIP:\n[One practical filming tip]\n\n#hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5\n\n---\n\nIf generating multiple variations, separate each with "--- VARIATION 2 ---" etc.`;
-  const userPrompt=`Write ${numVariations} TikTok script variation${numVariations>1?'s':''} for this product:\n\nPRODUCT: ${productName}\n${productData?`BRAND: ${productData.brand}\nUNITS SOLD: ${productData.sold||0}\nGMV: $${productData.gmv||0}`:''}\n${features?`\nPRODUCT FEATURES (use these facts — do not guess or fabricate):\n${features}`:''}\n${productDetails?`\nADDITIONAL NOTES: ${productDetails}`:''}\n${selectedHook?`\nHOOK FORMULA TO ADAPT: "${selectedHook.text}"\nUse this as the psychological blueprint — same energy, same angle, reworded to feel natural for this specific product. The viewer should never feel like a template was used.`:''}\n\nVIDEO LENGTH: ${toggleState.length}\nSCRIPT ANGLE: ${toggleState.tone} — ${ANGLE_DESCS[toggleState.tone]||''}\nOPENING PATTERN: ${toggleState.pattern}\n\n${productData?.sold>50?`NOTE: This product has strong sales proof (${productData.sold} units, $${productData.gmv} GMV) — you can reference this casually as social proof.`:''}\n\nWrite the script now. Be specific, authentic, and conversational. No filler words like "honestly" or "literally". Lean hard into the ${toggleState.tone} angle.`;
+  const userPrompt=`Write ${numVariations} TikTok script variation${numVariations>1?'s':''} for this product:\n\nPRODUCT: ${productName}\n${productData?`BRAND: ${productData.brand}\nUNITS SOLD: ${productData.sold||0}\nGMV: $${productData.gmv||0}`:''}\n${features?`\nPRODUCT FEATURES (use these facts — do not guess or fabricate):\n${features}`:''}\n${productDetails?`\nADDITIONAL NOTES: ${productDetails}`:''}\n${hookText?`\nHOOK FORMULA TO ADAPT: "${hookText}"\nUse this as the psychological blueprint — same energy, same angle, reworded to feel natural for this specific product. The viewer should never feel like a template was used.`:''}\n\nVIDEO LENGTH: ${toggleState.length}\nSCRIPT ANGLE: ${toggleState.tone} — ${ANGLE_DESCS[toggleState.tone]||''}\nOPENING PATTERN: ${toggleState.pattern}\n\n${productData?.sold>50?`NOTE: This product has strong sales proof (${productData.sold} units, $${productData.gmv} GMV) — you can reference this casually as social proof.`:''}\n\nWrite the script now. Be specific, authentic, and conversational. No filler words like "honestly" or "literally". Lean hard into the ${toggleState.tone} angle.`;
   try{
     const request=buildAiRequest(aiProvider,systemPrompt,userPrompt,1000);
     const res=await fetch(request.url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(request.body)});
