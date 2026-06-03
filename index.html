@@ -286,6 +286,7 @@ nav {
   display: flex; align-items: center; justify-content: center;
   font-size: 17px; flex-shrink: 0;
 }
+.home-icon-img{width:22px;height:22px;object-fit:contain;display:block;}
 .stat-icon.sage { background: rgba(122,144,104,0.15); }
 .stat-icon.caramel { background: rgba(200,134,74,0.15); }
 .stat-icon.rust { background: rgba(184,96,64,0.15); }
@@ -606,7 +607,7 @@ footer {
   <div class="stats-row">
     <div class="stat-card">
       <div class="stat-card-top">
-        <div class="stat-icon caramel"><i data-lucide="shopping-bag" style="width:20px;height:20px;stroke:#c8864a;stroke-width:1.8;fill:none;display:block"></i></div>
+        <div class="stat-icon caramel"><img src="icons/home/monthly-gmv.png" alt="" class="home-icon-img"></div>
         <div class="stat-label">GMV<br>This Month</div>
       </div>
       <div class="stat-num" id="s-gmv">—</div>
@@ -614,7 +615,7 @@ footer {
     </div>
     <div class="stat-card">
       <div class="stat-card-top">
-        <div class="stat-icon sage"><i data-lucide="dollar-sign" style="width:20px;height:20px;stroke:#7a9068;stroke-width:1.8;fill:none;display:block"></i></div>
+        <div class="stat-icon sage"><img src="icons/home/monthly-commission.png" alt="" class="home-icon-img"></div>
         <div class="stat-label">Commission<br>This Month</div>
       </div>
       <div class="stat-num" id="s-comm">—</div>
@@ -622,7 +623,7 @@ footer {
     </div>
     <div class="stat-card">
       <div class="stat-card-top">
-        <div class="stat-icon rust"><i data-lucide="video" style="width:20px;height:20px;stroke:#b86040;stroke-width:1.8;fill:none;display:block"></i></div>
+        <div class="stat-icon rust"><img src="icons/home/monthly-videos.png" alt="" class="home-icon-img"></div>
         <div class="stat-label">Videos Posted<br>This Month</div>
       </div>
       <div class="stat-num" id="s-vids">—</div>
@@ -630,7 +631,7 @@ footer {
     </div>
     <div class="stat-card">
       <div class="stat-card-top">
-        <div class="stat-icon sand"><i data-lucide="package" style="width:20px;height:20px;stroke:#9a8870;stroke-width:1.8;fill:none;display:block"></i></div>
+        <div class="stat-icon sand"><img src="icons/home/monthly-orders.png" alt="" class="home-icon-img"></div>
         <div class="stat-label">Orders<br>This Month</div>
       </div>
       <div class="stat-num" id="s-sold">—</div>
@@ -646,7 +647,7 @@ footer {
   <div class="actions-row">
     <a href="daily-todo.html" class="action-card">
       <div class="action-card-top">
-        <div class="action-icon sage-bg"><i data-lucide="check-square" style="width:22px;height:22px;stroke:#4a6040;stroke-width:1.8;fill:none;display:block"></i></div>
+        <div class="action-icon sage-bg"><img src="icons/home/daily-todo.png" alt="" class="home-icon-img"></div>
         <div>
           <div class="action-title">Today's To Do</div>
         </div>
@@ -656,7 +657,7 @@ footer {
     </a>
     <a href="products.html" class="action-card">
       <div class="action-card-top">
-        <div class="action-icon caramel-bg"><i data-lucide="layers" style="width:22px;height:22px;stroke:#c8864a;stroke-width:1.8;fill:none;display:block"></i></div>
+        <div class="action-icon caramel-bg"><img src="icons/home/product-database.png" alt="" class="home-icon-img"></div>
         <div>
           <div class="action-title">Product Database</div>
         </div>
@@ -666,7 +667,7 @@ footer {
     </a>
     <a href="video-tracker.html" class="action-card">
       <div class="action-card-top">
-        <div class="action-icon rust-bg"><i data-lucide="film" style="width:22px;height:22px;stroke:#b86040;stroke-width:1.8;fill:none;display:block"></i></div>
+        <div class="action-icon rust-bg"><img src="icons/home/video-tracker.png" alt="" class="home-icon-img"></div>
         <div>
           <div class="action-title">Video Tracker</div>
         </div>
@@ -684,7 +685,7 @@ footer {
   </div>
   <div class="snapshot-row">
     <a href="commissions.html" class="snap-card">
-      <div class="snap-icon"><i data-lucide="trending-up" style="width:18px;height:18px;stroke:#4a6040;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div class="snap-icon"><img src="icons/home/settled-commissions.png" alt="" class="home-icon-img"></div>
       <div>
         <div class="snap-num" id="snap-settled">—</div>
         <div class="snap-label">Settled Commissions</div>
@@ -692,7 +693,7 @@ footer {
       </div>
     </a>
     <a href="commissions.html" class="snap-card">
-      <div class="snap-icon c"><i data-lucide="clock" style="width:18px;height:18px;stroke:#c8864a;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div class="snap-icon c"><img src="icons/home/pending-commissions.png" alt="" class="home-icon-img"></div>
       <div>
         <div class="snap-num" id="snap-pending">—</div>
         <div class="snap-label">Pending Commissions</div>
@@ -700,7 +701,7 @@ footer {
       </div>
     </a>
     <a href="video-tracker.html" class="snap-card">
-      <div class="snap-icon r"><i data-lucide="play-circle" style="width:18px;height:18px;stroke:#b86040;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div class="snap-icon r"><img src="icons/home/total-videos.png" alt="" class="home-icon-img"></div>
       <div>
         <div class="snap-num" id="snap-vids">—</div>
         <div class="snap-label">Total Videos</div>
@@ -708,7 +709,7 @@ footer {
       </div>
     </a>
     <a href="products.html" class="snap-card">
-      <div class="snap-icon s"><i data-lucide="tag" style="width:18px;height:18px;stroke:#9a8870;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div class="snap-icon s"><img src="icons/home/products-count.png" alt="" class="home-icon-img"></div>
       <div>
         <div class="snap-num" id="snap-prods">—</div>
         <div class="snap-label">Products in Database</div>
@@ -724,31 +725,31 @@ footer {
   </div>
   <div class="tools-row">
     <a href="hooks.html" class="tool-card">
-      <div class="tool-icon" style="background:rgba(122,144,104,0.15)"><i data-lucide="anchor" style="width:18px;height:18px;stroke:#4a6040;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div class="tool-icon" style="background:rgba(122,144,104,0.15)"><img src="icons/home/hook-bank.png" alt="" class="home-icon-img"></div>
       <div class="tool-name">Hook Bank</div>
       <p class="tool-desc">Save and organize your best hooks.</p>
       <div class="tool-link">Open →</div>
     </a>
     <a href="script-generator.html" class="tool-card">
-      <div class="tool-icon" style="background:rgba(200,134,74,0.15)"><i data-lucide="pen-line" style="width:18px;height:18px;stroke:#c8864a;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div class="tool-icon" style="background:rgba(200,134,74,0.15)"><img src="icons/home/script-generator.png" alt="" class="home-icon-img"></div>
       <div class="tool-name">Script Generator</div>
       <p class="tool-desc">Create scroll-stopping scripts in seconds.</p>
       <div class="tool-link">Open →</div>
     </a>
     <a href="daily-sales-calendar.html" class="tool-card">
-      <div class="tool-icon" style="background:rgba(184,96,64,0.12)"><i data-lucide="calendar" style="width:18px;height:18px;stroke:#b86040;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div class="tool-icon" style="background:rgba(184,96,64,0.12)"><img src="icons/home/daily-sales.png" alt="" class="home-icon-img"></div>
       <div class="tool-name">Daily Sales</div>
       <p class="tool-desc">View your daily GMV calendar and trends.</p>
       <div class="tool-link">Open →</div>
     </a>
     <a href="commissions.html" class="tool-card">
-      <div class="tool-icon" style="background:rgba(212,196,168,0.4)"><i data-lucide="credit-card" style="width:18px;height:18px;stroke:#9a8870;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div class="tool-icon" style="background:rgba(212,196,168,0.4)"><img src="icons/home/commissions.png" alt="" class="home-icon-img"></div>
       <div class="tool-name">Commissions</div>
       <p class="tool-desc">Track earnings, payouts, and payment history.</p>
       <div class="tool-link">Open →</div>
     </a>
     <a href="level-ladder.html" class="tool-card">
-      <div class="tool-icon" style="background:rgba(122,144,104,0.15)"><i data-lucide="award" style="width:18px;height:18px;stroke:#4a6040;stroke-width:1.8;fill:none;display:block"></i></div>
+      <div class="tool-icon" style="background:rgba(122,144,104,0.15)"><img src="icons/home/level-ladder.png" alt="" class="home-icon-img"></div>
       <div class="tool-name">Level Ladder</div>
       <p class="tool-desc">See levels, progress, and requirements.</p>
       <div class="tool-link">Open →</div>
