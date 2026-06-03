@@ -654,7 +654,7 @@ async function loadProducts() {
     ALL_PRODUCTS=results.filter(p=>!p.archived&&!p.in_trash&&p.properties.Product?.title?.[0]?.plain_text).map(p=>({
       id:p.id,
       name:p.properties.Product?.title?.[0]?.plain_text||'',
-      brand:p.properties.Brand?.select?.name||'',
+      brand:normalizeBrand(p.properties.Brand?.select?.name),
       stock:p.properties.Stock?.select?.name||'',
       features:p.properties.Features?.rich_text?.[0]?.plain_text||'',
       link:p.properties['TikTok Shop Link']?.url||'',
@@ -679,7 +679,7 @@ async function loadTodoFromNotion() {
     pages.forEach(p => {
       const productId = p.properties['Product ID']?.rich_text?.[0]?.plain_text || '';
       const productName = p.properties['Product Name']?.title?.[0]?.plain_text || '';
-      const brand = p.properties.Brand?.rich_text?.[0]?.plain_text || '';
+      const brand = normalizeBrand(p.properties.Brand?.rich_text?.[0]?.plain_text);
       const link = p.properties['Shop Link']?.url || '';
       const script = p.properties.Script?.rich_text?.[0]?.plain_text || '';
       const hook = p.properties.Hook?.rich_text?.[0]?.plain_text || '';
@@ -718,6 +718,7 @@ async function loadTodoFromNotion() {
 
 function uid(){return 'id-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);}
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function normalizeBrand(brand){return String(brand||'').trim();}
 function parseInspirationLinks(text){return String(text||'').split(/\n+/).map(s=>s.trim()).filter(Boolean);}
 function normalizeInspirationUrl(url){const trimmed=String(url||'').trim();if(!trimmed)return'';return/^https?:\/\//i.test(trimmed)?trimmed:'https://'+trimmed;}
 function getLinkLabel(url){try{const u=new URL(url);return u.hostname.replace(/^www\./,'');}catch(e){return url.replace(/^https?:\/\//,'').slice(0,28);}}
@@ -726,11 +727,12 @@ function jsString(value){return JSON.stringify(String(value||''));}
 
 // ── RENDER ────────────────────────────────────────────────
 function getCardCounts(card){const takes=card.takes||[];const done=takes.filter(t=>t.done).length;return{total:takes.length,done,remaining:takes.length-done,logged:takes.filter(t=>t.logged).length};}
-function getTodoBrands(){return[...new Set(TODO.map(c=>c.brand).filter(Boolean))].sort((a,b)=>a.localeCompare(b));}
-function getFilteredTodoCards(){return todoBrandFilter==='All'?TODO:TODO.filter(card=>card.brand===todoBrandFilter);}
+function getTodoBrands(){return[...new Set(TODO.map(c=>normalizeBrand(c.brand)).filter(Boolean))].sort((a,b)=>a.localeCompare(b));}
+function getFilteredTodoCards(){return todoBrandFilter==='All'?TODO:TODO.filter(card=>normalizeBrand(card.brand)===todoBrandFilter);}
 function getSortedTodoCards(){return[...getFilteredTodoCards()].sort((a,b)=>{const ac=getCardCounts(a),bc=getCardCounts(b);if(todoSort==='brand')return(a.brand||'').localeCompare(b.brand||'')||a.productName.localeCompare(b.productName);if(todoSort==='remaining')return bc.remaining-ac.remaining||a.productName.localeCompare(b.productName);if(todoSort==='filmed')return bc.done-ac.done||a.productName.localeCompare(b.productName);if(todoSort==='least')return ac.remaining-bc.remaining||a.productName.localeCompare(b.productName);return 0;});}
 function setTodoSort(value){todoSort=value;localStorage.setItem('kortny-todo-sort',value);render();}
-function setTodoBrandFilter(brand){todoBrandFilter=brand;localStorage.setItem('kortny-todo-brand-filter',brand);render();}
+function setTodoBrandFilter(brand){todoBrandFilter=brand==='All'?'All':normalizeBrand(brand);localStorage.setItem('kortny-todo-brand-filter',todoBrandFilter);render();}
+function setTodoBrandFilterFromButton(btn){setTodoBrandFilter(btn?.dataset?.brand||'All');}
 
 function render() {
   const main=document.getElementById('main-content');
@@ -760,7 +762,7 @@ function render() {
     <div class="todo-toolbar">
       <div class="todo-brand-filters">
         <button class="todo-brand-pill${todoBrandFilter==='All'?' active':''}" onclick="setTodoBrandFilter('All')">All Brands</button>
-        ${brands.map(brand=>`<button class="todo-brand-pill${todoBrandFilter===brand?' active':''}" onclick="setTodoBrandFilter(${jsString(brand)})">${escapeHtml(brand)}</button>`).join('')}
+        ${brands.map(brand=>`<button class="todo-brand-pill${todoBrandFilter===brand?' active':''}" data-brand="${escapeHtml(brand)}" onclick="setTodoBrandFilterFromButton(this)">${escapeHtml(brand)}</button>`).join('')}
       </div>
       <div class="todo-sort">
         <span class="todo-sort-label">Sort</span>
@@ -912,6 +914,7 @@ async function createNotionTake(card, takeNum, hookText='') {
     })
   });
   const data = await res.json();
+  if(!res.ok || !data.id) throw new Error(data?.message || data?.error || 'Could not create take');
   return data.id;
 }
 
@@ -1101,15 +1104,23 @@ async function addSelectedProducts() {
   const btn = document.getElementById('picker-add-btn');
   if(btn){btn.disabled=true; btn.textContent='Adding...';}
 
-  for(const id of toAdd) {
-    const p = ALL_PRODUCTS.find(x=>x.id===id);
-    if(!p)continue;
-    const card = {id:'card-'+uid(), productId:p.id, productName:p.name, brand:p.brand, link:p.link, productFeatures:p.features||'', script:null, takes:[]};
-    TODO.push(card);
+  try {
+    for(const id of toAdd) {
+      const p = ALL_PRODUCTS.find(x=>x.id===id);
+      if(!p)continue;
+      const card = {id:'card-'+uid(), productId:p.id, productName:p.name, brand:normalizeBrand(p.brand), link:p.link, productFeatures:p.features||'', script:null, takes:[]};
+      const notionId = await createNotionTake(card, 1);
+      card.takes.push({id:'take-'+notionId, notionId, hookText:'', hookId:null, inspirationLinks:[], done:false, logged:false, showLog:false, takeNum:1});
+      TODO.push(card);
+    }
+    closePicker();
+    render();
+    showToast(`Added ${toAdd.length} product${toAdd.length>1?'s':''}`);
+  } catch(e) {
+    console.error(e);
+    showToast('Could not add products. Try again.');
+    if(btn){btn.disabled=false; btn.textContent='Add Selected';}
   }
-  closePicker();
-  render();
-  if(btn){btn.disabled=false; btn.textContent='Add Selected';}
 }
 
 // ── HOOK PICKER ───────────────────────────────────────────
