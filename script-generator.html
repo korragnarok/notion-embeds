@@ -290,7 +290,7 @@ function filterProducts(){
   sel.innerHTML='<option value="">— Pick from your database —</option>'+filtered.map(p=>`<option value="${p.name}">${p.brand?p.brand+' — ':''}${p.name}${p.sold?` (${p.sold} sold)`:''}</option>`).join('');
 }
 
-function loadHooks(){
+async function loadHooks(){
   try{
     let results=[],cursor=null;
     do{
