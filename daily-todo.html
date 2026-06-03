@@ -397,7 +397,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(18,13,9,0.9);backdrop-filt
     <div class="modal-list" id="picker-list"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closePicker()">Cancel</button>
-      <button class="btn-save" onclick="addSelectedProducts()">Add Selected</button>
+      <button class="btn-save" id="picker-add-btn" onclick="addSelectedProducts()">Add Selected</button>
     </div>
   </div>
 </div>
@@ -1099,7 +1099,7 @@ async function addSelectedProducts() {
   if(!toAdd.length){closePicker();return;}
 
   const btn = document.getElementById('picker-add-btn');
-  btn.disabled=true; btn.textContent='Adding...';
+  if(btn){btn.disabled=true; btn.textContent='Adding...';}
 
   for(const id of toAdd) {
     const p = ALL_PRODUCTS.find(x=>x.id===id);
@@ -1109,7 +1109,7 @@ async function addSelectedProducts() {
   }
   closePicker();
   render();
-  btn.disabled=false; btn.textContent='Add to Today';
+  if(btn){btn.disabled=false; btn.textContent='Add Selected';}
 }
 
 // ── HOOK PICKER ───────────────────────────────────────────
