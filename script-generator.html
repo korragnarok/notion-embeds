@@ -187,6 +187,7 @@ nav{background:rgba(18,13,9,0.9);backdrop-filter:blur(20px);border-bottom:1px so
     <div><div class="sidebar-title">Build Your Script</div><div class="sidebar-sub">Fill in the details below</div></div>
     <div class="form-group">
       <label class="form-label">Product</label>
+      <input type="text" class="form-input" id="product-search" placeholder="Search products..." oninput="filterProducts()" style="margin-bottom:6px;">
       <select class="form-select" id="product-select"><option value="">Loading products...</option></select>
     </div>
     <div class="form-group">
@@ -281,7 +282,15 @@ async function loadProducts(){
     const sel=document.getElementById('product-select');sel.innerHTML='<option value="">— Pick from your database —</option>'+PRODUCTS.map(p=>`<option value="${p.name}">${p.brand?p.brand+' — ':''}${p.name}${p.sold?` (${p.sold} sold)`:''}</option>`).join('');
   }catch(e){console.error('loadProducts error:', e);document.getElementById('product-select').innerHTML='<option value="">Could not load products — '+e.message+'</option>';}
 }
-async function loadHooks(){
+async 
+function filterProducts(){
+  const q=document.getElementById('product-search').value.toLowerCase();
+  const sel=document.getElementById('product-select');
+  const filtered=q?PRODUCTS.filter(p=>p.name.toLowerCase().includes(q)||(p.brand&&p.brand.toLowerCase().includes(q))):PRODUCTS;
+  sel.innerHTML='<option value="">— Pick from your database —</option>'+filtered.map(p=>`<option value="${p.name}">${p.brand?p.brand+' — ':''}${p.name}${p.sold?` (${p.sold} sold)`:''}</option>`).join('');
+}
+
+function loadHooks(){
   try{
     let results=[],cursor=null;
     do{
