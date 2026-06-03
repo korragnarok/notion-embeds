@@ -246,6 +246,18 @@ nav{position:sticky;top:0;z-index:200;background:rgba(18,13,9,0.9);backdrop-filt
 .tbtn.logged{background:rgba(74,96,64,0.15);color:var(--sage-dark);border-color:rgba(74,96,64,0.2);cursor:default;}
 .tbtn.del:hover{background:var(--rust);color:white;border-color:var(--rust);}
 .take-done{opacity:0.65;}
+.insp-section{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.insp-label{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--taupe);margin-bottom:7px;}
+.insp-links{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.insp-link{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border:1px solid var(--border-mid);border-radius:100px;color:var(--caramel);font-size:11px;font-weight:600;max-width:180px;}
+.insp-link span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.insp-remove{background:none;border:none;color:var(--taupe);font-size:13px;line-height:1;cursor:pointer;padding:0;}
+.insp-add{display:flex;gap:6px;}
+.insp-input{flex:1;min-width:0;padding:8px 12px;border:1px solid var(--border-mid);border-radius:8px;background:var(--espresso);color:var(--text-bright);font-size:12px;font-family:'DM Sans',sans-serif;outline:none;}
+.insp-input::placeholder{color:var(--sand);}
+.insp-input:focus{border-color:var(--sage);}
+.insp-add-btn{background:var(--cream-dark);border:1px solid var(--border-mid);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;color:var(--taupe);cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.insp-add-btn:hover{background:var(--caramel);border-color:var(--caramel);color:white;}
 /* ── TAKE LOG FORM ── */
 .take-log-form{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .take-log-input{padding:8px 12px;border:1px solid var(--border-mid);border-radius:8px;background:var(--espresso);color:var(--text-bright);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;}
@@ -656,6 +668,7 @@ async function loadTodoFromNotion() {
       const link = p.properties['Shop Link']?.url || '';
       const script = p.properties.Script?.rich_text?.[0]?.plain_text || '';
       const hook = p.properties.Hook?.rich_text?.[0]?.plain_text || '';
+      const inspiration = p.properties['Inspiration Links']?.rich_text?.map(t=>t.plain_text).join('') || '';
       const done = p.properties.Done?.checkbox || false;
       const logged = p.properties['Logged to Tracker']?.checkbox || false;
       const takeNum = p.properties['Take Number']?.number || 1;
@@ -677,6 +690,7 @@ async function loadTodoFromNotion() {
         notionId: p.id,
         hookText: hook,
         hookId: null,
+        inspirationLinks: parseInspirationLinks(inspiration),
         done, logged,
         showLog: false,
         takeNum
@@ -688,6 +702,11 @@ async function loadTodoFromNotion() {
 }
 
 function uid(){return 'id-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function parseInspirationLinks(text){return String(text||'').split(/\n+/).map(s=>s.trim()).filter(Boolean);}
+function normalizeInspirationUrl(url){const trimmed=String(url||'').trim();if(!trimmed)return'';return/^https?:\/\//i.test(trimmed)?trimmed:'https://'+trimmed;}
+function getLinkLabel(url){try{const u=new URL(url);return u.hostname.replace(/^www\./,'');}catch(e){return url.replace(/^https?:\/\//,'').slice(0,28);}}
+function getInspirationText(take){return(take.inspirationLinks||[]).join('\n');}
 
 // ── RENDER ────────────────────────────────────────────────
 function getCardCounts(card){const takes=card.takes||[];const done=takes.filter(t=>t.done).length;return{total:takes.length,done,remaining:takes.length-done,logged:takes.filter(t=>t.logged).length};}
@@ -761,6 +780,16 @@ function render() {
           <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;">
             <button class="edit-btn-small js-cancel-edit" data-card-id="${card.id}">Cancel</button>
             <button class="save-btn-small js-save-edit" data-card-id="${card.id}">Save</button>
+          </div>
+        </div>
+        <div class="insp-section">
+          <div class="insp-label">Inspiration</div>
+          <div class="insp-links">
+            ${(take.inspirationLinks||[]).map((url,linkIndex)=>`<a href="${escapeHtml(url)}" target="_blank" class="insp-link"><span>${escapeHtml(getLinkLabel(url))}</span></a><button class="insp-remove" onclick="removeInspirationLink('${card.id}','${take.id}',${linkIndex})" title="Remove link">×</button>`).join('')||'<span style="font-size:12px;color:var(--sand);font-style:italic">No links yet</span>'}
+          </div>
+          <div class="insp-add">
+            <input type="url" class="insp-input" id="insp-${take.id}" placeholder="Paste TikTok or inspo link..." onkeydown="if(event.key==='Enter'){event.preventDefault();addInspirationLink('${card.id}','${take.id}')}">
+            <button class="insp-add-btn" onclick="addInspirationLink('${card.id}','${take.id}')">Add</button>
           </div>
         </div>`;
       } else {
@@ -849,6 +878,7 @@ async function createNotionTake(card, takeNum, hookText='') {
         'Script': {rich_text:[{text:{content:card.script||''}}]},
         'Take Number': {number: takeNum},
         'Hook': {rich_text:[{text:{content:hookText}}]},
+        'Inspiration Links': {rich_text:[]},
         'Done': {checkbox: false},
         'Logged to Tracker': {checkbox: false},
         'Product ID': {rich_text:[{text:{content:card.productId||''}}]},
@@ -865,6 +895,11 @@ async function updateNotionTake(notionId, props) {
     method:'PATCH', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({properties: props})
   });
+}
+
+async function saveInspirationLinks(take) {
+  if(!take?.notionId)return;
+  await updateNotionTake(take.notionId, {'Inspiration Links':{rich_text:getInspirationText(take)?[{text:{content:getInspirationText(take).substring(0,2000)}}]:[]}});
 }
 
 async function deleteNotionPage(notionId) {
@@ -893,7 +928,7 @@ async function addTake(cardId) {
   const btn = document.querySelector(`#card-${cardId} .add-take-btn`);
   if(btn){btn.disabled=true;btn.textContent='Adding...';}
   const notionId = await createNotionTake(card, takeNum);
-  card.takes.push({id:'take-'+notionId, notionId, hookText:'', hookId:null, done:false, logged:false, showLog:false, takeNum});
+  card.takes.push({id:'take-'+notionId, notionId, hookText:'', hookId:null, inspirationLinks:[], done:false, logged:false, showLog:false, takeNum});
   render();
 }
 
@@ -904,6 +939,28 @@ async function removeTake(cardId, takeId) {
   if(take.notionId) await deleteNotionPage(take.notionId);
   card.takes = card.takes.filter(t=>t.id!==takeId);
   render();
+}
+
+async function addInspirationLink(cardId, takeId) {
+  const card = TODO.find(c=>c.id===cardId);
+  const take = card?.takes.find(t=>t.id===takeId);
+  const input = document.getElementById('insp-'+takeId);
+  if(!take||!input)return;
+  const url = normalizeInspirationUrl(input.value);
+  if(!url)return;
+  take.inspirationLinks = [...(take.inspirationLinks||[]), url];
+  input.value = '';
+  render();
+  await saveInspirationLinks(take);
+}
+
+async function removeInspirationLink(cardId, takeId, index) {
+  const card = TODO.find(c=>c.id===cardId);
+  const take = card?.takes.find(t=>t.id===takeId);
+  if(!take)return;
+  take.inspirationLinks = (take.inspirationLinks||[]).filter((_,i)=>i!==index);
+  render();
+  await saveInspirationLinks(take);
 }
 
 async function toggleDone(cardId, takeId) {
