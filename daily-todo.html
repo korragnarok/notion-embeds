@@ -63,6 +63,10 @@ nav{position:sticky;top:0;z-index:200;background:rgba(18,13,9,0.9);backdrop-filt
 .btn-primary:hover{background:var(--tan-dim);}
 .btn-ghost{background:transparent;color:var(--taupe);border:1px solid var(--border-mid);}
 .btn-ghost:hover{background:var(--parchment);color:var(--text-bright);}
+.todo-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 0;flex-wrap:wrap;}
+.todo-sort{display:flex;align-items:center;gap:8px;}
+.todo-sort-label{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--taupe);}
+.todo-sort-select{padding:7px 28px 7px 12px;border:1px solid var(--border-mid);border-radius:8px;background:var(--espresso);color:var(--text-bright);font-size:12px;font-family:'DM Sans',sans-serif;outline:none;cursor:pointer;}
 
 /* ── EMPTY STATE ── */
 .empty-state-wrap{text-align:center;padding:64px 24px;}
@@ -456,6 +460,7 @@ let pickerSelected = new Set();
 let hookTargetId = null;
 let scriptTargetCardId = null;
 let scriptAngle = 'story';
+let todoSort = localStorage.getItem('kortny-todo-sort') || 'original';
 
 
 // ── WEEK STRIP ────────────────────────────────────────────
@@ -685,6 +690,10 @@ async function loadTodoFromNotion() {
 function uid(){return 'id-'+Date.now()+'-'+Math.random().toString(36).slice(2,7);}
 
 // ── RENDER ────────────────────────────────────────────────
+function getCardCounts(card){const takes=card.takes||[];const done=takes.filter(t=>t.done).length;return{total:takes.length,done,remaining:takes.length-done,logged:takes.filter(t=>t.logged).length};}
+function getSortedTodoCards(){return[...TODO].sort((a,b)=>{const ac=getCardCounts(a),bc=getCardCounts(b);if(todoSort==='brand')return(a.brand||'').localeCompare(b.brand||'')||a.productName.localeCompare(b.productName);if(todoSort==='remaining')return bc.remaining-ac.remaining||a.productName.localeCompare(b.productName);if(todoSort==='filmed')return bc.done-ac.done||a.productName.localeCompare(b.productName);if(todoSort==='least')return ac.remaining-bc.remaining||a.productName.localeCompare(b.productName);return 0;});}
+function setTodoSort(value){todoSort=value;localStorage.setItem('kortny-todo-sort',value);render();}
+
 function render() {
   const main=document.getElementById('main-content');
   const allTakes=TODO.flatMap(c=>c.takes||[]);
@@ -708,9 +717,21 @@ function render() {
       <span class="ppill ppill-done">${doneTakes} filmed</span>
       <span class="ppill ppill-left">${totalTakes-doneTakes} remaining</span>
     </div>
+    <div class="todo-toolbar">
+      <div class="todo-sort">
+        <span class="todo-sort-label">Sort</span>
+        <select class="todo-sort-select" onchange="setTodoSort(this.value)">
+          <option value="original"${todoSort==='original'?' selected':''}>Original</option>
+          <option value="brand"${todoSort==='brand'?' selected':''}>Brand A-Z</option>
+          <option value="remaining"${todoSort==='remaining'?' selected':''}>Most remaining</option>
+          <option value="filmed"${todoSort==='filmed'?' selected':''}>Most filmed</option>
+          <option value="least"${todoSort==='least'?' selected':''}>Least remaining</option>
+        </select>
+      </div>
+    </div>
   </div><div class="product-cards">`;
 
-  TODO.forEach(card=>{
+  getSortedTodoCards().forEach(card=>{
     const takes=card.takes||[];
     html+=`<div class="product-card" id="card-${card.id}">
       <div class="card-header">
@@ -795,8 +816,8 @@ function render() {
           </select>
           <select class="take-log-select" id="lv-sales-${take.id}">
             <option value="">Got Sales?</option>
-            <option value="✅ Yes">✅ Yes</option>
-            <option value="❌ No">❌ No</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
           </select>
           <button class="take-log-submit" id="log-btn-${take.id}" onclick="logVideo('${card.id}','${take.id}')">Save to Video Tracker</button>
           <div class="take-log-msg" id="lv-msg-${take.id}"></div>
