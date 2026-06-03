@@ -1,8 +1,8 @@
 // @helloitskortny — TikTok Shop Creator Hub
-// Service Worker v1.6
+// Service Worker v1.7
 
-const CACHE_NAME = 'kortny-hub-v7';
-const RUNTIME_CACHE = 'kortny-runtime-v7';
+const CACHE_NAME = 'kortny-hub-v8';
+const RUNTIME_CACHE = 'kortny-runtime-v8';
 const BASE_PATH = '/notion-embeds';
 
 // App shell — everything needed to load offline
@@ -29,7 +29,7 @@ const CACHE_PATTERNS = [
 
 // ─── Install: pre-cache app shell ───────────────────────────────
 self.addEventListener('install', event => {
-  console.log('[SW] Installing kortny-hub-v7...');
+  console.log('[SW] Installing kortny-hub-v8...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
