@@ -1176,7 +1176,7 @@ function buildTodoAiRequest(provider, systemPrompt, userPrompt, maxTokens) {
       body: {
         model: 'gemini-2.5-flash',
         contents: [{role: 'user', parts: [{text: `${systemPrompt}\n\n${userPrompt}`}]}],
-        generationConfig: {maxOutputTokens: maxTokens}
+        generationConfig: {maxOutputTokens: maxTokens, thinkingConfig: {thinkingBudget: 0}}
       }
     };
   }
@@ -1191,7 +1191,7 @@ function extractTodoAiText(data) {
 }
 
 function getTodoAiErrorMessage(provider, data) {
-  if(provider === 'gemini') return 'Gemini is not enabled on the API bridge yet.';
+  if(provider === 'gemini') return data?.error?.message || data?.error || 'Gemini returned a blank response. Try again or switch back to Claude.';
   return data?.error?.message || data?.error || 'Error. Try again.';
 }
 
