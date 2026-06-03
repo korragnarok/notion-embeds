@@ -870,6 +870,16 @@ function render() {
           <div class="take-log-msg" id="lv-msg-${take.id}"></div>
         </div>`;
       }
+      html+=`<div class="insp-section">
+        <div class="insp-label">Inspiration</div>
+        <div class="insp-links">
+          ${(take.inspirationLinks||[]).map((url,linkIndex)=>`<a href="${escapeHtml(url)}" target="_blank" class="insp-link"><span>${escapeHtml(getLinkLabel(url))}</span></a><button class="insp-remove" onclick="removeInspirationLink('${card.id}','${take.id}',${linkIndex})" title="Remove link">×</button>`).join('')||'<span style="font-size:12px;color:var(--sand);font-style:italic">No links yet</span>'}
+        </div>
+        <div class="insp-add">
+          <input type="url" class="insp-input" id="insp-${take.id}" placeholder="Paste TikTok or inspo link..." onkeydown="if(event.key==='Enter'){event.preventDefault();addInspirationLink('${card.id}','${take.id}')}">
+          <button class="insp-add-btn" onclick="addInspirationLink('${card.id}','${take.id}')">Add</button>
+        </div>
+      </div>`;
       html+=`</div>`;
     });
 
@@ -1029,21 +1039,29 @@ function copyScript(cardId) {
   if(card?.script) navigator.clipboard.writeText(card.script);
 }
 
+function restoreScrollPosition(y) {
+  requestAnimationFrame(() => window.scrollTo({top:y,left:0,behavior:'auto'}));
+}
+
 function startEditScript(cardId) {
   const card = TODO.find(c=>c.id===cardId);
   if(!card)return;
+  const scrollY = window.scrollY;
   card.editing = true;
   render();
+  restoreScrollPosition(scrollY);
   // Focus and move cursor to end
   const ta = document.getElementById('script-edit-'+cardId);
-  if(ta){ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);}
+  if(ta){try{ta.focus({preventScroll:true});}catch(e){ta.focus();}ta.setSelectionRange(ta.value.length,ta.value.length);}
 }
 
 function cancelEditScript(cardId) {
   const card = TODO.find(c=>c.id===cardId);
   if(!card)return;
+  const scrollY = window.scrollY;
   card.editing = false;
   render();
+  restoreScrollPosition(scrollY);
 }
 
 async function saveEditScript(cardId) {
@@ -1053,9 +1071,11 @@ async function saveEditScript(cardId) {
   if(!ta)return;
   const newText = ta.value.trim();
   if(!newText)return;
+  const scrollY = window.scrollY;
   card.script = newText;
   card.editing = false;
   render();
+  restoreScrollPosition(scrollY);
   // Sync updated script to all takes in Notion
   for(const take of card.takes) {
     if(take.notionId) await updateNotionTake(take.notionId, {'Script':{rich_text:[{text:{content:newText.substring(0,2000)}}]}});
