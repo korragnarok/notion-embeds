@@ -1,8 +1,8 @@
 // @helloitskortny — TikTok Shop Creator Hub
-// Service Worker v1.8
+// Service Worker v1.9
 
-const CACHE_NAME = 'kortny-hub-v9';
-const RUNTIME_CACHE = 'kortny-runtime-v9';
+const CACHE_NAME = 'kortny-hub-v10';
+const RUNTIME_CACHE = 'kortny-runtime-v10';
 const BASE_PATH = '/notion-embeds';
 
 // App shell — everything needed to load offline
@@ -29,7 +29,7 @@ const CACHE_PATTERNS = [
 
 // ─── Install: pre-cache app shell ───────────────────────────────
 self.addEventListener('install', event => {
-  console.log('[SW] Installing kortny-hub-v9...');
+  console.log('[SW] Installing kortny-hub-v10...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -102,7 +102,21 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // App shell HTML + local assets — cache-first, fallback to network
+  // App shell HTML — network-first so app updates appear quickly
+  if (url.origin === self.location.origin && (request.mode === 'navigate' || url.pathname.endsWith('.html'))) {
+    event.respondWith(
+      fetch(request).then(response => {
+        if (response.ok) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(request, responseClone));
+        }
+        return response;
+      }).catch(() => caches.match(request).then(cached => cached || caches.match(`${BASE_PATH}/index.html`)))
+    );
+    return;
+  }
+
+  // Local assets — cache-first, fallback to network
   if (url.origin === self.location.origin) {
     event.respondWith(
       caches.match(request).then(cached => {
