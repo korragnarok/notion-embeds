@@ -282,7 +282,6 @@ async function loadProducts(){
     const sel=document.getElementById('product-select');sel.innerHTML='<option value="">— Pick from your database —</option>'+PRODUCTS.map(p=>`<option value="${p.name}">${p.brand?p.brand+' — ':''}${p.name}${p.sold?` (${p.sold} sold)`:''}</option>`).join('');
   }catch(e){console.error('loadProducts error:', e);document.getElementById('product-select').innerHTML='<option value="">Could not load products — '+e.message+'</option>';}
 }
-async 
 function filterProducts(){
   const q=document.getElementById('product-search').value.toLowerCase();
   const sel=document.getElementById('product-select');
