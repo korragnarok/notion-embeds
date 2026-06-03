@@ -379,8 +379,7 @@ function renderHistory() {
       <div class="history-item-meta">
         <span>${h.tone}</span><span>${h.length}</span><span>${h.date} ${h.time}</span>
       </div>
-      <div class="history-item-preview">${h.text.replace(/
-/g,' ')}</div>
+      <div class="history-item-preview">${h.text.replace(/ /g,' ')}</div>
     </div>`).join('');
 }
 
