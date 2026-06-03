@@ -67,6 +67,10 @@ nav{position:sticky;top:0;z-index:200;background:rgba(18,13,9,0.9);backdrop-filt
 .todo-sort{display:flex;align-items:center;gap:8px;}
 .todo-sort-label{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--taupe);}
 .todo-sort-select{padding:7px 28px 7px 12px;border:1px solid var(--border-mid);border-radius:8px;background:var(--espresso);color:var(--text-bright);font-size:12px;font-family:'DM Sans',sans-serif;outline:none;cursor:pointer;}
+.todo-brand-filters{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:220px;}
+.todo-brand-pill{background:var(--parchment);border:1px solid var(--border-mid);border-radius:100px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;color:var(--taupe);transition:all 0.12s;font-family:'DM Sans',sans-serif;}
+.todo-brand-pill.active{background:var(--ink);color:var(--cream);border-color:var(--text-bright);}
+.todo-brand-pill:hover:not(.active){background:var(--cream-dark);color:var(--text-bright);}
 
 /* ── EMPTY STATE ── */
 .empty-state-wrap{text-align:center;padding:64px 24px;}
@@ -473,6 +477,7 @@ let hookTargetId = null;
 let scriptTargetCardId = null;
 let scriptAngle = 'story';
 let todoSort = localStorage.getItem('kortny-todo-sort') || 'original';
+let todoBrandFilter = localStorage.getItem('kortny-todo-brand-filter') || 'All';
 
 
 // ── WEEK STRIP ────────────────────────────────────────────
@@ -707,14 +712,20 @@ function parseInspirationLinks(text){return String(text||'').split(/\n+/).map(s=
 function normalizeInspirationUrl(url){const trimmed=String(url||'').trim();if(!trimmed)return'';return/^https?:\/\//i.test(trimmed)?trimmed:'https://'+trimmed;}
 function getLinkLabel(url){try{const u=new URL(url);return u.hostname.replace(/^www\./,'');}catch(e){return url.replace(/^https?:\/\//,'').slice(0,28);}}
 function getInspirationText(take){return(take.inspirationLinks||[]).join('\n');}
+function jsString(value){return JSON.stringify(String(value||''));}
 
 // ── RENDER ────────────────────────────────────────────────
 function getCardCounts(card){const takes=card.takes||[];const done=takes.filter(t=>t.done).length;return{total:takes.length,done,remaining:takes.length-done,logged:takes.filter(t=>t.logged).length};}
-function getSortedTodoCards(){return[...TODO].sort((a,b)=>{const ac=getCardCounts(a),bc=getCardCounts(b);if(todoSort==='brand')return(a.brand||'').localeCompare(b.brand||'')||a.productName.localeCompare(b.productName);if(todoSort==='remaining')return bc.remaining-ac.remaining||a.productName.localeCompare(b.productName);if(todoSort==='filmed')return bc.done-ac.done||a.productName.localeCompare(b.productName);if(todoSort==='least')return ac.remaining-bc.remaining||a.productName.localeCompare(b.productName);return 0;});}
+function getTodoBrands(){return[...new Set(TODO.map(c=>c.brand).filter(Boolean))].sort((a,b)=>a.localeCompare(b));}
+function getFilteredTodoCards(){return todoBrandFilter==='All'?TODO:TODO.filter(card=>card.brand===todoBrandFilter);}
+function getSortedTodoCards(){return[...getFilteredTodoCards()].sort((a,b)=>{const ac=getCardCounts(a),bc=getCardCounts(b);if(todoSort==='brand')return(a.brand||'').localeCompare(b.brand||'')||a.productName.localeCompare(b.productName);if(todoSort==='remaining')return bc.remaining-ac.remaining||a.productName.localeCompare(b.productName);if(todoSort==='filmed')return bc.done-ac.done||a.productName.localeCompare(b.productName);if(todoSort==='least')return ac.remaining-bc.remaining||a.productName.localeCompare(b.productName);return 0;});}
 function setTodoSort(value){todoSort=value;localStorage.setItem('kortny-todo-sort',value);render();}
+function setTodoBrandFilter(brand){todoBrandFilter=brand;localStorage.setItem('kortny-todo-brand-filter',brand);render();}
 
 function render() {
   const main=document.getElementById('main-content');
+  const brands=getTodoBrands();
+  if(todoBrandFilter!=='All'&&!brands.includes(todoBrandFilter)){todoBrandFilter='All';localStorage.setItem('kortny-todo-brand-filter','All');}
   const allTakes=TODO.flatMap(c=>c.takes||[]);
   const doneTakes=allTakes.filter(t=>t.done).length;
   const totalTakes=allTakes.length;
@@ -737,6 +748,10 @@ function render() {
       <span class="ppill ppill-left">${totalTakes-doneTakes} remaining</span>
     </div>
     <div class="todo-toolbar">
+      <div class="todo-brand-filters">
+        <button class="todo-brand-pill${todoBrandFilter==='All'?' active':''}" onclick="setTodoBrandFilter('All')">All Brands</button>
+        ${brands.map(brand=>`<button class="todo-brand-pill${todoBrandFilter===brand?' active':''}" onclick="setTodoBrandFilter(${jsString(brand)})">${escapeHtml(brand)}</button>`).join('')}
+      </div>
       <div class="todo-sort">
         <span class="todo-sort-label">Sort</span>
         <select class="todo-sort-select" onchange="setTodoSort(this.value)">
