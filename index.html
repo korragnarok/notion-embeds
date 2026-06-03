@@ -171,7 +171,7 @@ nav {
   display: flex; align-items: center; gap: 14px;
   margin-bottom: 20px;
 }
-.level-badge-big { font-size: 38px; line-height: 1; }
+.level-badge-big { font-size: 44px; line-height: 1; }
 .level-name-big {
   font-family: 'Syne', sans-serif;
   font-size: 44px; font-weight: 800; line-height: 1;
@@ -512,18 +512,8 @@ footer {
   .hero-headline{font-size:64px;}
 }
 
-.level-gem-icon {
-  width: 26px; height: 26px;
-  object-fit: contain;
-  border-radius: 50%;
-  background: var(--ink);
-  padding: 3px;
-}
-.level-gem-icon-lg {
-  width: 52px; height: 52px;
-  object-fit: contain;
-}
-
+.level-gem-icon { width: 28px; height: 28px; object-fit: contain; }
+.level-gem-icon-lg { width: 48px; height: 48px; object-fit: contain; }
 
 
 
@@ -554,9 +544,8 @@ footer {
 <!-- NAV -->
 <nav>
   <div class="nav-brand">
-   <div class="nav-brand">
-    <img src="logo.png" style="height:38px;width:auto;object-fit:contain">
-</div>
+    <img src="icons/logo.png" style="height:38px;width:auto;object-fit:contain">
+  </div>
   <div class="nav-links">
     <a href="#" class="nav-link active">Home</a>
     <a href="#content" class="nav-link">Content</a>
@@ -570,10 +559,10 @@ footer {
 <!-- PAGE -->
 <div class="page">
 
- <!-- HERO -->
+  <!-- HERO -->
   <section class="hero">
     <div class="hero-left">
-      <div class="hero-leaf"><img src="leaf.png"></div>
+      <div class="hero-leaf">🌿</div>
       <h1 class="hero-headline">HELLO<br>ITS<br>KORTNY</h1>
       <span class="hero-script">Creator Hub</span>
       <p class="hero-desc">
@@ -588,7 +577,7 @@ footer {
         <div class="level-eyebrow">Current Level</div>
         <div class="level-current-row">
           <div class="level-badge-big" id="lc-emoji"></div>
-          <div class="level-name-big" id="lc-name"></div>
+          <div class="level-name-big" id="lc-name">SILVER</div>
         </div>
         <div class="level-stats-row">
           <div class="level-stat-box">
@@ -949,11 +938,11 @@ async function loadAll() {
     // ── Top products
     const topProds=[...prods].sort((a,b)=>(b.properties.GMV?.number||0)-(a.properties.GMV?.number||0)).slice(0,3);
     const maxGmv=topProds[0]?.properties.GMV?.number||1;
-    const EMOJIS=['🧴','🌿','💄','🐾','🏠','✨'];
+
     document.getElementById('top-products').innerHTML=topProds.map((p,i)=>{
       const name=p.properties.Product?.title?.[0]?.plain_text||'';
       const g=p.properties.GMV?.number||0;
-      return`<div class="prod-row"><div class="prod-img">${EMOJIS[i]||'📦'}</div><div class="prod-name">${name}</div><div class="prod-bar-wrap"><div class="prod-bar-bg"><div class="prod-bar-fill" style="width:${Math.round(g/maxGmv*100)}%"></div></div></div><div class="prod-gmv">${fmt(g)}</div></div>`;
+      return`<div class="prod-row"><div class="prod-img" style="background:var(--brown-lift);display:flex;align-items:center;justify-content:center;"><img src="icons/box.png" style="width:18px;height:18px;object-fit:contain;opacity:0.6"></div><div class="prod-name">${name}</div><div class="prod-bar-wrap"><div class="prod-bar-bg"><div class="prod-bar-fill" style="width:${Math.round(g/maxGmv*100)}%"></div></div></div><div class="prod-gmv">${fmt(g)}</div></div>`;
     }).join('');
 
   } catch(e) { console.error(e); }
