@@ -157,7 +157,7 @@ nav{background:rgba(18,13,9,0.9);backdrop-filter:blur(20px);border-bottom:1px so
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/service-worker.js")
+        navigator.serviceWorker.register("service-worker.js")
           .then(reg => console.log("[SW] Registered", reg.scope))
           .catch(err => console.warn("[SW] Failed", err));
       });

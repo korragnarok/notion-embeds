@@ -1,22 +1,23 @@
 // @helloitskortny — TikTok Shop Creator Hub
-// Service Worker v1.3
+// Service Worker v1.4
 
-const CACHE_NAME = 'kortny-hub-v4';
-const RUNTIME_CACHE = 'kortny-runtime-v4';
+const CACHE_NAME = 'kortny-hub-v5';
+const RUNTIME_CACHE = 'kortny-runtime-v5';
+const BASE_PATH = '/notion-embeds';
 
 // App shell — everything needed to load offline
 const APP_SHELL = [
-  '/index.html',
-  '/dashboard.html',
-  '/commissions.html',
-  '/video-tracker.html',
-  '/daily-sales-calendar.html',
-  '/level-ladder.html',
-  '/products.html',
-  '/hooks.html',
-  '/script-generator.html',
-  '/daily-todo.html',
-  '/manifest.json'
+  `${BASE_PATH}/index.html`,
+  `${BASE_PATH}/dashboard.html`,
+  `${BASE_PATH}/commissions.html`,
+  `${BASE_PATH}/video-tracker.html`,
+  `${BASE_PATH}/daily-sales-calendar.html`,
+  `${BASE_PATH}/level-ladder.html`,
+  `${BASE_PATH}/products.html`,
+  `${BASE_PATH}/hooks.html`,
+  `${BASE_PATH}/script-generator.html`,
+  `${BASE_PATH}/daily-todo.html`,
+  `${BASE_PATH}/manifest.json`
 ];
 
 // External assets to cache on first fetch (fonts etc)
@@ -28,7 +29,7 @@ const CACHE_PATTERNS = [
 
 // ─── Install: pre-cache app shell ───────────────────────────────
 self.addEventListener('install', event => {
-  console.log('[SW] Installing kortny-hub-v4...');
+  console.log('[SW] Installing kortny-hub-v5...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -124,7 +125,7 @@ self.addEventListener('fetch', event => {
           return response;
         }).catch(() => {
           // Offline fallback — try index.html
-          return caches.match('/index.html');
+          return caches.match(`${BASE_PATH}/index.html`);
         });
       })
     );
