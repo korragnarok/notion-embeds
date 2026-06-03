@@ -218,6 +218,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(18,13,9,0.9);backdrop-filt
 .script-text{background:var(--cream);border-radius:8px;padding:14px 16px;font-size:13px;line-height:1.75;color:var(--ink);border-left:3px solid var(--sage);position:relative;}
 .no-script{font-size:12px;color:var(--sand);font-style:italic;padding:8px 0;}
 .script-action-btns{display:flex;gap:5px;margin-bottom:8px;}
+.script-label .script-action-btns{margin-bottom:0;flex-wrap:wrap;justify-content:flex-end;}
 .edit-btn-small{background:none;border:1px solid var(--border-mid);border-radius:5px;padding:2px 8px;font-size:10px;font-weight:600;cursor:pointer;color:var(--taupe);font-family:'DM Sans',sans-serif;transition:all 0.12s;}
 .edit-btn-small:hover{background:var(--caramel);color:white;border-color:var(--caramel);}
 .save-btn-small{background:var(--sage-dark);color:white;border:none;border-radius:5px;padding:2px 8px;font-size:10px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
@@ -798,38 +799,28 @@ function render() {
     html+=`<div class="card-script">
       <div class="script-label">
         <span>📝 Script</span>
-        <button class="gen-script-btn" onclick="openScriptModal('${card.id}')">✦ ${card.script?'Regenerate':'Generate'}</button>
-      </div>`;
-    if(card.script){
-      if(card.editing){
-        html+=`<div class="script-text" style="padding:0;background:none;border:none;">
-          <textarea class="script-textarea" id="script-edit-${card.id}">${card.script}</textarea>
-          <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;">
-            <button class="edit-btn-small js-cancel-edit" data-card-id="${card.id}">Cancel</button>
-            <button class="save-btn-small js-save-edit" data-card-id="${card.id}">Save</button>
-          </div>
+        <div class="script-action-btns">
+          <button class="edit-btn-small js-start-edit" data-card-id="${card.id}">${card.script?'Edit':'Paste'}</button>
+          <button class="gen-script-btn" onclick="openScriptModal('${card.id}')">✦ ${card.script?'Regenerate':'Generate'}</button>
         </div>
-        <div class="insp-section">
-          <div class="insp-label">Inspiration</div>
-          <div class="insp-links">
-            ${(take.inspirationLinks||[]).map((url,linkIndex)=>`<a href="${escapeHtml(url)}" target="_blank" class="insp-link"><span>${escapeHtml(getLinkLabel(url))}</span></a><button class="insp-remove" onclick="removeInspirationLink('${card.id}','${take.id}',${linkIndex})" title="Remove link">×</button>`).join('')||'<span style="font-size:12px;color:var(--sand);font-style:italic">No links yet</span>'}
-          </div>
-          <div class="insp-add">
-            <input type="url" class="insp-input" id="insp-${take.id}" placeholder="Paste TikTok or inspo link..." onkeydown="if(event.key==='Enter'){event.preventDefault();addInspirationLink('${card.id}','${take.id}')}">
-            <button class="insp-add-btn" onclick="addInspirationLink('${card.id}','${take.id}')">Add</button>
-          </div>
-        </div>`;
-      } else {
-        html+=`<div class="script-text">
-          <div class="script-action-btns">
-            <button class="edit-btn-small js-start-edit" data-card-id="${card.id}">Edit</button>
-            <button class="copy-btn-small js-copy-script" data-card-id="${card.id}">Copy</button>
-          </div>
-          ${card.script.replace(/\n/g,'<br>')}
-        </div>`;
-      }
+      </div>`;
+    if(card.editing){
+      html+=`<div class="script-text" style="padding:0;background:none;border:none;">
+        <textarea class="script-textarea" id="script-edit-${card.id}" placeholder="Paste or write your script here...">${escapeHtml(card.script||'')}</textarea>
+        <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:6px;">
+          <button class="edit-btn-small js-cancel-edit" data-card-id="${card.id}">Cancel</button>
+          <button class="save-btn-small js-save-edit" data-card-id="${card.id}">Save Script</button>
+        </div>
+      </div>`;
+    } else if(card.script){
+      html+=`<div class="script-text">
+        <div class="script-action-btns">
+          <button class="copy-btn-small js-copy-script" data-card-id="${card.id}">Copy</button>
+        </div>
+        ${escapeHtml(card.script).replace(/\n/g,'<br>')}
+      </div>`;
     } else {
-      html+=`<div class="no-script">No script yet — click ✦ Generate above</div>`;
+      html+=`<div class="no-script">No script yet — paste your own or generate one.</div>`;
     }
     html+=`</div>`;
 
