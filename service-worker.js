@@ -1,8 +1,8 @@
 // @helloitskortny — TikTok Shop Creator Hub
-// Service Worker v1.0
+// Service Worker v1.1
 
-const CACHE_NAME = 'kortny-hub-v1';
-const RUNTIME_CACHE = 'kortny-runtime-v1';
+const CACHE_NAME = 'kortny-hub-v2';
+const RUNTIME_CACHE = 'kortny-runtime-v2';
 
 // App shell — everything needed to load offline
 const APP_SHELL = [
@@ -28,7 +28,7 @@ const CACHE_PATTERNS = [
 
 // ─── Install: pre-cache app shell ───────────────────────────────
 self.addEventListener('install', event => {
-  console.log('[SW] Installing kortny-hub-v1...');
+  console.log('[SW] Installing kortny-hub-v2...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
