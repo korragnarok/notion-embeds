@@ -631,7 +631,7 @@ footer {
     <div class="stat-card">
       <div class="stat-card-top">
         <div class="stat-icon sand"><i data-lucide="package" style="width:20px;height:20px;stroke:#9a8870;stroke-width:1.8;fill:none;display:block"></i></div>
-        <div class="stat-label">Units Sold<br>All Time</div>
+        <div class="stat-label">Orders<br>This Month</div>
       </div>
       <div class="stat-num" id="s-sold">—</div>
       <div class="stat-change" id="s-sold-sub">—</div>
@@ -857,7 +857,7 @@ async function loadAll() {
     const prevVids    = videosAll.filter(p=>p.properties['Date Posted']?.date?.start?.startsWith(`${prevM.getFullYear()}-${String(prevM.getMonth()+1).padStart(2,'0')}`));
 
     const prods = prodsAll.filter(p=>!p.archived&&p.properties.Product?.title?.[0]?.plain_text);
-    const soldMonth = prods.reduce((s,p)=>s+(p.properties.Sold?.number||0),0);
+    const soldMonth = ordersAll.filter(p=>p.properties['Order date']?.date?.start?.startsWith(monthPrefix)).length;
 
     // ── Snapshot stats
     document.getElementById('s-gmv').textContent  = fmt(gmv);
@@ -896,10 +896,10 @@ async function loadAll() {
       document.getElementById('lc-togo-label').textContent = 'Level';
       document.getElementById('level-cta-text').textContent = "You've reached Sapphire! 👸 Top tier.";
     }
-    const listEl=document.getElementById('level-list');
+ const listEl=document.getElementById('level-list');
     listEl.innerHTML=LEVELS.map((l,i)=>{
       const state=i<lvlIdx?'reached':i===lvlIdx?'current':'locked';
-      const statusText=state==='reached'?'REACHED ✓':state==='current'?'CURRENT ★':'LOCKED 🔒';
+      const statusText=state==='reached'?'REACHED ✓':state==='current'?'CURRENT ★':'<img src="locked.png" style="width:14px;height:14px;object-fit:contain;opacity:0.5" alt="locked">';
       return`<div class="level-row ${state}"><div class="level-row-dot"></div><div class="level-row-icon"><img src="icons/levels/${l.icon}.png" class="level-gem-icon" alt=""></div><div class="level-row-name">${l.name}</div><div class="level-row-status">${statusText}</div></div>`;
     }).join('');
 
