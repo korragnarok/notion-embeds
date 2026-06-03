@@ -1142,7 +1142,7 @@ async function logVideo(cardId, takeId) {
         'Date Posted':{date:{start:getDateKey(currentDate)}},
         ...(timePosted?{'Time Posted':{rich_text:[{text:{content:timePosted}}]}}:{}),
         ...(videoType?{'Video Type':{select:{name:videoType}}}:{}),
-        ...(gotSales?{'Got Sales?':{select:{name:gotSales}}}:{}),
+        ...(gotSales?{'Got Sales?':{rich_text:[{text:{content:gotSales}}]}}:{}),
         ...(take.hookText?{'Video Title / Hook (copy)':{rich_text:[{text:{content:take.hookText.substring(0,100)}}]}}:{}),
       }})
     });
