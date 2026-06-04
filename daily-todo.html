@@ -745,8 +745,8 @@ function getCardCounts(card){const takes=card.takes||[];const done=takes.filter(
 function getTodoBrands(){return[...new Set(TODO.map(c=>normalizeBrand(c.brand)).filter(Boolean))].sort((a,b)=>a.localeCompare(b));}
 function getFilteredTodoCards(){return todoBrandFilter==='All'?TODO:TODO.filter(card=>normalizeBrand(card.brand)===todoBrandFilter);}
 function getSortedTodoCards(){return[...getFilteredTodoCards()].sort((a,b)=>{const ac=getCardCounts(a),bc=getCardCounts(b);if(todoSort==='brand')return(a.brand||'').localeCompare(b.brand||'')||a.productName.localeCompare(b.productName);if(todoSort==='remaining')return bc.remaining-ac.remaining||a.productName.localeCompare(b.productName);if(todoSort==='filmed')return bc.done-ac.done||a.productName.localeCompare(b.productName);if(todoSort==='least')return ac.remaining-bc.remaining||a.productName.localeCompare(b.productName);return 0;});}
-function setTodoSort(value){todoSort=value;localStorage.setItem('kortny-todo-sort',value);render();}
-function setTodoBrandFilter(brand){todoBrandFilter=brand==='All'?'All':normalizeBrand(brand);localStorage.setItem('kortny-todo-brand-filter',todoBrandFilter);render();}
+function setTodoSort(value){todoSort=value;localStorage.setItem('kortny-todo-sort',value);renderPreservingScroll();}
+function setTodoBrandFilter(brand){todoBrandFilter=brand==='All'?'All':normalizeBrand(brand);localStorage.setItem('kortny-todo-brand-filter',todoBrandFilter);renderPreservingScroll();}
 function setTodoBrandFilterFromButton(btn){setTodoBrandFilter(btn?.dataset?.brand||'All');}
 
 function render() {
@@ -907,6 +907,12 @@ function render() {
   renderWeekStrip();
 }
 
+function renderPreservingScroll() {
+  const scrollY = window.scrollY;
+  render();
+  restoreScrollPosition(scrollY);
+}
+
 // ── NOTION HELPERS ────────────────────────────────────────
 async function createNotionTake(card, takeNum, hookText='') {
   const res = await fetch(`${API}?endpoint=pages`, {
@@ -961,7 +967,7 @@ async function removeCard(id) {
     if(take.notionId) await deleteNotionPage(take.notionId);
   }
   TODO = TODO.filter(c=>c.id!==id);
-  render();
+  renderPreservingScroll();
 }
 
 async function addTake(cardId) {
@@ -972,7 +978,7 @@ async function addTake(cardId) {
   if(btn){btn.disabled=true;btn.textContent='Adding...';}
   const notionId = await createNotionTake(card, takeNum);
   card.takes.push({id:'take-'+notionId, notionId, hookText:'', hookId:null, inspirationLinks:[], done:false, logged:false, showLog:false, takeNum});
-  render();
+  renderPreservingScroll();
 }
 
 async function removeTake(cardId, takeId) {
@@ -981,7 +987,7 @@ async function removeTake(cardId, takeId) {
   if(!take)return;
   if(take.notionId) await deleteNotionPage(take.notionId);
   card.takes = card.takes.filter(t=>t.id!==takeId);
-  render();
+  renderPreservingScroll();
 }
 
 async function addInspirationLink(cardId, takeId) {
@@ -993,7 +999,7 @@ async function addInspirationLink(cardId, takeId) {
   if(!url)return;
   take.inspirationLinks = [...(take.inspirationLinks||[]), url];
   input.value = '';
-  render();
+  renderPreservingScroll();
   await saveInspirationLinks(take);
 }
 
@@ -1002,7 +1008,7 @@ async function removeInspirationLink(cardId, takeId, index) {
   const take = card?.takes.find(t=>t.id===takeId);
   if(!take)return;
   take.inspirationLinks = (take.inspirationLinks||[]).filter((_,i)=>i!==index);
-  render();
+  renderPreservingScroll();
   await saveInspirationLinks(take);
 }
 
@@ -1011,7 +1017,7 @@ async function toggleDone(cardId, takeId) {
   const take = card?.takes.find(t=>t.id===takeId);
   if(!take)return;
   take.done = !take.done;
-  render();
+  renderPreservingScroll();
   if(take.notionId) await updateNotionTake(take.notionId, {'Done':{checkbox:take.done}});
 
   if(take.done) {
@@ -1034,7 +1040,7 @@ function toggleLog(cardId, takeId) {
   const take = card?.takes.find(t=>t.id===takeId);
   if(!take)return;
   take.showLog = !take.showLog;
-  render();
+  renderPreservingScroll();
 }
 
 async function restartDay() {
@@ -1060,10 +1066,8 @@ function restoreScrollPosition(y) {
 function startEditScript(cardId) {
   const card = TODO.find(c=>c.id===cardId);
   if(!card)return;
-  const scrollY = window.scrollY;
   card.editing = true;
-  render();
-  restoreScrollPosition(scrollY);
+  renderPreservingScroll();
   // Focus and move cursor to end
   const ta = document.getElementById('script-edit-'+cardId);
   if(ta){try{ta.focus({preventScroll:true});}catch(e){ta.focus();}ta.setSelectionRange(ta.value.length,ta.value.length);}
@@ -1072,10 +1076,8 @@ function startEditScript(cardId) {
 function cancelEditScript(cardId) {
   const card = TODO.find(c=>c.id===cardId);
   if(!card)return;
-  const scrollY = window.scrollY;
   card.editing = false;
-  render();
-  restoreScrollPosition(scrollY);
+  renderPreservingScroll();
 }
 
 async function saveEditScript(cardId) {
@@ -1085,11 +1087,9 @@ async function saveEditScript(cardId) {
   if(!ta)return;
   const newText = ta.value.trim();
   if(!newText)return;
-  const scrollY = window.scrollY;
   card.script = newText;
   card.editing = false;
-  render();
-  restoreScrollPosition(scrollY);
+  renderPreservingScroll();
   // Sync updated script to all takes in Notion
   for(const take of card.takes) {
     if(take.notionId) await updateNotionTake(take.notionId, {'Script':{rich_text:[{text:{content:newText.substring(0,2000)}}]}});
@@ -1139,7 +1139,7 @@ async function addSelectedProducts() {
       TODO.push(card);
     }
     closePicker();
-    render();
+    renderPreservingScroll();
     showToast(`Added ${toAdd.length} product${toAdd.length>1?'s':''}`);
   } catch(e) {
     console.error(e);
@@ -1176,7 +1176,7 @@ async function selectHook(hookId) {
   if(take && hook) {
     take.hookId = hookId;
     take.hookText = hook.text;
-    closeHookModal(); render();
+    closeHookModal(); renderPreservingScroll();
     if(take.notionId) await updateNotionTake(take.notionId, {'Hook':{rich_text:[{text:{content:hook.text}}]}});
   }
 }
@@ -1191,7 +1191,7 @@ async function saveCustomHook() {
   take.hookId = null;
   take.hookText = hookText;
   closeHookModal();
-  render();
+  renderPreservingScroll();
   if(take.notionId) await updateNotionTake(take.notionId, {'Hook':{rich_text:[{text:{content:hookText.substring(0,2000)}}]}});
   showToast('Custom hook saved');
 }
@@ -1298,7 +1298,7 @@ Output only the words to say on camera.`;
     const text = extractTodoAiText(data);
     if(text) {
       card.script = text;
-      closeScriptModal(); render();
+      closeScriptModal(); renderPreservingScroll();
       for(const take of card.takes) {
         if(take.notionId) await updateNotionTake(take.notionId, {'Script':{rich_text:[{text:{content:text.substring(0,2000)}}]}});
       }
@@ -1341,7 +1341,7 @@ async function logVideo(cardId, takeId) {
     if(res.ok) {
       take.logged=true; take.showLog=false;
       if(take.notionId) await updateNotionTake(take.notionId, {'Logged to Tracker':{checkbox:true}});
-      render();
+      renderPreservingScroll();
     } else {
       if(msgEl){msgEl.textContent='Error saving.';msgEl.className='take-log-msg error';}
       if(btn){btn.disabled=false;btn.textContent='Save to Video Tracker';}
